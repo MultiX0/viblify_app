@@ -1,0 +1,126 @@
+{
+  "project_info": {
+    "project_number": "407173202142",
+    "project_id": "viblify",
+    "storage_bucket": "viblify.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:407173202142:android:604c5d7b4e9b64c12a424f",
+        "android_client_info": {
+          "package_name": "com.biswa.twitter_clone"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "407173202142-e91edj4acs4lldqtmm306tsoa0tl6e2b.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCuU0uThnSsLWexZfcPBid4irZi0BrQyWQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "407173202142-e91edj4acs4lldqtmm306tsoa0tl6e2b.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "407173202142-pdbdlsqgdscqrj9p3l9n7ikol99i3i6k.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.twitterClone"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:407173202142:android:8c3591a947439df02a424f",
+        "android_client_info": {
+          "package_name": "com.example.reddit_tutorial"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "407173202142-e91edj4acs4lldqtmm306tsoa0tl6e2b.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCuU0uThnSsLWexZfcPBid4irZi0BrQyWQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "407173202142-e91edj4acs4lldqtmm306tsoa0tl6e2b.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "407173202142-pdbdlsqgdscqrj9p3l9n7ikol99i3i6k.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.twitterClone"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:407173202142:android:44631f6984852c442a424f",
+        "android_client_info": {
+          "package_name": "com.example.viblify_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "407173202142-nsg7muedlde5shk7cqb2evtopnqedkqq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.viblify_app",
+            "certificate_hash": "ecc1c2a5d1c3b3421d380a5c5446b6536b4ef0b2"
+          }
+        },
+        {
+          "client_id": "407173202142-e91edj4acs4lldqtmm306tsoa0tl6e2b.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCuU0uThnSsLWexZfcPBid4irZi0BrQyWQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "407173202142-e91edj4acs4lldqtmm306tsoa0tl6e2b.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "407173202142-pdbdlsqgdscqrj9p3l9n7ikol99i3i6k.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.twitterClone"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
