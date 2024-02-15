@@ -379,33 +379,6 @@ class _AddPostScreenState extends ConsumerState<AddPostScreen> {
                             ),
                           ),
                         ],
-                        if (img != null) ...[
-                          AspectRatio(
-                            aspectRatio: 16 / 9,
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(10),
-                              child: Stack(
-                                children: [
-                                  Positioned.fill(
-                                    child: Image.file(
-                                      img!,
-                                      fit: BoxFit.cover,
-                                    ),
-                                  ),
-                                  Positioned(
-                                    child: IconButton(
-                                      onPressed: deleteFile,
-                                      icon: const Icon(
-                                        Icons.remove_circle,
-                                        color: Colors.red,
-                                      ),
-                                    ),
-                                  )
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
                         if (videoID.isNotEmpty) ...[
                           AspectRatio(
                             aspectRatio: 16 / 9,
