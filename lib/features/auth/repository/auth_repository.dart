@@ -86,6 +86,7 @@ class AuthRepository {
           bannerPic: Constant.bannerDefault,
           userID: userCredential.user!.uid,
           isAccountPrivate: false,
+          isUserMod: false,
           link: '',
           email: userCredential.user!.email!,
           verified: false,

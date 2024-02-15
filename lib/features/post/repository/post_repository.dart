@@ -166,6 +166,18 @@ class PostRepository {
     });
   }
 
+  Future<void> deletePost(String feedID) async {
+    try {
+      final deleted = _posts.doc(feedID).update({
+        'isShowed': false,
+      });
+
+      await deleted;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   CollectionReference get _posts =>
       _firebaseFirestore.collection(FirebaseConstant.postsCollection);
 }

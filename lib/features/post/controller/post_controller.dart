@@ -15,6 +15,12 @@ final getAllFeedsProvider = FutureProvider.family((ref, String uid) {
   final communityController = ref.watch(postControllerProvider.notifier);
   return communityController.getAllFeeds(uid);
 });
+
+final deleteFeedProvider = FutureProvider.family((ref, String feedID) {
+  final communityController = ref.watch(postControllerProvider.notifier);
+  return communityController.getAllFeeds(feedID);
+});
+
 final getFeedByID = StreamProvider.family((ref, String feedID) {
   final communityController = ref.watch(postControllerProvider.notifier);
   return communityController.getFeedByID(feedID);
@@ -52,7 +58,9 @@ class PostController extends StateNotifier<bool> {
 
   void addPost({
     required File? image,
+    required String gif,
     required String content,
+    required String videoID,
     required BuildContext context,
     required List<String> tags,
     required bool isCommentsOpen,
@@ -70,7 +78,10 @@ class PostController extends StateNotifier<bool> {
 
     Feeds feeds = Feeds(
       isCommentsOpen: isCommentsOpen,
+      isShowed: true,
+      youtubeVideoID: videoID,
       feedID: "",
+      gif: gif,
       createdAt: Timestamp.now(),
       content: content,
       userID: uid,
@@ -161,5 +172,9 @@ class PostController extends StateNotifier<bool> {
 
   Stream<List<Feeds>> getFeedsByTags(String tag) {
     return _repository.getFeedsByTags(tag);
+  }
+
+  Future deletePost(String feedID) {
+    return _repository.deletePost(feedID);
   }
 }

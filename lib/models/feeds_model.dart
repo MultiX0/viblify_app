@@ -1,4 +1,3 @@
-// Import the necessary core libraries
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 
@@ -15,6 +14,9 @@ class Feeds {
   final Timestamp createdAt;
   final bool isCommentsOpen;
   int score;
+  final bool isShowed;
+  final String gif;
+  final String youtubeVideoID; // New field: youtubeVideoID
 
   Feeds({
     required this.feedID,
@@ -28,7 +30,10 @@ class Feeds {
     required this.likeCount,
     required this.createdAt,
     required this.isCommentsOpen,
-    required this.score, // New field: score
+    required this.score,
+    required this.isShowed,
+    required this.gif,
+    required this.youtubeVideoID, // New field: youtubeVideoID
   });
 
   Feeds copyWith({
@@ -41,9 +46,12 @@ class Feeds {
     List<dynamic>? views,
     int? commentCount,
     int? likeCount,
-    Timestamp? createdAt, // Change to Timestamp
+    Timestamp? createdAt,
     bool? isCommentsOpen,
-    int? score, // New field: score
+    int? score,
+    bool? isShowed,
+    String? gif,
+    String? youtubeVideoID, // New field: youtubeVideoID
   }) {
     return Feeds(
       feedID: feedID ?? this.feedID,
@@ -57,7 +65,11 @@ class Feeds {
       likeCount: likeCount ?? this.likeCount,
       createdAt: createdAt ?? this.createdAt,
       isCommentsOpen: isCommentsOpen ?? this.isCommentsOpen,
-      score: score ?? this.score, // New field: score
+      score: score ?? this.score,
+      isShowed: isShowed ?? this.isShowed,
+      gif: gif ?? this.gif,
+      youtubeVideoID:
+          youtubeVideoID ?? this.youtubeVideoID, // New field: youtubeVideoID
     );
   }
 
@@ -72,33 +84,40 @@ class Feeds {
       'views': views,
       'commentCount': commentCount,
       'likeCount': likeCount,
-      'createdAt': createdAt, // Include the new field in the map: createdAt
+      'createdAt': createdAt,
       'isCommentsOpen': isCommentsOpen,
-      'score': score, // Include the new field in the map: score
+      'score': score,
+      'isShowed': isShowed,
+      'gif': gif,
+      'youtubeVideoID':
+          youtubeVideoID, // Include the new field in the map: youtubeVideoID
     };
   }
 
   factory Feeds.fromMap(Map<String, dynamic> map) {
     return Feeds(
-      feedID: map['feedID'] as String,
-      content: map['content'] as String,
-      userID: map['userID'] as String,
+      feedID: map['feedID'] ?? "",
+      content: map['content'] ?? "",
+      userID: map['userID'] ?? "",
       tags: List<dynamic>.from(map['tags'] as List),
       likes: List<dynamic>.from(map['likes'] as List),
       photoUrl: map['photoUrl'] as String,
       views: List<dynamic>.from(map['views'] as List),
       commentCount: map['commentCount'] as int,
       likeCount: map['likeCount'] as int,
-      createdAt: map['createdAt'] as Timestamp, // Change to Timestamp
+      createdAt: map['createdAt'] as Timestamp,
       isCommentsOpen: map['isCommentsOpen'] as bool,
-      score: map['score']
-          as int, // Include the new field in the factory constructor
+      score: map['score'] as int,
+      isShowed: map['isShowed'] as bool,
+      gif: map['gif'] ?? "",
+      youtubeVideoID: map['youtubeVideoID'] ??
+          "", // Include the new field in the factory constructor
     );
   }
 
   @override
   String toString() {
-    return 'Feeds(feedID: $feedID, content: $content, userID: $userID, tags: $tags, likes: $likes, photoUrl: $photoUrl, views: $views, commentCount: $commentCount, likeCount: $likeCount, createdAt: $createdAt, isCommentsOpen: $isCommentsOpen, score: $score)';
+    return 'Feeds(feedID: $feedID, content: $content, userID: $userID, tags: $tags, likes: $likes, photoUrl: $photoUrl, views: $views, commentCount: $commentCount, likeCount: $likeCount, createdAt: $createdAt, isCommentsOpen: $isCommentsOpen, score: $score, isShowed: $isShowed, gif: $gif, youtubeVideoID: $youtubeVideoID)';
   }
 
   @override
@@ -116,7 +135,10 @@ class Feeds {
         other.likeCount == likeCount &&
         other.createdAt == createdAt &&
         other.isCommentsOpen == isCommentsOpen &&
-        other.score == score; // Compare the new field
+        other.score == score &&
+        other.isShowed == isShowed &&
+        other.gif == gif &&
+        other.youtubeVideoID == youtubeVideoID; // Compare the new field
   }
 
   @override
@@ -132,6 +154,9 @@ class Feeds {
         likeCount.hashCode ^
         createdAt.hashCode ^
         isCommentsOpen.hashCode ^
-        score.hashCode; // Include the new field in the hash code
+        score.hashCode ^
+        isShowed.hashCode ^
+        gif.hashCode ^
+        youtubeVideoID.hashCode; // Include the new field in the hash code
   }
 }

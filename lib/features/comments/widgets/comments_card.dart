@@ -102,6 +102,7 @@ class _CommentScreenState extends ConsumerState<CommentsCard> {
 
   @override
   Widget build(BuildContext context) {
+    bool isLoading = ref.watch(commentsControllerProvider);
     final myData = ref.watch(userProvider)!;
 
     void deleteComment(String commentID) {
@@ -411,81 +412,12 @@ class _CommentScreenState extends ConsumerState<CommentsCard> {
                                                       ),
                                                       if (comment
                                                           .gif.isNotEmpty) ...[
-                                                        Padding(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                  .only(
-                                                                  top: 5,
-                                                                  bottom: 5,
-                                                                  right: 5,
-                                                                  left: 3),
-                                                          child: ClipRRect(
-                                                            borderRadius:
-                                                                const BorderRadius
-                                                                    .all(
-                                                              Radius.circular(
-                                                                  15.0),
-                                                            ),
-                                                            child: ExtendedImage
-                                                                .network(
-                                                              comment.gif,
-                                                              loadStateChanged:
-                                                                  (ExtendedImageState
-                                                                      state) {
-                                                                switch (state
-                                                                    .extendedImageLoadState) {
-                                                                  case LoadState
-                                                                        .loading:
-                                                                    return AspectRatio(
-                                                                      aspectRatio:
-                                                                          16 /
-                                                                              9,
-                                                                      child: Shimmer
-                                                                          .fromColors(
-                                                                        baseColor: Colors
-                                                                            .grey
-                                                                            .shade900,
-                                                                        highlightColor: Colors
-                                                                            .grey
-                                                                            .shade800,
-                                                                        child:
-                                                                            Container(
-                                                                          decoration:
-                                                                              BoxDecoration(
-                                                                            borderRadius:
-                                                                                BorderRadius.circular(10),
-                                                                            color:
-                                                                                Colors.grey.shade900,
-                                                                          ),
-                                                                        ),
-                                                                      ),
-                                                                    );
-
-                                                                  case LoadState
-                                                                        .completed:
-                                                                    return ExtendedRawImage(
-                                                                      image: state
-                                                                          .extendedImageInfo
-                                                                          ?.image,
-                                                                    );
-
-                                                                  default:
-                                                                    return null;
-                                                                }
-                                                              },
-                                                              cache: true,
-                                                              borderRadius:
-                                                                  BorderRadius
-                                                                      .circular(
-                                                                          0),
-                                                            ),
-                                                          ),
-                                                        ),
-                                                      ],
-                                                      if (comment.photoUrl
-                                                          .isNotEmpty) ...[
-                                                        Hero(
-                                                          tag: comment.photoUrl,
+                                                        GestureDetector(
+                                                          onDoubleTap: () =>
+                                                              likeHunlidng(
+                                                                  widget.feedID,
+                                                                  comment
+                                                                      .commentID),
                                                           child: Padding(
                                                             padding:
                                                                 const EdgeInsets
@@ -504,8 +436,7 @@ class _CommentScreenState extends ConsumerState<CommentsCard> {
                                                               child:
                                                                   ExtendedImage
                                                                       .network(
-                                                                comment
-                                                                    .photoUrl,
+                                                                comment.gif,
                                                                 loadStateChanged:
                                                                     (ExtendedImageState
                                                                         state) {
@@ -538,20 +469,14 @@ class _CommentScreenState extends ConsumerState<CommentsCard> {
 
                                                                     case LoadState
                                                                           .completed:
-                                                                      return GestureDetector(
-                                                                        onTap: () =>
-                                                                            Navigator.of(context).push(
-                                                                          MaterialPageRoute(
-                                                                            builder: ((context) =>
-                                                                                ImageSlidePage(imageUrl: paresedImg)),
-                                                                          ),
-                                                                        ),
-                                                                        child:
-                                                                            ExtendedRawImage(
-                                                                          image: state
-                                                                              .extendedImageInfo
-                                                                              ?.image,
-                                                                        ),
+                                                                      return ExtendedRawImage(
+                                                                        width: double
+                                                                            .infinity,
+                                                                        fit: BoxFit
+                                                                            .cover,
+                                                                        image: state
+                                                                            .extendedImageInfo
+                                                                            ?.image,
                                                                       );
 
                                                                     default:
@@ -563,6 +488,96 @@ class _CommentScreenState extends ConsumerState<CommentsCard> {
                                                                     BorderRadius
                                                                         .circular(
                                                                             0),
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                      if (comment.photoUrl
+                                                          .isNotEmpty) ...[
+                                                        Hero(
+                                                          tag: comment.photoUrl,
+                                                          child:
+                                                              GestureDetector(
+                                                            onDoubleTap: () =>
+                                                                likeHunlidng(
+                                                                    widget
+                                                                        .feedID,
+                                                                    comment
+                                                                        .commentID),
+                                                            child: Padding(
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                      .only(
+                                                                      top: 5,
+                                                                      bottom: 5,
+                                                                      right: 5,
+                                                                      left: 3),
+                                                              child: ClipRRect(
+                                                                borderRadius:
+                                                                    const BorderRadius
+                                                                        .all(
+                                                                  Radius
+                                                                      .circular(
+                                                                          15.0),
+                                                                ),
+                                                                child:
+                                                                    ExtendedImage
+                                                                        .network(
+                                                                  comment
+                                                                      .photoUrl,
+                                                                  loadStateChanged:
+                                                                      (ExtendedImageState
+                                                                          state) {
+                                                                    switch (state
+                                                                        .extendedImageLoadState) {
+                                                                      case LoadState
+                                                                            .loading:
+                                                                        return AspectRatio(
+                                                                          aspectRatio:
+                                                                              16 / 9,
+                                                                          child:
+                                                                              Shimmer.fromColors(
+                                                                            baseColor:
+                                                                                Colors.grey.shade900,
+                                                                            highlightColor:
+                                                                                Colors.grey.shade800,
+                                                                            child:
+                                                                                Container(
+                                                                              decoration: BoxDecoration(
+                                                                                borderRadius: BorderRadius.circular(10),
+                                                                                color: Colors.grey.shade900,
+                                                                              ),
+                                                                            ),
+                                                                          ),
+                                                                        );
+
+                                                                      case LoadState
+                                                                            .completed:
+                                                                        return GestureDetector(
+                                                                          onTap: () =>
+                                                                              Navigator.of(context).push(
+                                                                            MaterialPageRoute(
+                                                                              builder: ((context) => ImageSlidePage(imageUrl: paresedImg)),
+                                                                            ),
+                                                                          ),
+                                                                          child:
+                                                                              ExtendedRawImage(
+                                                                            image:
+                                                                                state.extendedImageInfo?.image,
+                                                                          ),
+                                                                        );
+
+                                                                      default:
+                                                                        return null;
+                                                                    }
+                                                                  },
+                                                                  cache: true,
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .circular(
+                                                                              0),
+                                                                ),
                                                               ),
                                                             ),
                                                           ),
@@ -945,8 +960,8 @@ class _CommentScreenState extends ConsumerState<CommentsCard> {
                           ),
                         ),
                         Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 10, vertical: 15),
+                          padding: const EdgeInsets.only(
+                              left: 10, right: 10, bottom: 15),
                           child: Row(
                             children: [
                               CircleAvatar(
@@ -1016,9 +1031,9 @@ class _CommentScreenState extends ConsumerState<CommentsCard> {
                                 child: IconButton(
                                   splashRadius: 1,
                                   padding: EdgeInsets.zero,
-                                  onPressed: saveComment,
+                                  onPressed: isLoading ? null : saveComment,
                                   icon: Icon(
-                                    Icons.send,
+                                    isLoading ? Icons.more_horiz : Icons.send,
                                     color: Colors.blue.shade900,
                                   ),
                                 ),

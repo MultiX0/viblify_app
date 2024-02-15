@@ -17,7 +17,8 @@ class UserModel {
   final DateTime joinedAt;
   final bool verified;
   final String link;
-  final bool isAccountPrivate; // New field
+  final bool isAccountPrivate;
+  final bool isUserMod; // New field: isUserMod
 
   UserModel({
     required this.name,
@@ -34,7 +35,8 @@ class UserModel {
     required this.joinedAt,
     required this.verified,
     required this.link,
-    required this.isAccountPrivate, // New field
+    required this.isAccountPrivate,
+    required this.isUserMod, // New field: isUserMod
   });
 
   UserModel copyWith({
@@ -52,7 +54,8 @@ class UserModel {
     DateTime? joinedAt,
     bool? verified,
     String? link,
-    bool? isAccountPrivate, // New field
+    bool? isAccountPrivate,
+    bool? isUserMod, // New field: isUserMod
   }) {
     return UserModel(
       name: name ?? this.name,
@@ -69,7 +72,8 @@ class UserModel {
       joinedAt: joinedAt ?? this.joinedAt,
       verified: verified ?? this.verified,
       link: link ?? this.link,
-      isAccountPrivate: isAccountPrivate ?? this.isAccountPrivate, // New field
+      isAccountPrivate: isAccountPrivate ?? this.isAccountPrivate,
+      isUserMod: isUserMod ?? this.isUserMod, // New field: isUserMod
     );
   }
 
@@ -89,7 +93,8 @@ class UserModel {
       'joinedAt': joinedAt.toIso8601String(),
       'verified': verified,
       'link': link,
-      'isAccountPrivate': isAccountPrivate, // Include the new field in the map
+      'isAccountPrivate': isAccountPrivate,
+      'isUserMod': isUserMod, // Include the new field in the map
     };
   }
 
@@ -107,16 +112,18 @@ class UserModel {
       followers: List.from(map['followers'] as List),
       points: map['points'] as int,
       joinedAt: DateTime.parse(map['joinedAt'] as String),
-      verified: map['verified'] as bool,
+      verified: map['verified'] == null ? false : map['verified'] as bool,
       link: map['link'] as String,
-      isAccountPrivate: map['isAccountPrivate']
-          as bool, // Retrieve the new field from the map
+      isAccountPrivate: map['isAccountPrivate'] == null
+          ? false
+          : map['isAccountPrivate'] as bool,
+      isUserMod: map['isUserMod'] == null ? false : map['isUserMod'] as bool,
     );
   }
 
   @override
   String toString() {
-    return 'UserModel(name: $name, profilePic: $profilePic, bannerPic: $bannerPic, userID: $userID, email: $email, userName: $userName, location: $location, bio: $bio, following: $following, followers: $followers, points: $points, joinedAt: $joinedAt, verified: $verified, link: $link, isAccountPrivate: $isAccountPrivate)';
+    return 'UserModel(name: $name, profilePic: $profilePic, bannerPic: $bannerPic, userID: $userID, email: $email, userName: $userName, location: $location, bio: $bio, following: $following, followers: $followers, points: $points, joinedAt: $joinedAt, verified: $verified, link: $link, isAccountPrivate: $isAccountPrivate, isUserMod: $isUserMod)';
   }
 
   @override
@@ -137,7 +144,8 @@ class UserModel {
         other.joinedAt == joinedAt &&
         other.verified == verified &&
         other.link == link &&
-        other.isAccountPrivate == isAccountPrivate; // Compare the new field
+        other.isAccountPrivate == isAccountPrivate &&
+        other.isUserMod == isUserMod; // Compare the new field
   }
 
   @override
@@ -156,6 +164,7 @@ class UserModel {
         joinedAt.hashCode ^
         verified.hashCode ^
         link.hashCode ^
-        isAccountPrivate.hashCode; // Include the new field in the hash code
+        isAccountPrivate.hashCode ^
+        isUserMod.hashCode; // Include the new field in the hash code
   }
 }
