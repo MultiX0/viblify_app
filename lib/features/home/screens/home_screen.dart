@@ -5,6 +5,7 @@ import 'package:ionicons/ionicons.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:viblify_app/core/Constant/constant.dart';
 import 'package:viblify_app/features/auth/controller/auth_controller.dart';
+import 'package:viblify_app/features/stt/screens/stt_profile_screen.dart';
 import 'package:viblify_app/features/user_profile/screens/add_post.dart';
 import 'package:viblify_app/features/user_profile/screens/user_profile_screen.dart';
 import 'package:viblify_app/theme/pallete.dart';
@@ -70,7 +71,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
               forceMaterialTransparency: true,
               actions: [
                 IconButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.of(context).push(
+                        MaterialPageRoute(builder: (context) => MySttScreen()));
+                  },
                   icon: const Icon(
                     LineIcons.stickyNote,
                     size: 22,

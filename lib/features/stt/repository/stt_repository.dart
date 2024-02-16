@@ -43,4 +43,31 @@ class SttRepository {
       print('Error adding notifications: $e');
     }
   }
+
+  Stream<List<STT>> getAllStts(String userID) {
+    return _stts
+        .doc(userID)
+        .collection(FirebaseConstant.sttCollection)
+        .orderBy("createdAt", descending: true)
+        .snapshots()
+        .map((event) =>
+            event.docs.map((doc) => STT.fromMap(doc.data())).toList());
+  }
+
+  Stream<List<STT>> getSttByID(String sttID, String userID) {
+    return _stts
+        .doc(userID)
+        .collection(FirebaseConstant.sttCollection)
+        .where("sttID", isEqualTo: sttID)
+        .snapshots()
+        .map((event) {
+      if (event.docs.isNotEmpty) {
+        // If there are documents, directly return the single feed
+        return [STT.fromMap(event.docs.first.data())];
+      } else {
+        // If no documents match the criteria, return an empty list
+        return [];
+      }
+    });
+  }
 }

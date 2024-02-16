@@ -4,6 +4,8 @@ import 'package:viblify_app/features/user_profile/screens/add_post.dart';
 import 'package:viblify_app/features/user_profile/screens/search_screen.dart';
 import 'package:viblify_app/features/user_profile/screens/user_profile_screen.dart';
 
+import '../../features/stt/screens/stt_profile_screen.dart';
+
 class Constant {
   static const logoPath = 'assets/images/logo.png';
   static const cryPath = 'assets/images/cry.gif';
@@ -22,7 +24,7 @@ class Constant {
       const FeedScreen(),
       const SearchScreen(),
       const AddPostScreen(),
-      const Center(),
+      const MySttScreen(),
       UserProfileScreen(uid: uid),
     ];
     return tabWidget;

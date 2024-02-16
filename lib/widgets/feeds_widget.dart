@@ -10,11 +10,14 @@ import 'package:line_icons/line_icons.dart';
 import 'package:linkable/linkable.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+import 'package:tuple/tuple.dart';
 import 'package:viblify_app/core/common/error_text.dart';
 import 'package:timeago/timeago.dart' as timeago;
+import 'package:viblify_app/core/common/loader.dart';
 import 'package:viblify_app/core/methods/youtube_video_validator.dart';
 import 'package:viblify_app/features/Feed/tag_feed_screen.dart';
 import 'package:viblify_app/features/post/controller/post_controller.dart';
+import 'package:viblify_app/features/stt/controller/stt_controller.dart';
 import 'package:viblify_app/features/user_profile/controller/user_profile_controller.dart';
 import 'package:viblify_app/features/user_profile/screens/user_profile_screen.dart';
 import 'package:viblify_app/widgets/empty_widget.dart';
@@ -333,6 +336,87 @@ class FeedsWidget extends ConsumerWidget {
                                             if (post.gif.isNotEmpty) ...[
                                               const SizedBox(
                                                 height: 5,
+                                              ),
+                                            ],
+                                            if (post.sttID.isNotEmpty) ...[
+                                              const SizedBox(
+                                                height: 5,
+                                              ),
+                                            ],
+                                            if (post.sttID.isNotEmpty) ...[
+                                              Card(
+                                                elevation: 4.0,
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(15),
+                                                ),
+                                                child: Column(
+                                                  children: [
+                                                    const SizedBox(
+                                                      height: 10,
+                                                    ),
+                                                    const Center(
+                                                      child: Text(
+                                                        "viblify/stt",
+                                                        style: TextStyle(
+                                                            fontSize: 16,
+                                                            fontFamily:
+                                                                "LobsterTwo",
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .bold),
+                                                      ),
+                                                    ),
+                                                    Container(
+                                                      width:
+                                                          MediaQuery.of(context)
+                                                              .size
+                                                              .width,
+                                                      padding:
+                                                          const EdgeInsets.only(
+                                                              left: 16,
+                                                              right: 16,
+                                                              bottom: 16,
+                                                              top: 8),
+                                                      child: Column(
+                                                        children: [
+                                                          ref
+                                                              .watch(
+                                                                getSttByIdProvider(
+                                                                  Tuple2(
+                                                                      post.sttID,
+                                                                      post.userID),
+                                                                ),
+                                                              )
+                                                              .when(
+                                                                data: (stt) =>
+                                                                    Text(
+                                                                  stt.first
+                                                                      .message,
+                                                                  textDirection: Bidi.hasAnyRtl(stt
+                                                                          .first
+                                                                          .message)
+                                                                      ? ui.TextDirection
+                                                                          .rtl
+                                                                      : ui.TextDirection
+                                                                          .ltr,
+                                                                  style: const TextStyle(
+                                                                      color: Colors
+                                                                          .white),
+                                                                ),
+                                                                error: (error,
+                                                                        trace) =>
+                                                                    ErrorText(
+                                                                        error: error
+                                                                            .toString()),
+                                                                loading: () =>
+                                                                    const SttLoadingWidget(),
+                                                              ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
                                               ),
                                             ],
                                             if (post
@@ -929,6 +1013,28 @@ class FeedsWidget extends ConsumerWidget {
         builder: ((context) => UserProfileScreen(
               uid: uid,
             )),
+      ),
+    );
+  }
+}
+
+class SttLoadingWidget extends StatelessWidget {
+  const SttLoadingWidget({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Skeletonizer(
+      enabled: true,
+      child: Card(
+        child: SizedBox(
+          width: MediaQuery.of(context).size.width,
+          child: const ListTile(
+            title: Text('here is text of the loading screen say hi'),
+            subtitle: Text('Subtitle here'),
+          ),
+        ),
       ),
     );
   }

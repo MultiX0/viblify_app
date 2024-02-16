@@ -16,12 +16,15 @@ class Feeds {
   int score;
   final bool isShowed;
   final String gif;
+  final String sttID;
+
   final String youtubeVideoID; // New field: youtubeVideoID
 
   Feeds({
     required this.feedID,
     required this.content,
     required this.userID,
+    required this.sttID,
     required this.tags,
     required this.likes,
     required this.photoUrl,
@@ -44,6 +47,7 @@ class Feeds {
     List<dynamic>? likes,
     String? photoUrl,
     List<dynamic>? views,
+    String? sttID,
     int? commentCount,
     int? likeCount,
     Timestamp? createdAt,
@@ -58,6 +62,7 @@ class Feeds {
       content: content ?? this.content,
       userID: userID ?? this.userID,
       tags: tags ?? this.tags,
+      sttID: sttID ?? this.sttID,
       likes: likes ?? this.likes,
       photoUrl: photoUrl ?? this.photoUrl,
       views: views ?? this.views,
@@ -88,6 +93,7 @@ class Feeds {
       'isCommentsOpen': isCommentsOpen,
       'score': score,
       'isShowed': isShowed,
+      'sttID': sttID,
       'gif': gif,
       'youtubeVideoID':
           youtubeVideoID, // Include the new field in the map: youtubeVideoID
@@ -99,6 +105,7 @@ class Feeds {
       feedID: map['feedID'] ?? "",
       content: map['content'] ?? "",
       userID: map['userID'] ?? "",
+      sttID: map['sttID'] ?? "",
       tags: List<dynamic>.from(map['tags'] as List),
       likes: List<dynamic>.from(map['likes'] as List),
       photoUrl: map['photoUrl'] as String,
@@ -136,6 +143,7 @@ class Feeds {
         other.createdAt == createdAt &&
         other.isCommentsOpen == isCommentsOpen &&
         other.score == score &&
+        other.sttID == sttID &&
         other.isShowed == isShowed &&
         other.gif == gif &&
         other.youtubeVideoID == youtubeVideoID; // Compare the new field
@@ -148,6 +156,7 @@ class Feeds {
         userID.hashCode ^
         tags.hashCode ^
         likes.hashCode ^
+        sttID.hashCode ^
         photoUrl.hashCode ^
         views.hashCode ^
         commentCount.hashCode ^

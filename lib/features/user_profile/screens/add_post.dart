@@ -184,6 +184,7 @@ class _AddPostScreenState extends ConsumerState<AddPostScreen> {
         content: lastContent,
         videoID: videoID,
         isCommentsOpen: isCommentsOpen,
+        sttID: '',
         context: context,
         tags: tags,
         gif: currentGif?.images!.fixedWidth.url ?? "");

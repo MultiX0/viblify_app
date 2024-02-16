@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:tuple/tuple.dart';
 import 'package:viblify_app/core/Constant/firebase_constant.dart';
 import 'package:viblify_app/features/auth/controller/auth_controller.dart';
 import 'package:viblify_app/features/stt/repository/stt_repository.dart';
@@ -12,6 +13,17 @@ import 'package:viblify_app/models/stt_model.dart';
 
 import '../../../core/utils.dart';
 
+final getAllSttsProvider = StreamProvider.family((ref, String uid) {
+  final sttController = ref.watch(sttControllerProvider.notifier);
+
+  return sttController.getAllStts(uid);
+});
+final getSttByIdProvider =
+    StreamProvider.family<List<STT>, Tuple2<String, dynamic>>((ref, tuple) {
+  return ref
+      .watch(sttControllerProvider.notifier)
+      .getSttByID(tuple.item1, tuple.item2);
+});
 final sttControllerProvider = StateNotifierProvider<SttController, bool>((ref) {
   final _repository = ref.watch(sttRepositoryProvider);
   return SttController(
@@ -90,5 +102,13 @@ class SttController extends StateNotifier<bool> {
     }
 
     return newFeedID;
+  }
+
+  Stream<List<STT>> getAllStts(String uid) {
+    return _repository.getAllStts(uid);
+  }
+
+  Stream<List<STT>> getSttByID(String sttID, String userID) {
+    return _repository.getSttByID(sttID, userID);
   }
 }

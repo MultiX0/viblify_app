@@ -59,6 +59,7 @@ class PostController extends StateNotifier<bool> {
   void addPost({
     required File? image,
     required String gif,
+    required String sttID,
     required String content,
     required String videoID,
     required BuildContext context,
@@ -81,6 +82,7 @@ class PostController extends StateNotifier<bool> {
       isShowed: true,
       youtubeVideoID: videoID,
       feedID: "",
+      sttID: sttID,
       gif: gif,
       createdAt: Timestamp.now(),
       content: content,
