@@ -18,7 +18,7 @@ class Pallete {
       scrolledUnderElevation: 0,
       elevation: 0,
       titleTextStyle: TextStyle(fontFamily: "LobsterTwo", fontSize: 24),
-      backgroundColor: Color.fromARGB(176, 11, 16, 19),
+      backgroundColor: blackColor,
       iconTheme: IconThemeData(
         color: whiteColor,
       ),
