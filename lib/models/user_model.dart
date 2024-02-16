@@ -13,21 +13,27 @@ class UserModel {
   final String bio;
   final List following;
   final List followers;
+  final List notifications;
   final int points;
   final DateTime joinedAt;
   final bool verified;
   final String link;
   final bool isAccountPrivate;
   final bool isUserMod; // New field: isUserMod
+  final bool stt; // New field: stt
+  final bool isUserBlocked; // New field: isUserBlocked
 
   UserModel({
     required this.name,
     required this.profilePic,
     required this.bannerPic,
+    required this.notifications,
     required this.userID,
     required this.email,
     required this.userName,
     required this.location,
+    required this.stt,
+    required this.isUserBlocked,
     required this.bio,
     required this.following,
     required this.followers,
@@ -49,6 +55,9 @@ class UserModel {
     String? location,
     String? bio,
     List? following,
+    List? notifications,
+    bool? isUserBlocked,
+    bool? stt,
     List? followers,
     int? points,
     DateTime? joinedAt,
@@ -65,9 +74,12 @@ class UserModel {
       email: email ?? this.email,
       userName: userName ?? this.userName,
       location: location ?? this.location,
+      stt: stt ?? this.stt,
+      isUserBlocked: isUserBlocked ?? this.isUserBlocked,
       bio: bio ?? this.bio,
       following: following ?? this.following,
       followers: followers ?? this.followers,
+      notifications: notifications ?? this.notifications,
       points: points ?? this.points,
       joinedAt: joinedAt ?? this.joinedAt,
       verified: verified ?? this.verified,
@@ -89,12 +101,15 @@ class UserModel {
       'bio': bio,
       'following': following,
       'followers': followers,
+      'notifications': notifications,
       'points': points,
       'joinedAt': joinedAt.toIso8601String(),
       'verified': verified,
       'link': link,
       'isAccountPrivate': isAccountPrivate,
       'isUserMod': isUserMod, // Include the new field in the map
+      'isUserBlocked': isUserBlocked,
+      'stt': stt,
     };
   }
 
@@ -110,6 +125,7 @@ class UserModel {
       bio: map['bio'] as String,
       following: List.from(map['following'] as List),
       followers: List.from(map['followers'] as List),
+      notifications: List.from(map['notifications'] as List),
       points: map['points'] as int,
       joinedAt: DateTime.parse(map['joinedAt'] as String),
       verified: map['verified'] == null ? false : map['verified'] as bool,
@@ -118,6 +134,9 @@ class UserModel {
           ? false
           : map['isAccountPrivate'] as bool,
       isUserMod: map['isUserMod'] == null ? false : map['isUserMod'] as bool,
+      stt: map['stt'] == null ? false : map['stt'] as bool,
+      isUserBlocked:
+          map['isUserBlocked'] == null ? false : map['isUserBlocked'] as bool,
     );
   }
 
@@ -140,12 +159,15 @@ class UserModel {
         other.bio == bio &&
         listEquals(other.following, following) &&
         listEquals(other.followers, followers) &&
+        listEquals(other.notifications, notifications) &&
         other.points == points &&
         other.joinedAt == joinedAt &&
         other.verified == verified &&
         other.link == link &&
         other.isAccountPrivate == isAccountPrivate &&
-        other.isUserMod == isUserMod; // Compare the new field
+        other.isUserMod == isUserMod &&
+        other.isUserBlocked == isUserBlocked &&
+        other.stt == stt; // Compare the new field
   }
 
   @override
@@ -160,11 +182,14 @@ class UserModel {
         bio.hashCode ^
         following.hashCode ^
         followers.hashCode ^
+        notifications.hashCode ^
         points.hashCode ^
         joinedAt.hashCode ^
         verified.hashCode ^
         link.hashCode ^
         isAccountPrivate.hashCode ^
-        isUserMod.hashCode; // Include the new field in the hash code
+        isUserMod.hashCode ^
+        stt.hashCode ^
+        isUserBlocked.hashCode; // Include the new field in the hash code
   }
 }

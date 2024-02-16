@@ -3,6 +3,7 @@
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:like_button/like_button.dart';
 import 'package:line_icons/line_icons.dart';
@@ -124,13 +125,15 @@ class FeedsWidget extends ConsumerWidget {
                             focusNode: focusNode,
                             child: Listener(
                               onPointerHover: (event) => viewDocument(),
-                              child: InkWell(
-                                splashColor: Colors.grey[900]!.withOpacity(0.3),
-                                focusColor: Colors.grey[900]!.withOpacity(0.3),
-                                hoverColor: Colors.grey[900]!.withOpacity(0.3),
-                                highlightColor:
-                                    Colors.grey[900]!.withOpacity(0.3),
-                                onLongPress: commentScreen,
+                              child: GestureDetector(
+                                onLongPress: () {
+                                  if (post.isCommentsOpen != false) {
+                                    commentScreen();
+                                  } else {
+                                    Fluttertoast.showToast(
+                                        msg: 'التعليقات مغلقة لهذا المنشور');
+                                  }
+                                },
                                 child: Container(
                                   decoration: BoxDecoration(
                                     border: Border(
@@ -635,8 +638,13 @@ class FeedsWidget extends ConsumerWidget {
                                                             ],
                                                           ),
                                                           GestureDetector(
-                                                            onTap:
-                                                                commentScreen,
+                                                            onTap: feed
+                                                                    .isCommentsOpen
+                                                                ? commentScreen
+                                                                : () => Fluttertoast
+                                                                    .showToast(
+                                                                        msg:
+                                                                            "التعليقات مغلقة لهذا المنشور"),
                                                             child: Row(
                                                               children: [
                                                                 Icon(

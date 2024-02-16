@@ -72,7 +72,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                 IconButton(
                   onPressed: () {},
                   icon: const Icon(
-                    Ionicons.notifications_outline,
+                    LineIcons.stickyNote,
                     size: 22,
                   ),
                 ),

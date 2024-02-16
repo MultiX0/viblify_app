@@ -18,6 +18,7 @@ import 'package:intl/intl.dart';
 import 'package:viblify_app/widgets/profile_pic_widget.dart';
 
 import '../../../core/common/error_text.dart';
+import '../../stt/screens/stt_screen.dart';
 
 class UserProfileScreen extends ConsumerStatefulWidget {
   final String uid;
@@ -31,6 +32,7 @@ class UserProfileScreen extends ConsumerStatefulWidget {
 class _UserProfileScreenState extends ConsumerState<UserProfileScreen> {
   @override
   Widget build(BuildContext context) {
+    String myID = ref.watch(userProvider)!.userID;
     bool isLoading = ref.watch(userProfileControllerProvider);
 
     void navigationToEditScreen(BuildContext context) {
@@ -73,6 +75,17 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen> {
                 headerSliverBuilder: ((context, innerBoxIsScrolled) {
                   String date = DateFormat('MMMM/d/y').format(user.joinedAt);
                   String websiteName = extractWebsiteName(user.link);
+
+                  void navigationToSTT(BuildContext context) {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: ((context) => SayTheTruth(
+                              userID: widget.uid,
+                              useraName: user.userName,
+                            )),
+                      ),
+                    );
+                  }
 
                   return [
                     SliverAppBar(
@@ -400,6 +413,11 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen> {
                                 ),
                               ],
                             ),
+                            SizedBox(
+                              height: user.stt != false && user.userID != myID
+                                  ? 10
+                                  : 0,
+                            ),
                             if (user.link.isNotEmpty) ...[
                               const SizedBox(
                                 height: 5,
@@ -430,9 +448,40 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen> {
                             ],
                             user.link.isEmpty || user.location.isEmpty
                                 ? const SizedBox()
-                                : const SizedBox(
-                                    height: 10,
+                                : SizedBox(
+                                    height:
+                                        user.stt != false && user.userID != myID
+                                            ? 3
+                                            : 10,
                                   ),
+                            if (user.stt != false && user.userID != myID) ...[
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.only(right: 3),
+                                    child: Icon(
+                                      LineIcons.stickyNote,
+                                      color: Colors.grey.shade700,
+                                      size: 16,
+                                    ),
+                                  ),
+                                  GestureDetector(
+                                    onTap: () => navigationToSTT(context),
+                                    child: const Text(
+                                      'viblify/stt',
+                                      style: TextStyle(
+                                          color: Colors.blue,
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                            ],
                             Row(
                               children: [
                                 RichText(

@@ -105,6 +105,10 @@ class _AddPostScreenState extends ConsumerState<AddPostScreen> {
                               .checkVideoIsAvailableOnYoutube(
                                   videoController.text)) {
                             Fluttertoast.showToast(msg: "the link is valid");
+                            setState(() {
+                              img = null;
+                              currentGif = null;
+                            });
                             Navigator.pop(context);
 
                             setState(() async {
@@ -123,7 +127,7 @@ class _AddPostScreenState extends ConsumerState<AddPostScreen> {
                                 msg: "الفيديو الذي قمت بادخاله غير موجود");
                           }
                         } else {
-                          Fluttertoast.showToast(msg: "الرجاء ادحال رابط صحيح");
+                          Fluttertoast.showToast(msg: "الرجاء ادخال رابط صحيح");
                         }
                       },
                       icon: const Icon(Icons.check),

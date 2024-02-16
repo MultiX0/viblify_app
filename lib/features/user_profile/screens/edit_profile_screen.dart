@@ -27,6 +27,7 @@ class EditProfileScreen extends ConsumerStatefulWidget {
 
 class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   final allowedChars = 'abcdefghijklmnopqrstuvwxyz0123456789_';
+  bool stt = false;
 
   String userName = "";
   String link = "";
@@ -49,6 +50,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     linkController = TextEditingController(text: ref.read(userProvider)!.link);
     setState(() {
       userName = userNameController.text;
+      stt = ref.read(userProvider)!.stt;
     });
     super.initState();
   }
@@ -98,6 +100,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
           banner: bannerFile,
           userName: userName,
           link: linkController.text,
+          stt: stt,
           context: context,
           location: locationController.text.trim(),
           name: nameController.text.trim(),
@@ -362,6 +365,31 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                           ),
                         ),
                       ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 10),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              "new feature stt (say the truth) : ",
+                              style: TextStyle(
+                                  fontSize: 17,
+                                  color: Colors.grey[500],
+                                  fontWeight: FontWeight.bold),
+                            ),
+                            Switch(
+                              value: stt,
+                              activeColor: Colors.blue[800],
+                              onChanged: (bool value) {
+                                setState(() {
+                                  stt = !stt;
+                                });
+                              },
+                            ),
+                          ],
+                        ),
+                      )
                     ],
                   ),
                 ),

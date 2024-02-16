@@ -92,10 +92,13 @@ class AuthRepository {
           verified: false,
           bio: "",
           location: "",
+          stt: false,
+          isUserBlocked: false,
           joinedAt: DateTime.now(),
           userName: randomUsername,
           following: [],
           followers: [],
+          notifications: [],
           points: 0,
         );
 
