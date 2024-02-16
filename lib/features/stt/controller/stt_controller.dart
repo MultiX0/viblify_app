@@ -24,6 +24,7 @@ final getSttByIdProvider =
       .watch(sttControllerProvider.notifier)
       .getSttByID(tuple.item1, tuple.item2);
 });
+
 final sttControllerProvider = StateNotifierProvider<SttController, bool>((ref) {
   final _repository = ref.watch(sttRepositoryProvider);
   return SttController(
@@ -110,5 +111,9 @@ class SttController extends StateNotifier<bool> {
 
   Stream<List<STT>> getSttByID(String sttID, String userID) {
     return _repository.getSttByID(sttID, userID);
+  }
+
+  Future deleteStt(String userID, String sttID) async {
+    return _repository.deleteStt(userID, sttID);
   }
 }

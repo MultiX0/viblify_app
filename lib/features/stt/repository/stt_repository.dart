@@ -70,4 +70,18 @@ class SttRepository {
       }
     });
   }
+
+  Future<void> deleteStt(String userID, String sttID) async {
+    try {
+      final deleted = _stts
+          .doc(userID)
+          .collection(FirebaseConstant.sttCollection)
+          .doc(sttID)
+          .delete();
+
+      await deleted;
+    } catch (e) {
+      rethrow;
+    }
+  }
 }

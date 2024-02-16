@@ -13,7 +13,6 @@ import 'package:skeletonizer/skeletonizer.dart';
 import 'package:tuple/tuple.dart';
 import 'package:viblify_app/core/common/error_text.dart';
 import 'package:timeago/timeago.dart' as timeago;
-import 'package:viblify_app/core/common/loader.dart';
 import 'package:viblify_app/core/methods/youtube_video_validator.dart';
 import 'package:viblify_app/features/Feed/tag_feed_screen.dart';
 import 'package:viblify_app/features/post/controller/post_controller.dart';

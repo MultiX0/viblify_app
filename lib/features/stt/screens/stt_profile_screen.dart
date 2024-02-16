@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -53,6 +55,7 @@ class _MySttScreenState extends ConsumerState<MySttScreen> {
                                 context: context,
                                 tags: [],
                                 isCommentsOpen: true);
+                            contentController.clear();
                           } else {
                             Fluttertoast.showToast(
                                 msg: "على المنشور أن يحتوي على 8 أحرف أو أكثر");
@@ -89,60 +92,97 @@ class _MySttScreenState extends ConsumerState<MySttScreen> {
           });
     }
 
+    void deleteStt(String sttID) {
+      showDialog(
+        context: context,
+        builder: ((context) {
+          return AlertDialog(
+            title: const Text("هل تريد حذف الاعتراف؟"),
+            content: const Text(
+                "هل أنت متأكد من رغبتك في حذف هذا الاعتراف , مع العلم أن قرار الحذف نهائي ولا يتم الرجوع فيه"),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text("رجوع"),
+              ),
+              TextButton(
+                onPressed: () {
+                  final myID = ref.read(userProvider)!.userID;
+                  Navigator.of(context).pop();
+                  ref
+                      .watch(sttControllerProvider.notifier)
+                      .deleteStt(myID, sttID);
+                  Fluttertoast.showToast(msg: 'تمت العملية بنجاح');
+                },
+                child: const Text("تأكيد"),
+              ),
+            ],
+          );
+        }),
+      );
+    }
+
     final uid = ref.watch(userProvider)!.userID;
 
-    return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: const Text("My anonymous messages"),
-      ),
-      body: ref.watch(getAllSttsProvider(uid)).when(
-            data: (stts) {
-              return SingleChildScrollView(
-                child: Padding(
+    return WillPopScope(
+      onWillPop: () async {
+        contentController.clear();
+        return true;
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          centerTitle: true,
+          title: const Text("My anonymous messages"),
+        ),
+        body: ref.watch(getAllSttsProvider(uid)).when(
+              data: (stts) {
+                return Padding(
                   padding: const EdgeInsets.symmetric(vertical: 10),
-                  child: Wrap(
-                    spacing: 8.0,
-                    runSpacing: 4.0,
-                    children: stts.map((stt) {
-                      return stt.isShowed != false
-                          ? Card(
-                              elevation: 4.0,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(15),
-                              ),
-                              child: Container(
-                                width:
-                                    MediaQuery.of(context).size.width / 2 - 12,
-                                padding: const EdgeInsets.all(16),
-                                child: Column(
-                                  children: [
-                                    Text(
-                                      stt.message,
-                                      textDirection: Bidi.hasAnyRtl(stt.message)
-                                          ? ui.TextDirection.rtl
-                                          : ui.TextDirection.ltr,
-                                      style:
-                                          const TextStyle(color: Colors.white),
-                                    ),
-                                    IconButton(
-                                      padding: EdgeInsets.zero,
-                                      onPressed: () => repostTheStt(stt.sttID),
-                                      icon: const Icon(Ionicons.repeat),
-                                    ),
-                                  ],
+                  child: ListView.builder(
+                    itemCount: stts.length,
+                    itemBuilder: (context, index) {
+                      final stt = stts[index];
+
+                      return Card(
+                        elevation: 4.0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        child: Container(
+                          padding: const EdgeInsets.all(16),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  stt.message,
+                                  textDirection: Bidi.hasAnyRtl(stt.message)
+                                      ? ui.TextDirection.rtl
+                                      : ui.TextDirection.ltr,
+                                  style: const TextStyle(color: Colors.white),
                                 ),
                               ),
-                            )
-                          : const SizedBox();
-                    }).toList(),
+                              IconButton(
+                                padding: EdgeInsets.zero,
+                                onPressed: () => repostTheStt(stt.sttID),
+                                icon: const Icon(Icons.repeat),
+                              ),
+                              IconButton(
+                                padding: EdgeInsets.zero,
+                                onPressed: () => deleteStt(stt.sttID),
+                                icon: const Icon(Ionicons.remove),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
                   ),
-                ),
-              );
-            },
-            error: (error, trace) => ErrorText(error: error.toString()),
-            loading: () => const Loader(),
-          ),
+                );
+              },
+              error: (error, trace) => ErrorText(error: error.toString()),
+              loading: () => const Loader(),
+            ),
+      ),
     );
   }
 }

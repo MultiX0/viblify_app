@@ -5,9 +5,9 @@ import 'package:intl/intl.dart';
 import 'package:like_button/like_button.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:linkable/linkable.dart';
-import 'package:routemaster/routemaster.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+import 'package:tuple/tuple.dart';
 import 'package:viblify_app/core/common/error_text.dart';
 import 'package:viblify_app/core/common/loader.dart';
 import 'package:viblify_app/features/Feed/tag_feed_screen.dart';
@@ -18,6 +18,10 @@ import 'package:timeago/timeago.dart' as timeago;
 import 'package:viblify_app/features/user_profile/screens/user_profile_screen.dart';
 import 'package:viblify_app/theme/pallete.dart';
 
+import '../../../core/methods/youtube_video_validator.dart';
+import '../../../widgets/feeds_widget.dart';
+import '../../stt/controller/stt_controller.dart';
+import '../../user_profile/screens/video_screen.dart';
 import '../widgets/comments_card.dart';
 
 class CommentScreen extends ConsumerStatefulWidget {
@@ -48,6 +52,32 @@ class _CommentScreenState extends ConsumerState<CommentScreen> {
                 uid: uid,
               )),
         ),
+      );
+    }
+
+    void deletePost(String feedID) {
+      showDialog(
+        context: context,
+        builder: ((context) {
+          return AlertDialog(
+            title: const Text("هل تريد حذف المنشور؟"),
+            content: const Text(
+                "هل أنت متأكد من رغبتك في حذف هذا المنشور , مع العلم أن قرار الحذف نهائي ولا يتم الرجوع فيه"),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text("رجوع"),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  ref.watch(postControllerProvider.notifier).deletePost(feedID);
+                },
+                child: const Text("تأكيد"),
+              ),
+            ],
+          );
+        }),
       );
     }
 
@@ -92,6 +122,33 @@ class _CommentScreenState extends ConsumerState<CommentScreen> {
                                       final feedTime = timeago.format(
                                           feed.createdAt.toDate(),
                                           locale: 'en_short');
+                                      void more() {
+                                        showModalBottomSheet(
+                                            context: context,
+                                            showDragHandle: true,
+                                            isScrollControlled: false,
+                                            builder: (context) {
+                                              return Column(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  if (uid == feed.userID) ...[
+                                                    ListTile(
+                                                      title:
+                                                          const Text("Delete"),
+                                                      leading: const Icon(
+                                                          Icons.delete),
+                                                      onTap: () {
+                                                        Navigator.of(context)
+                                                            .pop();
+                                                        deletePost(feed.feedID);
+                                                      },
+                                                    ),
+                                                  ]
+                                                ],
+                                              );
+                                            });
+                                      }
+
                                       return Container(
                                         decoration: BoxDecoration(
                                           border: Border(
@@ -227,8 +284,7 @@ class _CommentScreenState extends ConsumerState<CommentScreen> {
                                                               ),
                                                               const Spacer(),
                                                               IconButton(
-                                                                onPressed:
-                                                                    () {},
+                                                                onPressed: more,
                                                                 icon:
                                                                     const Icon(
                                                                   Icons
@@ -308,6 +364,240 @@ class _CommentScreenState extends ConsumerState<CommentScreen> {
                                                       ),
                                                     ],
                                                   ],
+                                                  if (feed.gif.isNotEmpty) ...[
+                                                    const SizedBox(
+                                                      height: 5,
+                                                    ),
+                                                  ],
+                                                  if (feed
+                                                      .sttID.isNotEmpty) ...[
+                                                    const SizedBox(
+                                                      height: 5,
+                                                    ),
+                                                  ],
+                                                  if (feed
+                                                      .sttID.isNotEmpty) ...[
+                                                    Card(
+                                                      elevation: 4.0,
+                                                      shape:
+                                                          RoundedRectangleBorder(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(15),
+                                                      ),
+                                                      child: Column(
+                                                        children: [
+                                                          const SizedBox(
+                                                            height: 10,
+                                                          ),
+                                                          const Center(
+                                                            child: Text(
+                                                              "viblify/stt",
+                                                              style: TextStyle(
+                                                                  fontSize: 16,
+                                                                  fontFamily:
+                                                                      "LobsterTwo",
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .bold),
+                                                            ),
+                                                          ),
+                                                          Container(
+                                                            width:
+                                                                MediaQuery.of(
+                                                                        context)
+                                                                    .size
+                                                                    .width,
+                                                            padding:
+                                                                const EdgeInsets
+                                                                    .only(
+                                                                    left: 16,
+                                                                    right: 16,
+                                                                    bottom: 16,
+                                                                    top: 8),
+                                                            child: Column(
+                                                              children: [
+                                                                ref
+                                                                    .watch(
+                                                                      getSttByIdProvider(
+                                                                        Tuple2(
+                                                                            feed.sttID,
+                                                                            feed.userID),
+                                                                      ),
+                                                                    )
+                                                                    .when(
+                                                                      data: (stt) =>
+                                                                          Text(
+                                                                        stt.first
+                                                                            .message,
+                                                                        textDirection: Bidi.hasAnyRtl(stt.first.message)
+                                                                            ? ui.TextDirection.rtl
+                                                                            : ui.TextDirection.ltr,
+                                                                        style: const TextStyle(
+                                                                            color:
+                                                                                Colors.white),
+                                                                      ),
+                                                                      error: (error,
+                                                                              trace) =>
+                                                                          ErrorText(
+                                                                              error: error.toString()),
+                                                                      loading: () =>
+                                                                          const SttLoadingWidget(),
+                                                                    ),
+                                                              ],
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  ],
+                                                  if (feed.youtubeVideoID
+                                                      .isNotEmpty) ...[
+                                                    const SizedBox(
+                                                      height: 5,
+                                                    ),
+                                                  ],
+                                                  if (feed.gif.isNotEmpty) ...[
+                                                    GestureDetector(
+                                                      onDoubleTap: () =>
+                                                          likeHunlidng(
+                                                              feed.feedID),
+                                                      child: Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .only(
+                                                                top: 5,
+                                                                bottom: 5,
+                                                                right: 5,
+                                                                left: 3),
+                                                        child: ClipRRect(
+                                                          borderRadius:
+                                                              const BorderRadius
+                                                                  .all(
+                                                            Radius.circular(
+                                                                15.0),
+                                                          ),
+                                                          child: ExtendedImage
+                                                              .network(
+                                                            feed.gif,
+                                                            fit: BoxFit.cover,
+                                                            loadStateChanged:
+                                                                (ExtendedImageState
+                                                                    state) {
+                                                              switch (state
+                                                                  .extendedImageLoadState) {
+                                                                case LoadState
+                                                                      .loading:
+                                                                  return AspectRatio(
+                                                                    aspectRatio:
+                                                                        16 / 9,
+                                                                    child: Shimmer
+                                                                        .fromColors(
+                                                                      baseColor: Colors
+                                                                          .grey
+                                                                          .shade900,
+                                                                      highlightColor: Colors
+                                                                          .grey
+                                                                          .shade800,
+                                                                      child:
+                                                                          Container(
+                                                                        decoration:
+                                                                            BoxDecoration(
+                                                                          borderRadius:
+                                                                              BorderRadius.circular(10),
+                                                                          color: Colors
+                                                                              .grey
+                                                                              .shade900,
+                                                                        ),
+                                                                      ),
+                                                                    ),
+                                                                  );
+
+                                                                case LoadState
+                                                                      .completed:
+                                                                  return ExtendedRawImage(
+                                                                    width: double
+                                                                        .infinity,
+                                                                    fit: BoxFit
+                                                                        .cover,
+                                                                    image: state
+                                                                        .extendedImageInfo
+                                                                        ?.image,
+                                                                  );
+
+                                                                default:
+                                                                  return null;
+                                                              }
+                                                            },
+                                                            cache: true,
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        0),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                  if (feed.youtubeVideoID
+                                                      .isNotEmpty) ...[
+                                                    AspectRatio(
+                                                      aspectRatio: 16 / 9,
+                                                      child: Container(
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(15),
+                                                          image:
+                                                              DecorationImage(
+                                                                  image:
+                                                                      NetworkImage(
+                                                                    VideoURLValidator
+                                                                        .getYouTubeThumbnail(
+                                                                            feed.youtubeVideoID),
+                                                                  ),
+                                                                  fit: BoxFit
+                                                                      .cover),
+                                                        ),
+                                                        child: Align(
+                                                          alignment:
+                                                              Alignment.center,
+                                                          child:
+                                                              GestureDetector(
+                                                            onTap: () =>
+                                                                navigationToVideScreen(
+                                                                    feed.youtubeVideoID,
+                                                                    context),
+                                                            child: Container(
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                      .all(1),
+                                                              decoration:
+                                                                  BoxDecoration(
+                                                                shape: BoxShape
+                                                                    .circle,
+                                                                border: Border.all(
+                                                                    color: Colors
+                                                                        .white,
+                                                                    width: 2.5),
+                                                              ),
+                                                              child: const Icon(
+                                                                Icons
+                                                                    .play_circle,
+                                                                color: Colors
+                                                                    .white,
+                                                                size: 45,
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    const SizedBox(
+                                                      height: 5,
+                                                    ),
+                                                  ],
                                                   if (feed
                                                       .photoUrl.isNotEmpty) ...[
                                                     Hero(
@@ -319,66 +609,75 @@ class _CommentScreenState extends ConsumerState<CommentScreen> {
                                                                 .all(
                                                           Radius.circular(10.0),
                                                         ),
-                                                        child: ExtendedImage
-                                                            .network(
-                                                          feed.photoUrl,
-                                                          loadStateChanged:
-                                                              (ExtendedImageState
-                                                                  state) {
-                                                            switch (state
-                                                                .extendedImageLoadState) {
-                                                              case LoadState
-                                                                    .loading:
-                                                                return AspectRatio(
-                                                                  aspectRatio:
-                                                                      16 / 9,
-                                                                  child: Shimmer
-                                                                      .fromColors(
-                                                                    baseColor: Colors
-                                                                        .grey
-                                                                        .shade900,
-                                                                    highlightColor:
-                                                                        Colors
-                                                                            .grey
-                                                                            .shade800,
-                                                                    child:
-                                                                        Container(
-                                                                      decoration:
-                                                                          BoxDecoration(
-                                                                        borderRadius:
-                                                                            BorderRadius.circular(10),
-                                                                        color: Colors
-                                                                            .grey
-                                                                            .shade900,
+                                                        child: GestureDetector(
+                                                          onDoubleTap: () =>
+                                                              likeHunlidng(
+                                                                  feed.feedID),
+                                                          child: ExtendedImage
+                                                              .network(
+                                                            feed.photoUrl,
+                                                            loadStateChanged:
+                                                                (ExtendedImageState
+                                                                    state) {
+                                                              switch (state
+                                                                  .extendedImageLoadState) {
+                                                                case LoadState
+                                                                      .loading:
+                                                                  return AspectRatio(
+                                                                    aspectRatio:
+                                                                        16 / 9,
+                                                                    child: Shimmer
+                                                                        .fromColors(
+                                                                      baseColor: Colors
+                                                                          .grey
+                                                                          .shade900,
+                                                                      highlightColor: Colors
+                                                                          .grey
+                                                                          .shade800,
+                                                                      child:
+                                                                          Container(
+                                                                        decoration:
+                                                                            BoxDecoration(
+                                                                          borderRadius:
+                                                                              BorderRadius.circular(10),
+                                                                          color: Colors
+                                                                              .grey
+                                                                              .shade900,
+                                                                        ),
                                                                       ),
                                                                     ),
-                                                                  ),
-                                                                );
+                                                                  );
 
-                                                              case LoadState
-                                                                    .completed:
-                                                                return GestureDetector(
-                                                                  onTap: () =>
-                                                                      Routemaster.of(
-                                                                              context)
-                                                                          .push(
-                                                                              '/sliding-image/$img'),
-                                                                  child:
-                                                                      ExtendedRawImage(
-                                                                    image: state
-                                                                        .extendedImageInfo
-                                                                        ?.image,
-                                                                  ),
-                                                                );
+                                                                case LoadState
+                                                                      .completed:
+                                                                  return GestureDetector(
+                                                                    onTap: () =>
+                                                                        Navigator.of(context)
+                                                                            .push(
+                                                                      MaterialPageRoute(
+                                                                        builder:
+                                                                            ((context) =>
+                                                                                ImageSlidePage(imageUrl: img)),
+                                                                      ),
+                                                                    ),
+                                                                    child:
+                                                                        ExtendedRawImage(
+                                                                      image: state
+                                                                          .extendedImageInfo
+                                                                          ?.image,
+                                                                    ),
+                                                                  );
 
-                                                              default:
-                                                                return null;
-                                                            }
-                                                          },
-                                                          cache: true,
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(0),
+                                                                default:
+                                                                  return null;
+                                                              }
+                                                            },
+                                                            cache: true,
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        0),
+                                                          ),
                                                         ),
                                                       ),
                                                     ),
@@ -766,4 +1065,13 @@ class _CommentScreenState extends ConsumerState<CommentScreen> {
       ),
     );
   }
+}
+
+void navigationToVideScreen(String videoID, BuildContext context) async {
+  final title = await VideoURLValidator.getVideoTitle(videoID) ?? "";
+  Navigator.of(context).push(
+    MaterialPageRoute(
+      builder: (context) => VideoScreen(id: videoID, nameOfVideo: title),
+    ),
+  );
 }
