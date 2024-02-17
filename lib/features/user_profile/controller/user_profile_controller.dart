@@ -80,6 +80,7 @@ class UserProfileController extends StateNotifier<bool> {
     required String name,
     required String bio,
     required bool stt,
+    required String mbti,
     required String userName,
     required String location,
     required String link,
@@ -108,6 +109,7 @@ class UserProfileController extends StateNotifier<bool> {
         userName: userName,
         location: location,
         stt: stt,
+        mbti: mbti,
         link: link);
     final res = await _repository.editProfile(user);
     state = false;

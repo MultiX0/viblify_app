@@ -8,6 +8,7 @@ class UserModel {
   final String bannerPic;
   final String userID;
   final String email;
+  final String mbti;
   final String userName;
   final String location;
   final String bio;
@@ -37,6 +38,7 @@ class UserModel {
     required this.bio,
     required this.following,
     required this.followers,
+    required this.mbti,
     required this.points,
     required this.joinedAt,
     required this.verified,
@@ -54,6 +56,7 @@ class UserModel {
     String? userName,
     String? location,
     String? bio,
+    String? mbti,
     List? following,
     List? notifications,
     bool? isUserBlocked,
@@ -73,6 +76,7 @@ class UserModel {
       userID: userID ?? this.userID,
       email: email ?? this.email,
       userName: userName ?? this.userName,
+      mbti: mbti ?? this.mbti,
       location: location ?? this.location,
       stt: stt ?? this.stt,
       isUserBlocked: isUserBlocked ?? this.isUserBlocked,
@@ -106,6 +110,7 @@ class UserModel {
       'joinedAt': joinedAt.toIso8601String(),
       'verified': verified,
       'link': link,
+      'mbti': mbti,
       'isAccountPrivate': isAccountPrivate,
       'isUserMod': isUserMod, // Include the new field in the map
       'isUserBlocked': isUserBlocked,
@@ -118,6 +123,7 @@ class UserModel {
       name: map['name'] as String,
       profilePic: map['profilePic'] as String,
       bannerPic: map['bannerPic'] as String,
+      mbti: map['mbti'] ?? "",
       userID: map['userID'] as String,
       email: map['email'] as String,
       userName: map['userName'] as String,
@@ -161,6 +167,7 @@ class UserModel {
         listEquals(other.followers, followers) &&
         listEquals(other.notifications, notifications) &&
         other.points == points &&
+        other.mbti == mbti &&
         other.joinedAt == joinedAt &&
         other.verified == verified &&
         other.link == link &&
@@ -189,6 +196,7 @@ class UserModel {
         link.hashCode ^
         isAccountPrivate.hashCode ^
         isUserMod.hashCode ^
+        mbti.hashCode ^
         stt.hashCode ^
         isUserBlocked.hashCode; // Include the new field in the hash code
   }

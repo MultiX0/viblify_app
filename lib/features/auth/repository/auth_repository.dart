@@ -87,6 +87,7 @@ class AuthRepository {
           userID: userCredential.user!.uid,
           isAccountPrivate: false,
           isUserMod: false,
+          mbti: "",
           link: '',
           email: userCredential.user!.email!,
           verified: false,

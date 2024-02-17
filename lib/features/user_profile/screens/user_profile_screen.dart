@@ -452,7 +452,9 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen> {
                                     height:
                                         user.stt != false && user.userID != myID
                                             ? 3
-                                            : 10,
+                                            : user.mbti.isNotEmpty
+                                                ? 3
+                                                : 10,
                                   ),
                             if (user.stt != false && user.userID != myID) ...[
                               Row(
@@ -475,6 +477,31 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen> {
                                           fontSize: 15,
                                           fontWeight: FontWeight.bold),
                                     ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                            ],
+                            if (user.mbti.isNotEmpty) ...[
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.only(right: 3),
+                                    child: Icon(
+                                      LineIcons.star,
+                                      color: Colors.grey.shade700,
+                                      size: 16,
+                                    ),
+                                  ),
+                                  Text(
+                                    user.mbti,
+                                    style: const TextStyle(
+                                        color: Colors.blue,
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.bold),
                                   ),
                                 ],
                               ),

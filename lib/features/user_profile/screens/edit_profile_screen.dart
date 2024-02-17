@@ -28,6 +28,26 @@ class EditProfileScreen extends ConsumerStatefulWidget {
 class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   final allowedChars = 'abcdefghijklmnopqrstuvwxyz0123456789_';
   bool stt = false;
+  String currentVal = 'Prefer not to say';
+  List<String> mbtis = [
+    "Prefer not to say",
+    "ISTJ",
+    "ISFJ",
+    "INFJ",
+    "INTJ",
+    "ISTP",
+    "ISFP",
+    "INFP",
+    "INTP",
+    "ESTP",
+    "ESFP",
+    "ENFP",
+    "ENTP",
+    "ESTJ",
+    "ESFJ",
+    "ENFJ",
+    "ENTJ",
+  ];
 
   String userName = "";
   String link = "";
@@ -51,6 +71,8 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     setState(() {
       userName = userNameController.text;
       stt = ref.read(userProvider)!.stt;
+      currentVal = ref.read(userProvider)!.mbti;
+      currentVal = currentVal.isEmpty ? "Prefer not to say" : currentVal;
     });
     super.initState();
   }
@@ -101,6 +123,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
           userName: userName,
           link: linkController.text,
           stt: stt,
+          mbti: currentVal == "Prefer not to say" ? '' : currentVal,
           context: context,
           location: locationController.text.trim(),
           name: nameController.text.trim(),
@@ -366,17 +389,38 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                         ),
                       ),
                       Padding(
+                        padding:
+                            const EdgeInsets.only(top: 15, right: 10, left: 10),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text('Your Personality Types (optionally)'),
+                            DropdownButton(
+                              value: currentVal,
+                              icon: const Icon(Icons.keyboard_arrow_down),
+                              items: mbtis.map((String items) {
+                                return DropdownMenuItem(
+                                  value: items,
+                                  child: Text(items),
+                                );
+                              }).toList(),
+                              onChanged: (String? newValue) {
+                                setState(() {
+                                  currentVal = newValue!;
+                                });
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                      Padding(
                         padding: const EdgeInsets.symmetric(
                             horizontal: 10, vertical: 10),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(
-                              "new feature stt (say the truth) : ",
-                              style: TextStyle(
-                                  fontSize: 17,
-                                  color: Colors.grey[500],
-                                  fontWeight: FontWeight.bold),
+                            const Text(
+                              "new feature stt (say the truth) ",
                             ),
                             Switch(
                               value: stt,
@@ -389,7 +433,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                             ),
                           ],
                         ),
-                      )
+                      ),
                     ],
                   ),
                 ),
