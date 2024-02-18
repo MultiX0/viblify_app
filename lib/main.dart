@@ -1,9 +1,13 @@
+import 'dart:typed_data';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:viblify_app/core/common/error_text.dart';
 import 'package:viblify_app/core/common/loader.dart';
+import 'package:viblify_app/encrypt/encrypt.dart';
 import 'package:viblify_app/features/auth/controller/auth_controller.dart';
 import 'package:viblify_app/features/auth/screens/login_screen.dart';
 import 'package:viblify_app/features/home/screens/home_screen.dart';
@@ -41,6 +45,10 @@ void main() async {
   // }
 
   // updateAllDocuments();
+  Uint8List value = generateRandomIV();
+  String key = generateRandomKey();
+  print('key : $key \n iv : $value');
+
   runApp(
     const ProviderScope(
       child: MyApp(),
@@ -69,6 +77,8 @@ class _MyAppState extends ConsumerState<MyApp> {
 
   @override
   Widget build(BuildContext context) {
+    String encryptionKey = dotenv.env['ENCRYPTION_KEY'] ?? '';
+
     return ref.watch(authChangeState).when(
         data: (data) {
           if (data != null) {
@@ -82,26 +92,34 @@ class _MyAppState extends ConsumerState<MyApp> {
             onGenerateRoute: (settings) {
               if (settings.name != null &&
                   settings.name!.startsWith('https://viblify.com/u/')) {
-                // Handle user profile deep link
                 List<String> parts = settings.name!.split('/');
-                if (parts.length == 5) {
-                  String userId = parts[4]; // Extract user ID from the URL
+                if (parts.length == 6) {
+                  String fullEncryptedID = "${parts[4]}/${parts[5]}";
+
+                  final id =
+                      decrypt(fullEncryptedID, encryptionKey, Uint8List(16));
+
                   return MaterialPageRoute(
-                    builder: (context) => UserProfileScreen(uid: userId),
+                    builder: (context) => UserProfileScreen(uid: id),
                   );
                 }
               }
+
               if (settings.name != null &&
                   settings.name!.startsWith('https://viblify.com/p/')) {
-                // Handle user profile deep link
                 List<String> parts = settings.name!.split('/');
-                if (parts.length == 5) {
-                  String feedID = parts[4]; // Extract user ID from the URL
+                if (parts.length == 6) {
+                  String fullEncryptedID = "${parts[4]}/${parts[5]}";
+
+                  final id =
+                      decrypt(fullEncryptedID, encryptionKey, Uint8List(16));
+
                   return MaterialPageRoute(
-                    builder: (context) => CommentScreen(feedID: feedID),
+                    builder: (context) => CommentScreen(feedID: id),
                   );
                 }
               }
+
               print(settings.name);
 
               return MaterialPageRoute(

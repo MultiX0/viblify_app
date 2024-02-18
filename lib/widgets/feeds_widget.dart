@@ -120,11 +120,15 @@ class FeedsWidget extends ConsumerWidget {
                                         ),
                                       ],
                                       ListTile(
-                                        title: const Text("نسخ الرابط"),
-                                        leading: const Icon(Icons.link),
-                                        onTap: () => copyPostUrl(
-                                            post.feedID, ref, context),
-                                      ),
+                                          title: const Text("نسخ الرابط"),
+                                          leading: const Icon(Icons.link),
+                                          onTap: () {
+                                            copyPostUrl(
+                                              post.feedID,
+                                              ref,
+                                            );
+                                            Navigator.of(context).pop();
+                                          }),
                                     ],
                                   );
                                 });
@@ -769,9 +773,9 @@ class FeedsWidget extends ConsumerWidget {
                                                           GestureDetector(
                                                             onTap: () =>
                                                                 copyPostUrl(
-                                                                    feed.feedID,
-                                                                    ref,
-                                                                    context),
+                                                              feed.feedID,
+                                                              ref,
+                                                            ),
                                                             child: Row(
                                                               children: [
                                                                 Icon(
