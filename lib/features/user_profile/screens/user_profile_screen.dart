@@ -17,7 +17,6 @@ import 'package:viblify_app/theme/pallete.dart';
 import 'package:intl/intl.dart';
 import 'package:viblify_app/widgets/profile_pic_widget.dart';
 
-import '../../../core/common/error_text.dart';
 import '../../stt/screens/stt_screen.dart';
 
 class UserProfileScreen extends ConsumerStatefulWidget {
@@ -43,6 +42,23 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen> {
               )),
         ),
       );
+    }
+
+    void more(String userID) {
+      showModalBottomSheet(
+          context: context,
+          builder: (context) {
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ListTile(
+                  leading: const Icon(Icons.link),
+                  title: const Text('نسخ رابط الملف الشخصي'),
+                  onTap: () => copyProfileUrl(userID, context),
+                ),
+              ],
+            );
+          });
     }
 
     _createRoute(String tag, String photoUrl) {
@@ -108,39 +124,36 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen> {
                               )
                             : null,
                         actions: [
-                          if (visitorsID != user.userID) ...[
-                            IconButton(
-                              onPressed: () {},
-                              icon: Container(
-                                padding: const EdgeInsets.all(10),
-                                decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: Colors.grey.shade900),
-                                child: const Center(
-                                  child: Icon(
-                                    Icons.more_vert,
-                                    size: 20,
-                                  ),
+                          IconButton(
+                            onPressed: signout,
+                            icon: Container(
+                              padding: const EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: Colors.grey.shade900),
+                              child: const Center(
+                                child: Icon(
+                                  Icons.logout,
+                                  size: 18,
                                 ),
                               ),
-                            )
-                          ] else ...[
-                            IconButton(
-                              onPressed: signout,
-                              icon: Container(
-                                padding: const EdgeInsets.all(10),
-                                decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: Colors.grey.shade900),
-                                child: const Center(
-                                  child: Icon(
-                                    Icons.logout,
-                                    size: 18,
-                                  ),
+                            ),
+                          ),
+                          IconButton(
+                            onPressed: () => more(user.userID),
+                            icon: Container(
+                              padding: const EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: Colors.grey.shade900),
+                              child: const Center(
+                                child: Icon(
+                                  Icons.more_vert,
+                                  size: 18,
                                 ),
                               ),
-                            )
-                          ]
+                            ),
+                          ),
                         ],
                         pinned: false,
                         snap: false,
@@ -564,7 +577,12 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen> {
                   ),
                 ),
               ),
-          error: (error, trace) => ErrorText(error: error.toString()),
+          error: (error, trace) {
+            print(error);
+            return const Center(
+              child: Text("المستخدم الذي تبحث عنه غير موجود"),
+            );
+          },
           loading: () => const Loader()),
     );
   }

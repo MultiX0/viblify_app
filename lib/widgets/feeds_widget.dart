@@ -14,6 +14,7 @@ import 'package:tuple/tuple.dart';
 import 'package:viblify_app/core/common/error_text.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:viblify_app/core/methods/youtube_video_validator.dart';
+import 'package:viblify_app/core/utils.dart';
 import 'package:viblify_app/features/Feed/tag_feed_screen.dart';
 import 'package:viblify_app/features/post/controller/post_controller.dart';
 import 'package:viblify_app/features/stt/controller/stt_controller.dart';
@@ -110,14 +111,20 @@ class FeedsWidget extends ConsumerWidget {
                                     children: [
                                       if (myID == post.userID) ...[
                                         ListTile(
-                                          title: const Text("Delete"),
+                                          title: const Text("حذف المنشور"),
                                           leading: const Icon(Icons.delete),
                                           onTap: () {
                                             Navigator.of(context).pop();
                                             deletePost(post.feedID);
                                           },
                                         ),
-                                      ]
+                                      ],
+                                      ListTile(
+                                        title: const Text("نسخ الرابط"),
+                                        leading: const Icon(Icons.link),
+                                        onTap: () => copyPostUrl(
+                                            post.feedID, ref, context),
+                                      ),
                                     ],
                                   );
                                 });
@@ -759,26 +766,36 @@ class FeedsWidget extends ConsumerWidget {
                                                               ],
                                                             ),
                                                           ),
-                                                          Row(
-                                                            children: [
-                                                              Icon(
-                                                                LineIcons.share,
-                                                                color: Colors
-                                                                    .grey
-                                                                    .shade700,
-                                                                size: 18.0,
-                                                              ),
-                                                              const SizedBox(
-                                                                  width: 6.0),
-                                                              const Text(
-                                                                '0',
-                                                                style: TextStyle(
-                                                                    fontSize:
-                                                                        12.0,
-                                                                    color: Colors
-                                                                        .grey),
-                                                              ),
-                                                            ],
+                                                          GestureDetector(
+                                                            onTap: () =>
+                                                                copyPostUrl(
+                                                                    feed.feedID,
+                                                                    ref,
+                                                                    context),
+                                                            child: Row(
+                                                              children: [
+                                                                Icon(
+                                                                  LineIcons
+                                                                      .share,
+                                                                  color: Colors
+                                                                      .grey
+                                                                      .shade700,
+                                                                  size: 18.0,
+                                                                ),
+                                                                const SizedBox(
+                                                                    width: 6.0),
+                                                                Text(
+                                                                  feed.shares
+                                                                      .length
+                                                                      .toString(),
+                                                                  style: const TextStyle(
+                                                                      fontSize:
+                                                                          12.0,
+                                                                      color: Colors
+                                                                          .grey),
+                                                                ),
+                                                              ],
+                                                            ),
                                                           ),
                                                           Row(
                                                             children: [
@@ -924,9 +941,10 @@ class FeedsWidget extends ConsumerWidget {
                                                             ),
                                                             const SizedBox(
                                                                 width: 6.0),
-                                                            const Text(
-                                                              '0',
-                                                              style: TextStyle(
+                                                            Text(
+                                                              post.shares.length
+                                                                  .toString(),
+                                                              style: const TextStyle(
                                                                   fontSize:
                                                                       12.0,
                                                                   color: Colors

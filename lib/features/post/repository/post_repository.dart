@@ -144,6 +144,24 @@ class PostRepository {
     });
   }
 
+  void sharePost(String feedID, String uid) async {
+    try {
+      final postRef = _posts.doc(feedID);
+      final currentData = await postRef.get();
+      final isShared = currentData['shares']?.contains(uid) ?? false;
+      if (!isShared) {
+        final share = await _posts.doc(feedID).update({
+          'shares': FieldValue.arrayUnion([uid]),
+        });
+        share;
+      } else {
+        print('is already shared with this user');
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   Stream<List<Feeds>> getFeedByID(String feedId) {
     return _posts.where("feedID", isEqualTo: feedId).snapshots().map((event) {
       if (event.docs.isNotEmpty) {

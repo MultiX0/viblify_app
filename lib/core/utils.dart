@@ -1,5 +1,10 @@
+import 'package:clipboard/clipboard.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:viblify_app/features/auth/controller/auth_controller.dart';
+import 'package:viblify_app/features/post/controller/post_controller.dart';
 
 void showSnackBar(BuildContext context, String text) {
   final scaffoldMessenger = ScaffoldMessenger.maybeOf(context);
@@ -38,4 +43,21 @@ String extractWebsiteName(String url) {
     print('Error extracting website name: $e');
     return '';
   }
+}
+
+void copyPostUrl(String feedID, WidgetRef ref, BuildContext context) {
+  FlutterClipboard.copy('https://viblify.com/p/$feedID').then((value) {
+    final uid = ref.watch(userProvider)!.userID;
+    Navigator.of(context).pop();
+
+    Fluttertoast.showToast(msg: "تم نسخ رابط المنشور بنجاح");
+    ref.watch(postControllerProvider.notifier).sharePost(feedID, uid);
+  });
+}
+
+void copyProfileUrl(String uid, BuildContext context) {
+  FlutterClipboard.copy('https://viblify.com/u/$uid').then((value) {
+    Navigator.of(context).pop();
+    Fluttertoast.showToast(msg: "تم نسخ رابط الملف الشخصي");
+  });
 }

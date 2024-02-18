@@ -35,9 +35,9 @@ class CommentScreen extends ConsumerStatefulWidget {
 class _CommentScreenState extends ConsumerState<CommentScreen> {
   @override
   Widget build(BuildContext context) {
-    final uid = ref.watch(userProvider)!.userID;
+    final uid = ref.watch(userProvider)?.userID;
     void likeHunlidng(String docID) {
-      ref.watch(postControllerProvider.notifier).likeHundling(docID, uid);
+      ref.watch(postControllerProvider.notifier).likeHundling(docID, uid!);
     }
 
     Future<bool> onLikeButtonTapped(bool isLiked, String docID) async {
@@ -1041,7 +1041,12 @@ class _CommentScreenState extends ConsumerState<CommentScreen> {
                   ),
                 );
               },
-              error: (error, trace) => ErrorText(error: error.toString()),
+              error: (error, trace) {
+                print(error);
+                return const Center(
+                  child: Text("المنشور الذي تبحث عنه غير موجود"),
+                );
+              },
               loading: () => const Loader(),
             ),
       ),

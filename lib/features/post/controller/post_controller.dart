@@ -78,6 +78,7 @@ class PostController extends StateNotifier<bool> {
     });
 
     Feeds feeds = Feeds(
+      shares: [],
       isCommentsOpen: isCommentsOpen,
       isShowed: true,
       youtubeVideoID: videoID,
@@ -158,6 +159,10 @@ class PostController extends StateNotifier<bool> {
 
   void viewDocument(String docID, String uid) {
     _repository.viewDocument(docID, uid);
+  }
+
+  void sharePost(String docID, String uid) {
+    _repository.sharePost(docID, uid);
   }
 
   Future<List<Feeds>> getAllFeeds(String uid) {

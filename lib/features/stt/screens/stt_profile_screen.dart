@@ -5,12 +5,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:ionicons/ionicons.dart';
+import 'package:timeago/timeago.dart' as timeago;
 import 'package:viblify_app/core/common/error_text.dart';
 import 'package:viblify_app/core/common/loader.dart';
 import 'package:viblify_app/features/auth/controller/auth_controller.dart';
 import 'package:viblify_app/features/post/controller/post_controller.dart';
 import 'dart:ui' as ui;
 import 'package:viblify_app/features/stt/controller/stt_controller.dart';
+import 'package:viblify_app/widgets/empty_widget.dart';
 
 TextEditingController contentController = TextEditingController();
 
@@ -136,48 +138,72 @@ class _MySttScreenState extends ConsumerState<MySttScreen> {
         ),
         body: ref.watch(getAllSttsProvider(uid)).when(
               data: (stts) {
-                return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 10),
-                  child: ListView.builder(
-                    itemCount: stts.length,
-                    itemBuilder: (context, index) {
-                      final stt = stts[index];
+                return stts.isNotEmpty
+                    ? Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        child: ListView.builder(
+                          itemCount: stts.length,
+                          itemBuilder: (context, index) {
+                            final stt = stts[index];
 
-                      return Card(
-                        elevation: 4.0,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15),
-                        ),
-                        child: Container(
-                          padding: const EdgeInsets.all(16),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: Text(
-                                  stt.message,
-                                  textDirection: Bidi.hasAnyRtl(stt.message)
-                                      ? ui.TextDirection.rtl
-                                      : ui.TextDirection.ltr,
-                                  style: const TextStyle(color: Colors.white),
+                            final date = timeago.format(stt.createdAt.toDate(),
+                                locale: 'en_short');
+
+                            return Card(
+                              elevation: 4.0,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(15),
+                              ),
+                              child: Container(
+                                padding: const EdgeInsets.all(16),
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            stt.message,
+                                            textDirection:
+                                                Bidi.hasAnyRtl(stt.message)
+                                                    ? ui.TextDirection.rtl
+                                                    : ui.TextDirection.ltr,
+                                            style: const TextStyle(
+                                                color: Colors.white),
+                                          ),
+                                          Align(
+                                              alignment: Alignment.bottomLeft,
+                                              child: Text(
+                                                date.toString(),
+                                                style: TextStyle(
+                                                    color: Colors.grey[500],
+                                                    fontSize: 13),
+                                              ))
+                                        ],
+                                      ),
+                                    ),
+                                    IconButton(
+                                      padding: EdgeInsets.zero,
+                                      onPressed: () => repostTheStt(stt.sttID),
+                                      icon: const Icon(Icons.repeat),
+                                    ),
+                                    IconButton(
+                                      padding: EdgeInsets.zero,
+                                      onPressed: () => deleteStt(stt.sttID),
+                                      icon: const Icon(Ionicons.remove),
+                                    ),
+                                  ],
                                 ),
                               ),
-                              IconButton(
-                                padding: EdgeInsets.zero,
-                                onPressed: () => repostTheStt(stt.sttID),
-                                icon: const Icon(Icons.repeat),
-                              ),
-                              IconButton(
-                                padding: EdgeInsets.zero,
-                                onPressed: () => deleteStt(stt.sttID),
-                                icon: const Icon(Ionicons.remove),
-                              ),
-                            ],
-                          ),
+                            );
+                          },
                         ),
-                      );
-                    },
-                  ),
-                );
+                      )
+                    : const MyEmptyShowen(text: "لاتوجد لديك اعترافات");
               },
               error: (error, trace) => ErrorText(error: error.toString()),
               loading: () => const Loader(),

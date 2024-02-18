@@ -8,6 +8,7 @@ import 'package:viblify_app/features/auth/controller/auth_controller.dart';
 import 'package:viblify_app/features/auth/screens/login_screen.dart';
 import 'package:viblify_app/features/home/screens/home_screen.dart';
 
+import 'features/comments/screens/comment_screen.dart';
 import 'features/user_profile/screens/user_profile_screen.dart';
 import 'firebase_options.dart';
 import 'models/user_model.dart';
@@ -20,6 +21,26 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
+  // Future<void> updateAllDocuments() async {
+  //   try {
+  //     final CollectionReference collection = FirebaseFirestore.instance
+  //         .collection(FirebaseConstant.postsCollection);
+
+  //     QuerySnapshot querySnapshot = await collection.get();
+
+  //     for (QueryDocumentSnapshot documentSnapshot in querySnapshot.docs) {
+  //       await collection.doc(documentSnapshot.id).update({
+  //         "shares": [],
+  //       });
+  //     }
+
+  //     print('All documents updated successfully.');
+  //   } catch (e) {
+  //     print('Error updating documents: $e');
+  //   }
+  // }
+
+  // updateAllDocuments();
   runApp(
     const ProviderScope(
       child: MyApp(),
@@ -67,6 +88,17 @@ class _MyAppState extends ConsumerState<MyApp> {
                   String userId = parts[4]; // Extract user ID from the URL
                   return MaterialPageRoute(
                     builder: (context) => UserProfileScreen(uid: userId),
+                  );
+                }
+              }
+              if (settings.name != null &&
+                  settings.name!.startsWith('https://viblify.com/p/')) {
+                // Handle user profile deep link
+                List<String> parts = settings.name!.split('/');
+                if (parts.length == 5) {
+                  String feedID = parts[4]; // Extract user ID from the URL
+                  return MaterialPageRoute(
+                    builder: (context) => CommentScreen(feedID: feedID),
                   );
                 }
               }
