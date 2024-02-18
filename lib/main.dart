@@ -8,6 +8,7 @@ import 'package:viblify_app/features/auth/controller/auth_controller.dart';
 import 'package:viblify_app/features/auth/screens/login_screen.dart';
 import 'package:viblify_app/features/home/screens/home_screen.dart';
 
+import 'features/user_profile/screens/user_profile_screen.dart';
 import 'firebase_options.dart';
 import 'models/user_model.dart';
 import 'theme/Pallete.dart';
@@ -57,6 +58,26 @@ class _MyAppState extends ConsumerState<MyApp> {
             debugShowCheckedModeBanner: false,
             theme: Pallete.darkModeAppTheme,
             title: "viblify",
+            onGenerateRoute: (settings) {
+              if (settings.name != null &&
+                  settings.name!.startsWith('https://viblify.com/u/')) {
+                // Handle user profile deep link
+                List<String> parts = settings.name!.split('/');
+                if (parts.length == 5) {
+                  String userId = parts[4]; // Extract user ID from the URL
+                  return MaterialPageRoute(
+                    builder: (context) => UserProfileScreen(uid: userId),
+                  );
+                }
+              }
+              print(settings.name);
+
+              return MaterialPageRoute(
+                builder: (context) => const Center(
+                  child: Text("Page not exist"),
+                ),
+              );
+            },
           );
         },
         error: (error, stackTrace) => ErrorText(
