@@ -21,33 +21,11 @@ import 'theme/Pallete.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  await dotenv.load();
+
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-
-  // Future<void> updateAllDocuments() async {
-  //   try {
-  //     final CollectionReference collection = FirebaseFirestore.instance
-  //         .collection(FirebaseConstant.postsCollection);
-
-  //     QuerySnapshot querySnapshot = await collection.get();
-
-  //     for (QueryDocumentSnapshot documentSnapshot in querySnapshot.docs) {
-  //       await collection.doc(documentSnapshot.id).update({
-  //         "shares": [],
-  //       });
-  //     }
-
-  //     print('All documents updated successfully.');
-  //   } catch (e) {
-  //     print('Error updating documents: $e');
-  //   }
-  // }
-
-  // updateAllDocuments();
-  Uint8List value = generateRandomIV();
-  String key = generateRandomKey();
-  print('key : $key \n iv : $value');
 
   runApp(
     const ProviderScope(
