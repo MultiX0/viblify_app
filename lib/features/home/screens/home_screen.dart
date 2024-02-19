@@ -1,11 +1,14 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:viblify_app/core/Constant/constant.dart';
 import 'package:viblify_app/features/auth/controller/auth_controller.dart';
 import 'package:viblify_app/features/stt/screens/stt_profile_screen.dart';
+import 'package:viblify_app/features/user_profile/repository/update_user_status.dart';
 import 'package:viblify_app/features/user_profile/screens/add_post.dart';
 import 'package:viblify_app/features/user_profile/screens/user_profile_screen.dart';
 import 'package:viblify_app/theme/pallete.dart';
@@ -22,11 +25,26 @@ class HomeScreen extends ConsumerStatefulWidget {
 class _HomeScreenState extends ConsumerState<HomeScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-
+  final userUid = FirebaseAuth.instance.currentUser?.uid;
   @override
   void initState() {
+    UpdateUserStatus().updateActiveStatus(true, userUid!);
+
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+
+    SystemChannels.lifecycle.setMessageHandler((message) {
+      print('Message: $message');
+
+      if (message.toString().contains('resume')) {
+        UpdateUserStatus().updateActiveStatus(true, userUid!);
+      }
+      if (message.toString().contains('pause')) {
+        UpdateUserStatus().updateActiveStatus(false, userUid!);
+      }
+
+      return Future.value(message);
+    });
   }
 
   @override

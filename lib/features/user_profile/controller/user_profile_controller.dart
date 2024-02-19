@@ -118,4 +118,8 @@ class UserProfileController extends StateNotifier<bool> {
       Navigator.of(context).pop();
     });
   }
+
+  Future<void> updateActiveStatus(bool isOnline, String userID) async {
+    _repository.updateActiveStatus(isOnline, userID);
+  }
 }

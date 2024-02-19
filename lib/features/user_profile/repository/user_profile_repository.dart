@@ -145,4 +145,11 @@ class UserRepository {
       return true;
     });
   }
+
+  Future<void> updateActiveStatus(bool isOnline, String uid) async {
+    await _users.doc(uid).update({
+      'isUserOnline': isOnline,
+      'lastTimeActive': DateTime.now().millisecondsSinceEpoch.toString(),
+    });
+  }
 }

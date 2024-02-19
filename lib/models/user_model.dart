@@ -20,6 +20,8 @@ class UserModel {
   final bool verified;
   final String link;
   final bool isAccountPrivate;
+  final bool isUserOnline;
+  final String lastTimeActive;
   final bool isUserMod; // New field: isUserMod
   final bool stt; // New field: stt
   final bool isUserBlocked; // New field: isUserBlocked
@@ -31,6 +33,8 @@ class UserModel {
     required this.notifications,
     required this.userID,
     required this.email,
+    required this.lastTimeActive,
+    required this.isUserOnline,
     required this.userName,
     required this.location,
     required this.stt,
@@ -55,6 +59,8 @@ class UserModel {
     String? email,
     String? userName,
     String? location,
+    String? lastTimeActive,
+    bool? isUserOnline,
     String? bio,
     String? mbti,
     List? following,
@@ -71,6 +77,8 @@ class UserModel {
   }) {
     return UserModel(
       name: name ?? this.name,
+      isUserOnline: isUserOnline ?? this.isUserOnline,
+      lastTimeActive: lastTimeActive ?? this.lastTimeActive,
       profilePic: profilePic ?? this.profilePic,
       bannerPic: bannerPic ?? this.bannerPic,
       userID: userID ?? this.userID,
@@ -111,6 +119,8 @@ class UserModel {
       'verified': verified,
       'link': link,
       'mbti': mbti,
+      'lastTimeActive': lastTimeActive,
+      'isUserOnline': isUserOnline,
       'isAccountPrivate': isAccountPrivate,
       'isUserMod': isUserMod, // Include the new field in the map
       'isUserBlocked': isUserBlocked,
@@ -124,6 +134,8 @@ class UserModel {
       profilePic: map['profilePic'] as String,
       bannerPic: map['bannerPic'] as String,
       mbti: map['mbti'] ?? "",
+      isUserOnline: map['isUserOnline'] ?? false,
+      lastTimeActive: map['lastTimeActive'] ?? '',
       userID: map['userID'] as String,
       email: map['email'] as String,
       userName: map['userName'] as String,
@@ -162,6 +174,8 @@ class UserModel {
         other.email == email &&
         other.userName == userName &&
         other.location == location &&
+        other.lastTimeActive == lastTimeActive &&
+        other.isUserOnline == isUserOnline &&
         other.bio == bio &&
         listEquals(other.following, following) &&
         listEquals(other.followers, followers) &&
@@ -187,6 +201,8 @@ class UserModel {
         userName.hashCode ^
         location.hashCode ^
         bio.hashCode ^
+        lastTimeActive.hashCode ^
+        isUserOnline.hashCode ^
         following.hashCode ^
         followers.hashCode ^
         notifications.hashCode ^

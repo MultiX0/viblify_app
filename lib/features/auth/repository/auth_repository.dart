@@ -89,6 +89,8 @@ class AuthRepository {
           isUserMod: false,
           mbti: "",
           link: '',
+          lastTimeActive: '',
+          isUserOnline: false,
           email: userCredential.user!.email!,
           verified: false,
           bio: "",

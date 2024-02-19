@@ -124,21 +124,23 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen> {
                               )
                             : null,
                         actions: [
-                          IconButton(
-                            onPressed: signout,
-                            icon: Container(
-                              padding: const EdgeInsets.all(10),
-                              decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: Colors.grey.shade900),
-                              child: const Center(
-                                child: Icon(
-                                  Icons.logout,
-                                  size: 18,
+                          if (visitorsID == user.userID) ...[
+                            IconButton(
+                              onPressed: signout,
+                              icon: Container(
+                                padding: const EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: Colors.grey.shade900),
+                                child: const Center(
+                                  child: Icon(
+                                    Icons.logout,
+                                    size: 18,
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
+                          ],
                           IconButton(
                             onPressed: () => more(user.userID),
                             icon: Container(
@@ -203,6 +205,29 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen> {
                                   ),
                                 ),
                               ),
+                              if (visitorsID != user.userID) ...[
+                                if (isFollowingUser) ...[
+                                  if (user.isUserOnline) ...[
+                                    Positioned(
+                                      bottom: 13,
+                                      left: 60,
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          border: Border.all(
+                                            color: Pallete.blackColor,
+                                            width: 3.5,
+                                          ),
+                                        ),
+                                        child: CircleAvatar(
+                                          backgroundColor: Colors.green[700],
+                                          radius: 7,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ],
+                              ],
                               if (widget.uid != visitorsID)
                                 Padding(
                                   padding: const EdgeInsets.symmetric(
