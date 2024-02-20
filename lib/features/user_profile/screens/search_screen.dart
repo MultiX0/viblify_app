@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:viblify_app/core/common/error_text.dart';
 import 'package:viblify_app/core/common/loader.dart';
 import 'package:viblify_app/theme/pallete.dart';
 import 'package:viblify_app/widgets/empty_widget.dart';
 
 import '../../community/controller/community_controller.dart';
-import '../../community/screens/community_screen.dart';
 
 class SearchScreen extends ConsumerStatefulWidget {
   const SearchScreen({super.key});
@@ -100,10 +100,6 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
   }
 
   void navigateToCommunity(BuildContext context, String communityName) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: ((context) => CommunityScreen(name: communityName)),
-      ),
-    );
+    context.push("/c/$communityName");
   }
 }

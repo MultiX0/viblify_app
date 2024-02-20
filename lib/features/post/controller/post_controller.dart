@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:viblify_app/core/Constant/firebase_constant.dart';
 import 'package:viblify_app/core/providers/storage_repository_provider.dart';
 import 'package:viblify_app/core/utils.dart';
@@ -121,7 +122,7 @@ class PostController extends StateNotifier<bool> {
     state = false;
     result.fold((l) => showSnackBar(context, l.message), (r) async {
       showSnackBar(context, "Post Created Successfully");
-      Navigator.of(context).pop();
+      context.pop();
     });
   }
 
@@ -129,9 +130,9 @@ class PostController extends StateNotifier<bool> {
     final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
     String generateNewFeedID() {
-      const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+      const chars = '0123456789';
       final random = Random.secure();
-      return List.generate(28, (index) => chars[random.nextInt(chars.length)])
+      return List.generate(10, (index) => chars[random.nextInt(chars.length)])
           .join();
     }
 

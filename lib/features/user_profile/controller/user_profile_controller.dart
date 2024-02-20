@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:go_router/go_router.dart';
 import 'package:viblify_app/core/providers/storage_repository_provider.dart';
 import 'package:viblify_app/core/utils.dart';
 import 'package:viblify_app/features/auth/controller/auth_controller.dart';
@@ -115,7 +116,7 @@ class UserProfileController extends StateNotifier<bool> {
     state = false;
     res.fold((l) => showSnackBar(context, l.message), (r) {
       _ref.read(userProvider.notifier).update((state) => user);
-      Navigator.of(context).pop();
+      context.pop();
     });
   }
 

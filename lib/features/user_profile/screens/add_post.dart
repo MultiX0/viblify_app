@@ -5,13 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:giphy_get/giphy_get.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:viblify_app/core/methods/youtube_video_validator.dart';
 import 'package:viblify_app/core/utils.dart';
 import 'package:viblify_app/features/auth/controller/auth_controller.dart';
 import 'package:viblify_app/features/post/controller/post_controller.dart';
-import 'package:viblify_app/features/user_profile/screens/video_screen.dart';
 import 'package:viblify_app/theme/pallete.dart';
 import 'dart:ui' as ui;
 import '../../giphy/api_key.dart';
@@ -93,7 +93,7 @@ class _AddPostScreenState extends ConsumerState<AddPostScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     IconButton(
-                      onPressed: () => Navigator.pop(context),
+                      onPressed: () => context.pop(),
                       icon: const Icon(Icons.close),
                     ),
                     const Text('اضف رابط يوتيوب'),
@@ -109,7 +109,7 @@ class _AddPostScreenState extends ConsumerState<AddPostScreen> {
                               img = null;
                               currentGif = null;
                             });
-                            Navigator.pop(context);
+                            context.pop();
 
                             setState(() async {
                               videoID = VideoURLValidator.extractYouTubeVideoId(
@@ -226,8 +226,7 @@ class _AddPostScreenState extends ConsumerState<AddPostScreen> {
           appBar: AppBar(
             forceMaterialTransparency: true,
             leading: IconButton(
-                onPressed: () => Navigator.pop(context),
-                icon: const Icon(Icons.close)),
+                onPressed: () => context.pop(), icon: const Icon(Icons.close)),
             automaticallyImplyLeading: false,
             centerTitle: true,
             title: const Text("Viblify"),
@@ -504,10 +503,8 @@ class _AddPostScreenState extends ConsumerState<AddPostScreen> {
   }
 
   void navigationToVideScreen() {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => VideoScreen(id: videoID, nameOfVideo: videoTitle),
-      ),
+    context.push(
+      "/video/$videoID/$videoTitle",
     );
   }
 

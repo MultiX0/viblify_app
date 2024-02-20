@@ -1,16 +1,10 @@
-import 'dart:typed_data';
-
 import 'package:clipboard/clipboard.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:viblify_app/encrypt/encrypt.dart';
 import 'package:viblify_app/features/auth/controller/auth_controller.dart';
 import 'package:viblify_app/features/post/controller/post_controller.dart';
-
-String encryptionKey = dotenv.env['ENCRYPTION_KEY'] ?? '';
 
 void showSnackBar(BuildContext context, String text) {
   final scaffoldMessenger = ScaffoldMessenger.maybeOf(context);
@@ -52,8 +46,7 @@ String extractWebsiteName(String url) {
 }
 
 void copyPostUrl(String feedID, WidgetRef ref) {
-  final id = encrypt(feedID, encryptionKey, Uint8List(16));
-  FlutterClipboard.copy('https://viblify.com/p/$id').then((value) {
+  FlutterClipboard.copy('https://viblify.com/p/$feedID').then((value) {
     final uid = ref.watch(userProvider)!.userID;
 
     Fluttertoast.showToast(msg: "تم نسخ رابط المنشور بنجاح");
@@ -62,9 +55,7 @@ void copyPostUrl(String feedID, WidgetRef ref) {
 }
 
 void copyProfileUrl(String uid, BuildContext context) {
-  final id = encrypt(uid, encryptionKey, Uint8List(16));
-
-  FlutterClipboard.copy('https://viblify.com/u/$id').then((value) {
+  FlutterClipboard.copy('https://viblify.com/u/$uid').then((value) {
     Navigator.of(context).pop();
     Fluttertoast.showToast(msg: "تم نسخ رابط الملف الشخصي");
   });

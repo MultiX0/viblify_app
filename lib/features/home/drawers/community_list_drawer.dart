@@ -1,26 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:viblify_app/core/common/loader.dart';
 import 'package:viblify_app/features/community/controller/community_controller.dart';
-import 'package:viblify_app/features/community/screens/create_community.dart';
 import 'package:viblify_app/models/community_model.dart';
 
 import '../../../core/common/error_text.dart';
-import '../../community/screens/community_screen.dart';
 
 class CommunityListDrawer extends ConsumerWidget {
   const CommunityListDrawer({super.key});
 
   void navigationToCreateCommunity(BuildContext context) {
-    Navigator.of(context).push(
-        MaterialPageRoute(builder: (ctx) => const CreateComunityScreen()));
+    context.push("/c/create");
   }
 
   void navigationToCommunity(BuildContext context, Community community) {
-    Navigator.of(context).push(MaterialPageRoute(
-        builder: (ctx) => CommunityScreen(
-              name: community.name,
-            )));
+    context.push("/c/${community.name}");
   }
 
   @override

@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:go_router/go_router.dart';
 import 'package:tuple/tuple.dart';
 import 'package:viblify_app/core/Constant/firebase_constant.dart';
 import 'package:viblify_app/features/auth/controller/auth_controller.dart';
@@ -71,7 +72,7 @@ class SttController extends StateNotifier<bool> {
     state = false;
     result.fold((l) => showSnackBar(context, l.message), (r) async {
       Fluttertoast.showToast(msg: "تم ارسال الرسالة بنجاح");
-      Navigator.of(context).pop();
+      context.pop();
     });
   }
 

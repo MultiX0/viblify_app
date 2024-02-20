@@ -3,20 +3,19 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:line_icons/line_icons.dart';
-import 'package:viblify_app/core/Constant/constant.dart';
 import 'package:viblify_app/features/auth/controller/auth_controller.dart';
-import 'package:viblify_app/features/stt/screens/stt_profile_screen.dart';
 import 'package:viblify_app/features/user_profile/repository/update_user_status.dart';
-import 'package:viblify_app/features/user_profile/screens/add_post.dart';
-import 'package:viblify_app/features/user_profile/screens/user_profile_screen.dart';
 import 'package:viblify_app/theme/pallete.dart';
 
 import '../drawers/community_list_drawer.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
-  const HomeScreen({super.key});
+  final StatefulNavigationShell navigationShell;
+
+  const HomeScreen({super.key, required this.navigationShell});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _HomeScreenState();
@@ -25,22 +24,31 @@ class HomeScreen extends ConsumerStatefulWidget {
 class _HomeScreenState extends ConsumerState<HomeScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  final userUid = FirebaseAuth.instance.currentUser?.uid;
+
+  String? userUid; // Change the type to String? (nullable)
+
   @override
   void initState() {
-    UpdateUserStatus().updateActiveStatus(true, userUid!);
-
     super.initState();
+    final currentUser = FirebaseAuth.instance.currentUser;
+
+    if (currentUser != null) {
+      userUid = currentUser.uid;
+      UpdateUserStatus().updateActiveStatus(true, userUid!);
+    }
+
     _tabController = TabController(length: 2, vsync: this);
 
     SystemChannels.lifecycle.setMessageHandler((message) {
       print('Message: $message');
 
-      if (message.toString().contains('resume')) {
-        UpdateUserStatus().updateActiveStatus(true, userUid!);
-      }
-      if (message.toString().contains('pause')) {
-        UpdateUserStatus().updateActiveStatus(false, userUid!);
+      if (userUid != null) {
+        if (message.toString().contains('resume')) {
+          UpdateUserStatus().updateActiveStatus(true, userUid!);
+        }
+        if (message.toString().contains('pause')) {
+          UpdateUserStatus().updateActiveStatus(false, userUid!);
+        }
       }
 
       return Future.value(message);
@@ -53,17 +61,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     super.dispose();
   }
 
-  int _page = 0;
+  int page = 0;
 
-  void onPageChanged(int page) {
+  void onTap(context, int index) {
+    setState(() {
+      page = index;
+    });
     if (page != 2) {
-      setState(() {
-        _page = page;
-      });
+      widget.navigationShell.goBranch(
+        index,
+        initialLocation: index == widget.navigationShell.currentIndex,
+      );
     }
     if (page == 2) {
-      Navigator.of(context)
-          .push(MaterialPageRoute(builder: (ctx) => const AddPostScreen()));
+      GoRouter.of(context).push('/addpost');
     }
   }
 
@@ -71,28 +82,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
   Widget build(BuildContext context) {
     final user = ref.watch(userProvider)!;
 
-    void navigationToUserProfile(BuildContext context) {
-      Navigator.of(context).push(MaterialPageRoute(
-          builder: (ctx) => UserProfileScreen(
-                uid: user.userID,
-              )));
-    }
-
     return Scaffold(
       drawer: const CommunityListDrawer(),
-      appBar: _page == 0
+      appBar: widget.navigationShell.currentIndex == 0
           ? AppBar(
-              title: Text(
+              title: const Text(
                 "Viblify",
               ),
               centerTitle: false,
               forceMaterialTransparency: true,
               actions: [
                 IconButton(
-                  onPressed: () {
-                    Navigator.of(context).push(
-                        MaterialPageRoute(builder: (context) => MySttScreen()));
-                  },
+                  onPressed: () => context.push("/stt"),
                   icon: const Icon(
                     LineIcons.stickyNote,
                     size: 22,
@@ -106,7 +107,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                   ),
                 ),
               ],
-              bottom: _page == 0
+              bottom: widget.navigationShell.currentIndex == 0
                   ? TabBar(
                       labelColor: Colors.white,
                       dividerColor: Colors.grey.shade900,
@@ -121,9 +122,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
             )
           : null,
       body: SafeArea(
-        child: Constant.navBar(
-          uid: user.userID,
-        )[_page],
+        child: widget.navigationShell,
       ),
       bottomNavigationBar: CupertinoTabBar(
         height: kToolbarHeight + 5,
@@ -174,8 +173,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
               ),
               label: ''),
         ],
-        onTap: onPageChanged,
-        currentIndex: _page,
+        currentIndex: widget.navigationShell.currentIndex,
+        onTap: (int index) => onTap(context, index),
       ),
     );
   }

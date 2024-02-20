@@ -1,7 +1,10 @@
+import 'dart:convert';
+
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:like_button/like_button.dart';
 import 'package:line_icons/line_icons.dart';
@@ -14,8 +17,6 @@ import 'package:viblify_app/features/post/controller/post_controller.dart';
 import 'package:viblify_app/theme/pallete.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'dart:ui' as ui;
-
-import 'package:viblify_app/widgets/feeds_widget.dart';
 
 class TagFeedsScreen extends ConsumerStatefulWidget {
   final String tag;
@@ -111,8 +112,6 @@ class _SearchScreenState extends ConsumerState<TagFeedsScreen> {
                       }
 
                       bool postLiked = post.likes.contains(myID);
-
-                      final img = Uri.encodeComponent(post.photoUrl);
 
                       bool isArabic = Bidi.hasAnyRtl(post.content);
                       final postTime = timeago.format(post.createdAt.toDate(),
@@ -314,14 +313,8 @@ class _SearchScreenState extends ConsumerState<TagFeedsScreen> {
 
                                                 case LoadState.completed:
                                                   return GestureDetector(
-                                                    onTap: () =>
-                                                        Navigator.of(context)
-                                                            .push(
-                                                      MaterialPageRoute(
-                                                          builder: (context) =>
-                                                              ImageSlidePage(
-                                                                imageUrl: img,
-                                                              )),
+                                                    onTap: () => context.push(
+                                                      "/img/slide/${base64UrlEncode(utf8.encode(post.photoUrl))}",
                                                     ),
                                                     child: ExtendedRawImage(
                                                       image: state

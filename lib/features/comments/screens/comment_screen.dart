@@ -1,6 +1,7 @@
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:like_button/like_button.dart';
 import 'package:line_icons/line_icons.dart';
@@ -10,6 +11,7 @@ import 'package:skeletonizer/skeletonizer.dart';
 import 'package:tuple/tuple.dart';
 import 'package:viblify_app/core/common/error_text.dart';
 import 'package:viblify_app/core/common/loader.dart';
+import 'package:viblify_app/core/utils.dart';
 import 'package:viblify_app/features/Feed/tag_feed_screen.dart';
 import 'package:viblify_app/features/auth/controller/auth_controller.dart';
 import 'dart:ui' as ui;
@@ -133,17 +135,28 @@ class _CommentScreenState extends ConsumerState<CommentScreen> {
                                                 children: [
                                                   if (uid == feed.userID) ...[
                                                     ListTile(
-                                                      title:
-                                                          const Text("Delete"),
+                                                      title: const Text(
+                                                          "حذف المنشور"),
                                                       leading: const Icon(
                                                           Icons.delete),
                                                       onTap: () {
-                                                        Navigator.of(context)
-                                                            .pop();
+                                                        context.pop();
                                                         deletePost(feed.feedID);
                                                       },
                                                     ),
-                                                  ]
+                                                  ],
+                                                  ListTile(
+                                                      title: const Text(
+                                                          "نسخ الرابط"),
+                                                      leading: const Icon(
+                                                          Icons.link),
+                                                      onTap: () {
+                                                        copyPostUrl(
+                                                          feed.feedID,
+                                                          ref,
+                                                        );
+                                                        context.pop();
+                                                      }),
                                                 ],
                                               );
                                             });
@@ -797,29 +810,38 @@ class _CommentScreenState extends ConsumerState<CommentScreen> {
                                                                     ),
                                                                   ],
                                                                 ),
-                                                                Row(
-                                                                  children: [
-                                                                    Icon(
-                                                                      LineIcons
-                                                                          .share,
-                                                                      color: Colors
-                                                                          .grey
-                                                                          .shade700,
-                                                                      size:
-                                                                          18.0,
-                                                                    ),
-                                                                    const SizedBox(
-                                                                        width:
-                                                                            6.0),
-                                                                    const Text(
-                                                                      '0',
-                                                                      style: TextStyle(
-                                                                          fontSize:
-                                                                              12.0,
-                                                                          color:
-                                                                              Colors.grey),
-                                                                    ),
-                                                                  ],
+                                                                GestureDetector(
+                                                                  onTap: () =>
+                                                                      copyPostUrl(
+                                                                    feed.feedID,
+                                                                    ref,
+                                                                  ),
+                                                                  child: Row(
+                                                                    children: [
+                                                                      Icon(
+                                                                        LineIcons
+                                                                            .share,
+                                                                        color: Colors
+                                                                            .grey
+                                                                            .shade700,
+                                                                        size:
+                                                                            18.0,
+                                                                      ),
+                                                                      const SizedBox(
+                                                                          width:
+                                                                              6.0),
+                                                                      Text(
+                                                                        feed.shares
+                                                                            .length
+                                                                            .toString(),
+                                                                        style: const TextStyle(
+                                                                            fontSize:
+                                                                                12.0,
+                                                                            color:
+                                                                                Colors.grey),
+                                                                      ),
+                                                                    ],
+                                                                  ),
                                                                 ),
                                                                 Row(
                                                                   children: [
@@ -971,9 +993,11 @@ class _CommentScreenState extends ConsumerState<CommentScreen> {
                                                                   const SizedBox(
                                                                       width:
                                                                           6.0),
-                                                                  const Text(
-                                                                    '0',
-                                                                    style: TextStyle(
+                                                                  Text(
+                                                                    feed.shares
+                                                                        .length
+                                                                        .toString(),
+                                                                    style: const TextStyle(
                                                                         fontSize:
                                                                             12.0,
                                                                         color: Colors

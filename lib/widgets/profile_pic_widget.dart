@@ -1,24 +1,27 @@
 // ignore_for_file: deprecated_member_use
 
+import 'dart:convert';
+
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:viblify_app/features/user_profile/controller/user_profile_controller.dart';
 
 class ProfileImageScreen extends ConsumerWidget {
-  final String uid;
   final String url;
   final String tag;
-  const ProfileImageScreen(
-      {super.key, required this.uid, required this.tag, required this.url});
+  const ProfileImageScreen({super.key, required this.tag, required this.url});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    String decodedUrl = Uri.decodeComponent(url);
+    List<int> decodedBytes = base64Url.decode(url);
+    String decodedUrl = utf8.decode(decodedBytes);
 
     void download() {
-      Navigator.of(context).pop();
+      print("object");
+      context.pop();
       ref
           .watch(userProfileControllerProvider.notifier)
           .downloadImage(decodedUrl, context);
@@ -32,6 +35,8 @@ class ProfileImageScreen extends ConsumerWidget {
         actions: [
           IconButton(
             onPressed: () {
+              print("========================");
+              print(decodedUrl);
               showModalBottomSheet(
                   context: context,
                   showDragHandle: true,

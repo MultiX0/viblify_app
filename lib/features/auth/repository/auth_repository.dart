@@ -126,6 +126,35 @@ class AuthRepository {
         (event) => UserModel.fromMap(event.data() as Map<String, dynamic>));
   }
 
+  Future<String> getUserIdByName(String name) async {
+    QuerySnapshot event = await _users.where("userName", isEqualTo: name).get();
+
+    if (event.docs.isNotEmpty) {
+      // Assuming the document ID is the user ID
+      return event.docs.first.id;
+    } else {
+      // Handle the case when no user with the specified name is found
+      // Return null or throw an exception based on your requirements
+      // ignore: null_check_always_fails
+      return null!;
+    }
+  }
+
+  Stream<UserModel> getUserDataByName(String name) {
+    return _users.where("userName", isEqualTo: name).snapshots().map(
+      (QuerySnapshot event) {
+        if (event.docs.isNotEmpty) {
+          return UserModel.fromMap(
+              event.docs.first.data() as Map<String, dynamic>);
+        } else {
+          // Handle the case when no user with the specified name is found
+          // ignore: null_check_always_fails
+          return null!; // Or throw an exception or return a default user
+        }
+      },
+    );
+  }
+
   String generateRandomUsername() {
     const allowedChars = 'abcdefghijklmnopqrstuvwxyz0123456789_';
 

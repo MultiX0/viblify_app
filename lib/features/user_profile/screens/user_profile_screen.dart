@@ -1,8 +1,11 @@
 // ignore_for_file: depend_on_referenced_packages
 
+import 'dart:convert';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:panara_dialogs/panara_dialogs.dart';
@@ -11,13 +14,9 @@ import 'package:viblify_app/core/common/loader.dart';
 import 'package:viblify_app/core/utils.dart';
 import 'package:viblify_app/features/auth/controller/auth_controller.dart';
 import 'package:viblify_app/features/user_profile/controller/user_profile_controller.dart';
-import 'package:viblify_app/features/user_profile/screens/edit_profile_screen.dart';
 import 'package:viblify_app/features/user_profile/screens/user_feeds.dart';
 import 'package:viblify_app/theme/pallete.dart';
 import 'package:intl/intl.dart';
-import 'package:viblify_app/widgets/profile_pic_widget.dart';
-
-import '../../stt/screens/stt_screen.dart';
 
 class UserProfileScreen extends ConsumerStatefulWidget {
   final String uid;
@@ -35,12 +34,8 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen> {
     bool isLoading = ref.watch(userProfileControllerProvider);
 
     void navigationToEditScreen(BuildContext context) {
-      Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: ((context) => EditProfileScreen(
-                uid: widget.uid,
-              )),
-        ),
+      context.push(
+        "/edit/profile/${widget.uid}",
       );
     }
 
@@ -62,14 +57,9 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen> {
     }
 
     _createRoute(String tag, String photoUrl) {
-      String encodedUrl = Uri.encodeComponent(photoUrl);
+      String encodedUrl = base64UrlEncode(utf8.encode(photoUrl));
 
-      Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: ((context) =>
-              ProfileImageScreen(uid: widget.uid, tag: tag, url: encodedUrl)),
-        ),
-      );
+      GoRouter.of(context).push('/img/$tag/$encodedUrl');
     }
 
     final visitorsID = ref.watch(userProvider)!.userID;
@@ -94,14 +84,7 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen> {
                     String websiteName = extractWebsiteName(user.link);
 
                     void navigationToSTT(BuildContext context) {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: ((context) => SayTheTruth(
-                                userID: widget.uid,
-                                useraName: user.userName,
-                              )),
-                        ),
-                      );
+                      context.push("/stt/page/${widget.uid}/${user.userName}");
                     }
 
                     return [
@@ -109,7 +92,7 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen> {
                         forceMaterialTransparency: true,
                         leading: visitorsID != user.userID
                             ? IconButton(
-                                onPressed: () => Navigator.of(context).pop(),
+                                onPressed: () => context.pop(),
                                 icon: Container(
                                   decoration: BoxDecoration(
                                       shape: BoxShape.circle,
@@ -166,10 +149,11 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen> {
                             children: [
                               Positioned(
                                 child: Hero(
-                                  tag: "pic",
+                                  tag: "banner_${user.userID}",
                                   child: GestureDetector(
-                                    onTap: () =>
-                                        _createRoute("pic", user.bannerPic),
+                                    onTap: () => _createRoute(
+                                        "banner_${user.userID}",
+                                        user.bannerPic),
                                     child: Image.network(
                                       user.bannerPic,
                                       height: 150,
@@ -590,7 +574,9 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen> {
                               const SizedBox(
                                 height: 10,
                               ),
-                              const Divider(),
+                              Divider(
+                                color: Colors.grey[900],
+                              ),
                             ],
                           ),
                         ),
@@ -622,12 +608,12 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen> {
       color: Colors.grey.shade900,
 
       onTapCancel: () {
-        Navigator.pop(context);
+        context.pop();
       },
       onTapConfirm: () {
         print("object");
         _signOutWithGoogle();
-        Navigator.pop(context);
+        context.pushReplacement('/login');
       },
       panaraDialogType: PanaraDialogType.custom,
       textColor: Colors.grey.shade900,

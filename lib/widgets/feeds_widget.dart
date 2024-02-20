@@ -1,9 +1,12 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'dart:convert';
+
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:like_button/like_button.dart';
 import 'package:line_icons/line_icons.dart';
@@ -15,16 +18,12 @@ import 'package:viblify_app/core/common/error_text.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:viblify_app/core/methods/youtube_video_validator.dart';
 import 'package:viblify_app/core/utils.dart';
-import 'package:viblify_app/features/Feed/tag_feed_screen.dart';
 import 'package:viblify_app/features/post/controller/post_controller.dart';
 import 'package:viblify_app/features/stt/controller/stt_controller.dart';
 import 'package:viblify_app/features/user_profile/controller/user_profile_controller.dart';
-import 'package:viblify_app/features/user_profile/screens/user_profile_screen.dart';
 import 'package:viblify_app/widgets/empty_widget.dart';
 import 'dart:ui' as ui;
 import '../features/auth/controller/auth_controller.dart';
-import '../features/comments/screens/comment_screen.dart';
-import '../features/user_profile/screens/video_screen.dart';
 import '../models/feeds_model.dart';
 
 class FeedsWidget extends ConsumerWidget {
@@ -53,12 +52,12 @@ class FeedsWidget extends ConsumerWidget {
                 "هل أنت متأكد من رغبتك في حذف هذا المنشور , مع العلم أن قرار الحذف نهائي ولا يتم الرجوع فيه"),
             actions: [
               TextButton(
-                onPressed: () => Navigator.of(context).pop(),
+                onPressed: () => context.pop(),
                 child: const Text("رجوع"),
               ),
               TextButton(
                 onPressed: () {
-                  Navigator.of(context).pop();
+                  context.pop();
                   ref.watch(postControllerProvider.notifier).deletePost(feedID);
                 },
                 child: const Text("تأكيد"),
@@ -77,10 +76,8 @@ class FeedsWidget extends ConsumerWidget {
             itemBuilder: (context, index) {
               final post = posts[index];
               void commentScreen() {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: ((context) => CommentScreen(feedID: post.feedID)),
-                  ),
+                context.push(
+                  "/p/${post.feedID}",
                 );
               }
 
@@ -92,8 +89,6 @@ class FeedsWidget extends ConsumerWidget {
                                 .watch(postControllerProvider.notifier)
                                 .viewDocument(post.feedID, myID);
                           }
-
-                          final img = Uri.encodeComponent(post.photoUrl);
 
                           bool isArabic = Bidi.hasAnyRtl(post.content);
                           bool feedLiked = post.likes.contains(myID);
@@ -114,7 +109,7 @@ class FeedsWidget extends ConsumerWidget {
                                           title: const Text("حذف المنشور"),
                                           leading: const Icon(Icons.delete),
                                           onTap: () {
-                                            Navigator.of(context).pop();
+                                            context.pop();
                                             deletePost(post.feedID);
                                           },
                                         ),
@@ -127,7 +122,7 @@ class FeedsWidget extends ConsumerWidget {
                                               post.feedID,
                                               ref,
                                             );
-                                            Navigator.of(context).pop();
+                                            context.pop();
                                           }),
                                     ],
                                   );
@@ -616,15 +611,8 @@ class FeedsWidget extends ConsumerWidget {
                                                                 .completed:
                                                             return GestureDetector(
                                                               onTap: () =>
-                                                                  Navigator.of(
-                                                                          context)
-                                                                      .push(
-                                                                MaterialPageRoute(
-                                                                  builder: ((context) =>
-                                                                      ImageSlidePage(
-                                                                          imageUrl:
-                                                                              img)),
-                                                                ),
+                                                                  context.push(
+                                                                "/img/slide/${base64UrlEncode(utf8.encode(post.photoUrl))}",
                                                               ),
                                                               child:
                                                                   ExtendedRawImage(
@@ -1013,29 +1001,19 @@ class FeedsWidget extends ConsumerWidget {
 
   void navigationToVideScreen(String videoID, BuildContext context) async {
     final title = await VideoURLValidator.getVideoTitle(videoID) ?? "";
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => VideoScreen(id: videoID, nameOfVideo: title),
-      ),
+    context.push(
+      "/video/$videoID/$title",
     );
   }
 
   void navigationToTagScreen(String tag, BuildContext context) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: ((context) => TagFeedsScreen(tag: tag)),
-      ),
+    context.push(
+      "/tag/$tag",
     );
   }
 
   void navigationToUserScreen(String uid, BuildContext context) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: ((context) => UserProfileScreen(
-              uid: uid,
-            )),
-      ),
-    );
+    context.push('/u/$uid');
   }
 }
 
@@ -1068,7 +1046,9 @@ class ImageSlidePage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final decoded = Uri.decodeComponent(imageUrl);
+    List<int> decodedBytes = base64Url.decode(imageUrl);
+    String decoded = utf8.decode(decodedBytes);
+
     void download() {
       ref
           .watch(userProfileControllerProvider.notifier)

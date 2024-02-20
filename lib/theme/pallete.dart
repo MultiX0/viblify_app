@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class Pallete {
   // Colors
-  static const blackColor = Color(0xff121212); // primary color
+  static const blackColor = Color.fromARGB(255, 13, 16, 19); // primary color
   static const greyColor = Color.fromRGBO(26, 39, 45, 1); // secondary color
   static const drawerColor = Color.fromRGBO(18, 18, 18, 1);
   static const whiteColor = Colors.white;

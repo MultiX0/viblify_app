@@ -18,6 +18,10 @@ final getUserDataProvider = StreamProvider.family((ref, String uid) {
   final authController = ref.watch(authControllerProvider.notifier);
   return authController.getUserData(uid);
 });
+final getUserByName = StreamProvider.family((ref, String userName) {
+  final authController = ref.watch(authControllerProvider.notifier);
+  return authController.getUserDataByName(userName);
+});
 
 final authChangeState = StreamProvider((ref) {
   final authController = ref.watch(authControllerProvider.notifier);
@@ -35,6 +39,14 @@ class AuthController extends StateNotifier<bool> {
   Stream<User?> get authStateChanges => _authRepository.authStateChanged;
   Stream<UserModel> getUserData(String uid) {
     return _authRepository.getUserData(uid);
+  }
+
+  Stream<UserModel> getUserDataByName(String name) {
+    return _authRepository.getUserDataByName(name);
+  }
+
+  Future<String> getUserIdByName(String name) {
+    return _authRepository.getUserIdByName(name);
   }
 
   void signInWithGoogle(BuildContext context) async {

@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:timeago/timeago.dart' as timeago;
@@ -41,7 +42,7 @@ class _MySttScreenState extends ConsumerState<MySttScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       IconButton(
-                        onPressed: () => Navigator.pop(context),
+                        onPressed: () => context.pop(),
                         icon: const Icon(Icons.close),
                       ),
                       const Text('اضف عنوان المنشور'),
@@ -104,13 +105,13 @@ class _MySttScreenState extends ConsumerState<MySttScreen> {
                 "هل أنت متأكد من رغبتك في حذف هذا الاعتراف , مع العلم أن قرار الحذف نهائي ولا يتم الرجوع فيه"),
             actions: [
               TextButton(
-                onPressed: () => Navigator.of(context).pop(),
+                onPressed: () => context.pop(),
                 child: const Text("رجوع"),
               ),
               TextButton(
                 onPressed: () {
                   final myID = ref.read(userProvider)!.userID;
-                  Navigator.of(context).pop();
+                  context.pop();
                   ref
                       .watch(sttControllerProvider.notifier)
                       .deleteStt(myID, sttID);
