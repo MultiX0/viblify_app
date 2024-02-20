@@ -44,3 +44,4 @@ app.*.map.json
 # Ignore the myKey.env file
 .env
 lib/firebase_options.dart
+/lib/firebase_options.dart
