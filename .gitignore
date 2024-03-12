@@ -33,11 +33,6 @@ migrate_working_dir/
 /build/
  **/build/
 
-/lib/firebase_options.dart
-
-# firebase options
-lib/firebase_options.dart
-
 # Symbolication related
 app.*.symbols
 
@@ -58,6 +53,6 @@ app.*.map.json
 **/android/local.properties
 **/android/**/GeneratedPluginRegistrant.java
 
-**/lib/firebase_options.dart
-
-
+# firebase options
+lib/firebase_options.dart
+/lib/firebase_options.dart

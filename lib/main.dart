@@ -17,9 +17,9 @@ import 'package:pub_semver/pub_semver.dart';
 import 'package:viblify_app/core/common/error_text.dart';
 import 'package:viblify_app/features/auth/controller/auth_controller.dart';
 import 'package:viblify_app/features/splash_screen/splash_screen.dart';
+import 'package:viblify_app/firebase_options.dart';
 import 'package:viblify_app/router.dart';
 import 'features/remote_config/repository/remote_config_repository.dart';
-import 'firebase_options.dart';
 import 'models/user_model.dart';
 import 'theme/Pallete.dart';
 
