@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -115,9 +117,6 @@ class _CommentScreenState extends ConsumerState<CommentScreen> {
                             [
                               ref.watch(getUserDataProvider(feed.userID)).when(
                                     data: (user) {
-                                      final img =
-                                          Uri.encodeComponent(feed.photoUrl);
-
                                       bool isArabic =
                                           Bidi.hasAnyRtl(feed.content);
                                       bool feedLiked = feed.likes.contains(uid);
@@ -665,13 +664,9 @@ class _CommentScreenState extends ConsumerState<CommentScreen> {
                                                                       .completed:
                                                                   return GestureDetector(
                                                                     onTap: () =>
-                                                                        Navigator.of(context)
+                                                                        context
                                                                             .push(
-                                                                      MaterialPageRoute(
-                                                                        builder:
-                                                                            ((context) =>
-                                                                                ImageSlidePage(imageUrl: img)),
-                                                                      ),
+                                                                      "/img/slide/${base64UrlEncode(utf8.encode(feed.photoUrl))}",
                                                                     ),
                                                                     child:
                                                                         ExtendedRawImage(

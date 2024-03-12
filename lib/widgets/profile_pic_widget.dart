@@ -69,6 +69,7 @@ class ProfileImageScreen extends ConsumerWidget {
             child: ExtendedImage.network(
               width: double.infinity,
               borderRadius: BorderRadius.circular(0),
+              cache: true,
               enableSlideOutPage: true,
               decodedUrl,
               fit: BoxFit.contain,

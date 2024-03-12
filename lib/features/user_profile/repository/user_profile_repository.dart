@@ -1,4 +1,4 @@
-// ignore_for_file: void_checks
+// ignore_for_file: void_checks, avoid_print
 
 import 'dart:io';
 import 'dart:math';
@@ -113,11 +113,75 @@ class UserRepository {
     }
   }
 
+  Stream<List<UserModel>> searchUsers(String query) {
+    return _users
+        .where(
+          'userName',
+          isGreaterThanOrEqualTo: query.isEmpty ? 0 : query,
+          isLessThan: query.isEmpty
+              ? null
+              : query.substring(0, query.length - 1) +
+                  String.fromCharCode(
+                    query.codeUnitAt(query.length - 1) + 1,
+                  ),
+        )
+        .snapshots()
+        .map((event) {
+      List<UserModel> users = [];
+      for (var community in event.docs) {
+        users.add(UserModel.fromMap(community.data() as Map<String, dynamic>));
+      }
+      return users;
+    });
+  }
+
   Stream<bool> isFollowingTheUserStream(String userID, String followerID) {
     final followingRef = _users.doc(userID);
 
     return followingRef.snapshots().map((doc) {
       return doc['followers']?.contains(followerID) ?? false;
+    });
+  }
+
+  Stream<List<dynamic>> getFollowersStream(String userID) {
+    return _firebaseFirestore
+        .collection(FirebaseConstant.usersCollection)
+        .doc(userID)
+        .snapshots()
+        .map((DocumentSnapshot snapshot) {
+      if (!snapshot.exists) {
+        // Document doesn't exist, return an empty list
+        return [];
+      }
+
+      final List<dynamic>? documentData = snapshot.get('followers');
+      if (documentData == null) {
+        // 'followers' field is missing or null, return an empty list
+        return [];
+      }
+
+      return documentData;
+    });
+  }
+
+  Stream<List<dynamic>> getFollowingStream(String userID) {
+    return _firebaseFirestore
+        .collection(FirebaseConstant.usersCollection)
+        .doc(userID)
+        .snapshots()
+        .map((DocumentSnapshot snapshot) {
+      if (!snapshot.exists) {
+        // Document doesn't exist, return an empty list
+        return [];
+      }
+
+      final List<dynamic>? documentData = snapshot.get('following');
+      if (documentData == null) {
+        // 'followers' field is missing or null, return an empty list
+        return [];
+      }
+
+      return documentData;
     });
   }
 
@@ -143,6 +207,15 @@ class UserRepository {
 
       // If the username is not taken, return true
       return true;
+    });
+  }
+
+  Future<void> updateProfileTheme(
+      String uid, String color, String dividerColor, bool isThemeDark) async {
+    _users.doc(uid).update({
+      'profile_theme': color,
+      'divider_color': dividerColor,
+      'is_theme_dark': isThemeDark,
     });
   }
 

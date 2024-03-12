@@ -2,15 +2,21 @@ import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:hexcolor/hexcolor.dart';
 import 'package:viblify_app/core/Constant/constant.dart';
 import 'package:viblify_app/core/Constant/firebase_constant.dart';
 import 'package:viblify_app/core/failure.dart';
 import 'package:viblify_app/core/providers/firebase_providers.dart';
 import 'package:viblify_app/core/type_defs.dart';
+import 'package:viblify_app/messaging/notifications.dart';
 import 'package:viblify_app/models/user_model.dart';
+import 'package:viblify_app/theme/pallete.dart';
+
+import '../../../utils/colors.dart';
 
 final authRepositoryProvider = Provider(
   (ref) => AuthRepository(
@@ -80,11 +86,17 @@ class AuthRepository {
         }
 
         // Proceed with creating the new user
+        String notificationsToken =
+            await ViblifyNotifications().initNotifications();
+
         userModel = UserModel(
           name: userCredential.user!.displayName ?? "Unknown",
           profilePic: userCredential.user!.photoURL ?? Constant.avatarDefault,
           bannerPic: Constant.bannerDefault,
+          notificationsToken: notificationsToken,
           userID: userCredential.user!.uid,
+          dividerColor: getTheHex(ColorToHex(Colors.grey.shade900).toString()),
+          isThemeDark: true,
           isAccountPrivate: false,
           isUserMod: false,
           mbti: "",
@@ -102,6 +114,11 @@ class AuthRepository {
           following: [],
           followers: [],
           notifications: [],
+          postLikes: [],
+          usersBlock: [],
+          profileTheme: getTheHex(
+            ColorToHex(Pallete.blackColor).toString(),
+          ),
           points: 0,
         );
 

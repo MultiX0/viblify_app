@@ -1,9 +1,12 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:viblify_app/core/Constant/firebase_constant.dart';
 import 'package:viblify_app/core/failure.dart';
 import 'package:viblify_app/core/providers/firebase_providers.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:viblify_app/core/type_defs.dart';
 import 'package:viblify_app/models/feeds_model.dart';
 
@@ -44,6 +47,13 @@ class PostRepository {
         'likes': FieldValue.arrayUnion([uid]),
         'likeCount': FieldValue.increment(1),
       });
+      await FirebaseAnalytics.instance.logEvent(
+        name: "select_content",
+        parameters: {
+          "content_type": "post",
+          "item_id": docID,
+        },
+      ).then((value) => log("done"));
     }
 
     // Fetch the updated data after the like handling
@@ -97,7 +107,7 @@ class PostRepository {
 
       // Sort feeds based on the custom score in descending order
       feeds.sort((a, b) => b.score.compareTo(a.score));
-
+      feeds.shuffle();
       return feeds;
     } catch (error) {
       // Handle error appropriately
@@ -134,6 +144,20 @@ class PostRepository {
     return _posts
         .where("userID", isEqualTo: uid)
         .orderBy('createdAt', descending: true)
+        .snapshots()
+        .map((event) {
+      List<Feeds> feeds = [];
+      for (var doc in event.docs) {
+        feeds.add(Feeds.fromMap(doc.data() as Map<String, dynamic>));
+      }
+      return feeds;
+    });
+  }
+
+  Stream<List<Feeds>> getFollowingFeeds(List<dynamic> uids) {
+    return _posts
+        .orderBy('createdAt', descending: true)
+        .where("userID", whereIn: uids)
         .snapshots()
         .map((event) {
       List<Feeds> feeds = [];

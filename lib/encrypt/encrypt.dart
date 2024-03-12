@@ -14,18 +14,25 @@ String generateRandomKey() {
   return base64.encode(keyBytes);
 }
 
-String encrypt(String plaintext, String key, Uint8List iv) {
+String encrypt(String plaintext, String key) {
   final encryptKey = Key(utf8.encode(key));
   final encrypter =
       Encrypter(AES(encryptKey, mode: AESMode.cfb64, padding: 'PKCS7'));
-  final encrypted = encrypter.encrypt(plaintext, iv: IV(iv));
+  final encrypted = encrypter.encrypt(plaintext, iv: IV(Uint8List(16)));
   return encrypted.base64;
 }
 
-String decrypt(String ciphertext, String key, Uint8List iv) {
-  final decryptKey = Key(utf8.encode(key));
-  final encrypter =
-      Encrypter(AES(decryptKey, mode: AESMode.cfb64, padding: 'PKCS7'));
-  final decrypted = encrypter.decrypt64(ciphertext, iv: IV(iv));
-  return decrypted;
+String decrypt(String ciphertext, String key) {
+  if (ciphertext.isEmpty) {
+    return '';
+  }
+  try {
+    final decryptKey = Key(utf8.encode(key));
+    final encrypter =
+        Encrypter(AES(decryptKey, mode: AESMode.cfb64, padding: 'PKCS7'));
+    final decrypted = encrypter.decrypt64(ciphertext, iv: IV(Uint8List(16)));
+    return decrypted;
+  } catch (e) {
+    return '';
+  }
 }

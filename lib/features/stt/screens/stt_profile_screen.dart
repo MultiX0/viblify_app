@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
@@ -142,7 +143,10 @@ class _MySttScreenState extends ConsumerState<MySttScreen> {
                 return stts.isNotEmpty
                     ? Padding(
                         padding: const EdgeInsets.symmetric(vertical: 10),
-                        child: ListView.builder(
+                        child: MasonryGridView.builder(
+                          gridDelegate:
+                              const SliverSimpleGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 2),
                           itemCount: stts.length,
                           itemBuilder: (context, index) {
                             final stt = stts[index];
@@ -167,35 +171,49 @@ class _MySttScreenState extends ConsumerState<MySttScreen> {
                                         mainAxisAlignment:
                                             MainAxisAlignment.center,
                                         children: [
-                                          Text(
-                                            stt.message,
-                                            textDirection:
+                                          Align(
+                                            alignment:
                                                 Bidi.hasAnyRtl(stt.message)
-                                                    ? ui.TextDirection.rtl
-                                                    : ui.TextDirection.ltr,
-                                            style: const TextStyle(
-                                                color: Colors.white),
+                                                    ? Alignment.centerRight
+                                                    : Alignment.centerLeft,
+                                            child: Text(
+                                              stt.message,
+                                              textDirection:
+                                                  Bidi.hasAnyRtl(stt.message)
+                                                      ? ui.TextDirection.rtl
+                                                      : ui.TextDirection.ltr,
+                                              style: const TextStyle(
+                                                  color: Colors.white),
+                                            ),
+                                          ),
+                                          Row(
+                                            children: [
+                                              IconButton(
+                                                padding: EdgeInsets.zero,
+                                                onPressed: () =>
+                                                    repostTheStt(stt.sttID),
+                                                icon: const Icon(Icons.repeat),
+                                              ),
+                                              IconButton(
+                                                padding: EdgeInsets.zero,
+                                                onPressed: () =>
+                                                    deleteStt(stt.sttID),
+                                                icon:
+                                                    const Icon(Ionicons.remove),
+                                              ),
+                                            ],
                                           ),
                                           Align(
-                                              alignment: Alignment.bottomLeft,
-                                              child: Text(
-                                                date.toString(),
-                                                style: TextStyle(
-                                                    color: Colors.grey[500],
-                                                    fontSize: 13),
-                                              ))
+                                            alignment: Alignment.bottomLeft,
+                                            child: Text(
+                                              date.toString(),
+                                              style: TextStyle(
+                                                  color: Colors.grey[500],
+                                                  fontSize: 13),
+                                            ),
+                                          ),
                                         ],
                                       ),
-                                    ),
-                                    IconButton(
-                                      padding: EdgeInsets.zero,
-                                      onPressed: () => repostTheStt(stt.sttID),
-                                      icon: const Icon(Icons.repeat),
-                                    ),
-                                    IconButton(
-                                      padding: EdgeInsets.zero,
-                                      onPressed: () => deleteStt(stt.sttID),
-                                      icon: const Icon(Ionicons.remove),
                                     ),
                                   ],
                                 ),

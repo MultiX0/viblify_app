@@ -2,11 +2,13 @@
 
 import 'dart:convert';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hexcolor/hexcolor.dart';
 import 'package:intl/intl.dart';
 import 'package:like_button/like_button.dart';
 import 'package:line_icons/line_icons.dart';
@@ -20,7 +22,6 @@ import 'package:viblify_app/core/methods/youtube_video_validator.dart';
 import 'package:viblify_app/core/utils.dart';
 import 'package:viblify_app/features/post/controller/post_controller.dart';
 import 'package:viblify_app/features/stt/controller/stt_controller.dart';
-import 'package:viblify_app/features/user_profile/controller/user_profile_controller.dart';
 import 'package:viblify_app/widgets/empty_widget.dart';
 import 'dart:ui' as ui;
 import '../features/auth/controller/auth_controller.dart';
@@ -28,7 +29,13 @@ import '../models/feeds_model.dart';
 
 class FeedsWidget extends ConsumerWidget {
   final List<Feeds> posts;
-  const FeedsWidget({super.key, required this.posts});
+  final bool isThemeDark;
+  final String dividerColor;
+  const FeedsWidget(
+      {super.key,
+      required this.posts,
+      required this.isThemeDark,
+      required this.dividerColor});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final FocusNode focusNode = FocusNode();
@@ -146,7 +153,10 @@ class FeedsWidget extends ConsumerWidget {
                                   decoration: BoxDecoration(
                                     border: Border(
                                       bottom: BorderSide(
-                                          color: Colors.grey.shade900),
+                                        color: dividerColor.isEmpty
+                                            ? Colors.grey.shade900
+                                            : HexColor(dividerColor),
+                                      ),
                                     ),
                                   ),
                                   padding: const EdgeInsets.all(8),
@@ -165,7 +175,8 @@ class FeedsWidget extends ConsumerWidget {
                                           child: CircleAvatar(
                                             radius: 20,
                                             backgroundImage:
-                                                NetworkImage(user.profilePic),
+                                                CachedNetworkImageProvider(
+                                                    user.profilePic),
                                             backgroundColor: Colors.white,
                                           ),
                                         ),
@@ -190,9 +201,11 @@ class FeedsWidget extends ConsumerWidget {
                                                     child: Row(
                                                       children: [
                                                         if (user.verified) ...[
-                                                          const Icon(
+                                                          Icon(
                                                             Icons.verified,
-                                                            color: Colors.blue,
+                                                            color: isThemeDark
+                                                                ? Colors.blue
+                                                                : Colors.black,
                                                             size: 14,
                                                           ),
                                                           const SizedBox(
@@ -209,13 +222,16 @@ class FeedsWidget extends ConsumerWidget {
                                                               : null,
                                                           child: Text(
                                                             user.name,
-                                                            style:
-                                                                const TextStyle(
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold,
-                                                              fontSize: 14,
-                                                            ),
+                                                            style: TextStyle(
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold,
+                                                                fontSize: 14,
+                                                                color: isThemeDark
+                                                                    ? Colors
+                                                                        .white
+                                                                    : Colors
+                                                                        .black),
                                                           ),
                                                         ),
                                                         Padding(
@@ -234,43 +250,52 @@ class FeedsWidget extends ConsumerWidget {
                                                                 : null,
                                                             child: Text(
                                                               "@${user.userName}",
-                                                              style: const TextStyle(
+                                                              style: TextStyle(
                                                                   fontWeight:
                                                                       FontWeight
                                                                           .bold,
                                                                   fontSize: 14,
-                                                                  color: Colors
-                                                                      .grey),
+                                                                  color: isThemeDark
+                                                                      ? Colors
+                                                                          .grey
+                                                                      : Colors.grey[
+                                                                          900]),
                                                             ),
                                                           ),
                                                         ),
-                                                        const Text(
+                                                        Text(
                                                           " · ",
                                                           style: TextStyle(
                                                               fontWeight:
                                                                   FontWeight
                                                                       .bold,
                                                               fontSize: 13,
-                                                              color:
-                                                                  Colors.grey),
+                                                              color: isThemeDark
+                                                                  ? Colors.grey
+                                                                  : Colors.grey[
+                                                                      900]),
                                                         ),
                                                         Text(
                                                           postTime.toString(),
-                                                          style:
-                                                              const TextStyle(
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .bold,
-                                                                  fontSize: 13,
-                                                                  color: Colors
-                                                                      .grey),
+                                                          style: TextStyle(
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                              fontSize: 13,
+                                                              color: isThemeDark
+                                                                  ? Colors.grey
+                                                                  : Colors.grey[
+                                                                      900]),
                                                         ),
                                                         const Spacer(),
                                                         IconButton(
                                                           onPressed: more,
-                                                          icon: const Icon(
+                                                          icon: Icon(
                                                             Icons.more_vert,
                                                             size: 14,
+                                                            color: isThemeDark
+                                                                ? Colors.grey
+                                                                : Colors.black,
                                                           ),
                                                         ),
                                                       ],
@@ -290,8 +315,17 @@ class FeedsWidget extends ConsumerWidget {
                                                     ? Alignment.centerRight
                                                     : Alignment.centerLeft,
                                                 child: Linkable(
-                                                  textColor: Colors.white,
+                                                  textColor: isThemeDark
+                                                      ? Colors.white
+                                                      : Colors.black,
+                                                  linkColor: isThemeDark
+                                                      ? Colors.blue
+                                                      : Colors.blue[900],
                                                   text: post.content,
+                                                  style: TextStyle(
+                                                      fontWeight: isThemeDark
+                                                          ? null
+                                                          : FontWeight.bold),
                                                   textAlign: isArabic
                                                       ? TextAlign.right
                                                       : TextAlign.left,
@@ -319,9 +353,12 @@ class FeedsWidget extends ConsumerWidget {
                                                                   context),
                                                           child: Text(
                                                             "#$item",
-                                                            style: const TextStyle(
-                                                                color:
-                                                                    Colors.blue,
+                                                            style: TextStyle(
+                                                                color: isThemeDark
+                                                                    ? Colors
+                                                                        .blue
+                                                                    : Colors.blue[
+                                                                        900],
                                                                 fontSize: 14,
                                                                 fontWeight:
                                                                     FontWeight
@@ -517,7 +554,8 @@ class FeedsWidget extends ConsumerWidget {
                                                         BorderRadius.circular(
                                                             15),
                                                     image: DecorationImage(
-                                                        image: NetworkImage(
+                                                        image:
+                                                            CachedNetworkImageProvider(
                                                           VideoURLValidator
                                                               .getYouTubeThumbnail(
                                                                   post.youtubeVideoID),
@@ -571,65 +609,58 @@ class FeedsWidget extends ConsumerWidget {
                                                     onDoubleTap: () =>
                                                         likeHunlidng(
                                                             post.feedID),
-                                                    child:
-                                                        ExtendedImage.network(
-                                                      post.photoUrl,
-                                                      loadStateChanged:
-                                                          (ExtendedImageState
-                                                              state) {
-                                                        switch (state
-                                                            .extendedImageLoadState) {
-                                                          case LoadState
-                                                                .loading:
-                                                            return AspectRatio(
-                                                              aspectRatio:
-                                                                  16 / 9,
-                                                              child: Shimmer
-                                                                  .fromColors(
-                                                                baseColor: Colors
+                                                    child: CachedNetworkImage(
+                                                      imageUrl: post.photoUrl,
+                                                      imageBuilder: (context,
+                                                          imageProvider) {
+                                                        return GestureDetector(
+                                                          onTap: () =>
+                                                              context.push(
+                                                            "/img/slide/${base64UrlEncode(utf8.encode(post.photoUrl))}",
+                                                          ),
+                                                          child: Container(
+                                                            width:
+                                                                double.infinity,
+                                                            constraints: BoxConstraints(
+                                                                maxHeight:
+                                                                    MediaQuery.of(
+                                                                            context)
+                                                                        .size
+                                                                        .width),
+                                                            child: Image(
+                                                              image:
+                                                                  imageProvider,
+                                                              fit: BoxFit.cover,
+                                                            ),
+                                                          ),
+                                                        );
+                                                      },
+                                                      placeholder:
+                                                          (context, url) {
+                                                        return AspectRatio(
+                                                          aspectRatio: 1 / 1,
+                                                          child: Shimmer
+                                                              .fromColors(
+                                                            baseColor: Colors
+                                                                .grey.shade900,
+                                                            highlightColor:
+                                                                Colors.grey
+                                                                    .shade800,
+                                                            child: Container(
+                                                              decoration:
+                                                                  BoxDecoration(
+                                                                borderRadius:
+                                                                    BorderRadius
+                                                                        .circular(
+                                                                            16),
+                                                                color: Colors
                                                                     .grey
                                                                     .shade900,
-                                                                highlightColor:
-                                                                    Colors.grey
-                                                                        .shade800,
-                                                                child:
-                                                                    Container(
-                                                                  decoration:
-                                                                      BoxDecoration(
-                                                                    borderRadius:
-                                                                        BorderRadius.circular(
-                                                                            10),
-                                                                    color: Colors
-                                                                        .grey
-                                                                        .shade900,
-                                                                  ),
-                                                                ),
                                                               ),
-                                                            );
-
-                                                          case LoadState
-                                                                .completed:
-                                                            return GestureDetector(
-                                                              onTap: () =>
-                                                                  context.push(
-                                                                "/img/slide/${base64UrlEncode(utf8.encode(post.photoUrl))}",
-                                                              ),
-                                                              child:
-                                                                  ExtendedRawImage(
-                                                                image: state
-                                                                    .extendedImageInfo
-                                                                    ?.image,
-                                                              ),
-                                                            );
-
-                                                          default:
-                                                            return null;
-                                                        }
+                                                            ),
+                                                          ),
+                                                        );
                                                       },
-                                                      cache: true,
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              0),
                                                     ),
                                                   ),
                                                 ),
@@ -676,11 +707,10 @@ class FeedsWidget extends ConsumerWidget {
                                                                         : Icons
                                                                             .favorite_border,
                                                                     color: postLiked
-                                                                        ? Colors
-                                                                            .pinkAccent
-                                                                        : Colors
-                                                                            .grey
-                                                                            .shade800,
+                                                                        ? Colors.pinkAccent
+                                                                        : isThemeDark
+                                                                            ? Colors.grey.shade800
+                                                                            : Colors.black,
                                                                     size: 19,
                                                                   );
                                                                 },
@@ -710,11 +740,14 @@ class FeedsWidget extends ConsumerWidget {
                                                                           int>(
                                                                       feed.likes
                                                                           .length),
-                                                                  style: const TextStyle(
+                                                                  style: TextStyle(
                                                                       fontSize:
                                                                           12.0,
-                                                                      color: Colors
-                                                                          .grey),
+                                                                      color: isThemeDark
+                                                                          ? Colors
+                                                                              .grey
+                                                                          : Colors
+                                                                              .black),
                                                                 ),
                                                               ),
                                                             ],
@@ -734,14 +767,18 @@ class FeedsWidget extends ConsumerWidget {
                                                                       .chat_bubble_outline,
                                                                   color: feed
                                                                           .isCommentsOpen
-                                                                      ? Colors
-                                                                          .grey
-                                                                          .shade700
-                                                                      : Colors
-                                                                          .grey
-                                                                          .shade800
-                                                                          .withOpacity(
-                                                                              0.6),
+                                                                      ? isThemeDark
+                                                                          ? Colors
+                                                                              .grey
+                                                                              .shade700
+                                                                          : Colors
+                                                                              .black
+                                                                      : isThemeDark
+                                                                          ? Colors
+                                                                              .grey
+                                                                              .shade800
+                                                                              .withOpacity(0.6)
+                                                                          : Colors.grey[900],
                                                                   size: 18.0,
                                                                 ),
                                                                 const SizedBox(
@@ -749,11 +786,14 @@ class FeedsWidget extends ConsumerWidget {
                                                                 Text(
                                                                   feed.commentCount
                                                                       .toString(),
-                                                                  style: const TextStyle(
+                                                                  style: TextStyle(
                                                                       fontSize:
                                                                           12.0,
-                                                                      color: Colors
-                                                                          .grey),
+                                                                      color: isThemeDark
+                                                                          ? Colors
+                                                                              .grey
+                                                                          : Colors
+                                                                              .black),
                                                                 ),
                                                               ],
                                                             ),
@@ -769,9 +809,12 @@ class FeedsWidget extends ConsumerWidget {
                                                                 Icon(
                                                                   LineIcons
                                                                       .share,
-                                                                  color: Colors
-                                                                      .grey
-                                                                      .shade700,
+                                                                  color: isThemeDark
+                                                                      ? Colors
+                                                                          .grey
+                                                                          .shade700
+                                                                      : Colors
+                                                                          .black,
                                                                   size: 18.0,
                                                                 ),
                                                                 const SizedBox(
@@ -780,11 +823,14 @@ class FeedsWidget extends ConsumerWidget {
                                                                   feed.shares
                                                                       .length
                                                                       .toString(),
-                                                                  style: const TextStyle(
+                                                                  style: TextStyle(
                                                                       fontSize:
                                                                           12.0,
-                                                                      color: Colors
-                                                                          .grey),
+                                                                      color: isThemeDark
+                                                                          ? Colors
+                                                                              .grey
+                                                                          : Colors
+                                                                              .black),
                                                                 ),
                                                               ],
                                                             ),
@@ -794,9 +840,12 @@ class FeedsWidget extends ConsumerWidget {
                                                               Icon(
                                                                 Icons
                                                                     .stacked_bar_chart_rounded,
-                                                                color: Colors
-                                                                    .grey
-                                                                    .shade700,
+                                                                color: isThemeDark
+                                                                    ? Colors
+                                                                        .grey
+                                                                        .shade700
+                                                                    : Colors
+                                                                        .black,
                                                                 size: 18.0,
                                                               ),
                                                               const SizedBox(
@@ -805,11 +854,14 @@ class FeedsWidget extends ConsumerWidget {
                                                                 feed.views
                                                                     .length
                                                                     .toString(),
-                                                                style: const TextStyle(
+                                                                style: TextStyle(
                                                                     fontSize:
                                                                         12.0,
-                                                                    color: Colors
-                                                                        .grey),
+                                                                    color: isThemeDark
+                                                                        ? Colors
+                                                                            .grey
+                                                                        : Colors
+                                                                            .black),
                                                               ),
                                                             ],
                                                           ),
@@ -1032,71 +1084,6 @@ class SttLoadingWidget extends StatelessWidget {
           child: const ListTile(
             title: Text('here is text of the loading screen say hi'),
             subtitle: Text('Subtitle here'),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class ImageSlidePage extends ConsumerWidget {
-  final String imageUrl;
-
-  ImageSlidePage({required this.imageUrl});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    List<int> decodedBytes = base64Url.decode(imageUrl);
-    String decoded = utf8.decode(decodedBytes);
-
-    void download() {
-      ref
-          .watch(userProfileControllerProvider.notifier)
-          .downloadImage(decoded, context);
-    }
-
-    return Scaffold(
-      appBar: AppBar(
-        leading: const SizedBox(),
-        leadingWidth: 0,
-        title: const Text('Image Slide Page'),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 10),
-            child: OutlinedButton(
-              onPressed: download,
-              style: OutlinedButton.styleFrom(
-                minimumSize: Size(MediaQuery.of(context).size.width * 0.2, 30),
-                side: const BorderSide(
-                  color: Colors.blue,
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15.0),
-                ),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
-              ),
-              child: const Text(
-                "Save",
-                style: TextStyle(color: Colors.white),
-              ),
-            ),
-          )
-        ],
-      ),
-      body: Center(
-        child: Hero(
-          tag: decoded,
-          child: ExtendedImageSlidePage(
-            slideAxis: SlideAxis.both,
-            slideType: SlideType.onlyImage,
-            child: ExtendedImage.network(
-              enableSlideOutPage: true,
-              decoded,
-              borderRadius: BorderRadius.circular(0),
-              fit: BoxFit.contain,
-              mode: ExtendedImageMode.gesture,
-            ),
           ),
         ),
       ),

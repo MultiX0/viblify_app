@@ -1,12 +1,12 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:viblify_app/core/common/error_text.dart';
 import 'package:viblify_app/core/common/loader.dart';
+import 'package:viblify_app/features/user_profile/controller/user_profile_controller.dart';
 import 'package:viblify_app/theme/pallete.dart';
 import 'package:viblify_app/widgets/empty_widget.dart';
-
-import '../../community/controller/community_controller.dart';
 
 class SearchScreen extends ConsumerStatefulWidget {
   const SearchScreen({super.key});
@@ -64,21 +64,22 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
           ),
         ),
         body: query.isNotEmpty
-            ? ref.watch(searchCommunityProvider(query)).when(
-                  data: (communites) => ListView.builder(
-                    itemCount: communites.length,
+            ? ref.watch(searchUsersProvider(query)).when(
+                  data: (users) => ListView.builder(
+                    itemCount: users.length,
                     itemBuilder: (BuildContext context, int index) {
-                      final community = communites[index];
+                      final user = users[index];
                       return ListTile(
                         leading: CircleAvatar(
-                          backgroundImage: NetworkImage(community.avatar),
+                          backgroundImage:
+                              CachedNetworkImageProvider(user.profilePic),
                         ),
                         title: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(community.name),
+                            Text(user.name),
                             Text(
-                              "${community.members.length} Members",
+                              "@${user.userName}",
                               style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 10,
@@ -86,8 +87,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                             ),
                           ],
                         ),
-                        onTap: () =>
-                            navigateToCommunity(context, community.name),
+                        onTap: () => navigateToUserScreen(context, user.userID),
                       );
                     },
                   ),
@@ -99,7 +99,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
             : const MyEmptyShowen(text: "لاتوجد نتائج"));
   }
 
-  void navigateToCommunity(BuildContext context, String communityName) {
-    context.push("/c/$communityName");
+  void navigateToUserScreen(BuildContext context, String userID) {
+    context.push("/u/$userID");
   }
 }

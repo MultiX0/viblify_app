@@ -1,3 +1,7 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
+final encryptKey = dotenv.env['ENCRYPTION_KEY'] ?? "";
+
 class Constant {
   static const logoPath = 'assets/images/logo.png';
   static const cryPath = 'assets/images/cry.gif';

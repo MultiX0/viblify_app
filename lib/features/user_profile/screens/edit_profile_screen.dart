@@ -110,8 +110,9 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
       final result = await pickImage();
 
       if (result != null) {
+        File? img = await cropImage(File(result.files.first.path!));
         setState(() {
-          avatarFile = File(result.files.first.path!);
+          avatarFile = img;
         });
       }
     }
@@ -174,7 +175,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                                 dashPattern: const [10, 4],
                                 strokeCap: StrokeCap.round,
                                 color: Pallete.darkModeAppTheme.textTheme
-                                    .bodyText2!.color!,
+                                    .bodyMedium!.color!,
                                 child: Container(
                                   width: double.infinity,
                                   height: 150,
@@ -301,6 +302,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                         maxLines: null,
                         maxLength: 155,
                         controller: bioController,
+                        enableInteractiveSelection: true, // Add this line
                         decoration: InputDecoration(
                           label: const Text("bio info"),
                           filled: true,
@@ -357,6 +359,8 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                             }
                           });
                         },
+                        enableInteractiveSelection: true, // Add this line
+
                         decoration: InputDecoration(
                           label: const Text("add one link"),
                           filled: true,

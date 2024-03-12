@@ -1,5 +1,6 @@
 // ignore_for_file: deprecated_member_use
 
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:extended_image/extended_image.dart';
@@ -7,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:giphy_get/giphy_get.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:like_button/like_button.dart';
 import 'package:line_icons/line_icons.dart';
@@ -21,7 +23,6 @@ import 'dart:ui' as ui;
 
 import '../../../core/utils.dart';
 import '../../../widgets/empty_widget.dart';
-import '../../../widgets/feeds_widget.dart';
 import '../controller/comment_controller.dart';
 
 TextEditingController commentController = TextEditingController();
@@ -234,8 +235,6 @@ class _CommentScreenState extends ConsumerState<CommentsCard> {
                                     bool commentLiked =
                                         comment.likes.contains(myData.userID);
 
-                                    String paresedImg =
-                                        Uri.encodeComponent(comment.photoUrl);
                                     final feedTime = timeago.format(
                                         comment.createdAt.toDate(),
                                         locale: 'en_short');
@@ -249,10 +248,17 @@ class _CommentScreenState extends ConsumerState<CommentsCard> {
                                                   titleAlignment:
                                                       ListTileTitleAlignment
                                                           .top,
-                                                  leading: CircleAvatar(
-                                                    backgroundImage:
-                                                        NetworkImage(
-                                                            user.profilePic),
+                                                  leading: GestureDetector(
+                                                    onTap: () => user.userID !=
+                                                            myData.userID
+                                                        ? context.push(
+                                                            "/u/${user.userID}")
+                                                        : null,
+                                                    child: CircleAvatar(
+                                                      backgroundImage:
+                                                          NetworkImage(
+                                                              user.profilePic),
+                                                    ),
                                                   ),
                                                   title: Row(
                                                     mainAxisAlignment:
@@ -287,7 +293,8 @@ class _CommentScreenState extends ConsumerState<CommentsCard> {
                                                                             .userID !=
                                                                         myData
                                                                             .userID
-                                                                    ? null
+                                                                    ? context.push(
+                                                                        "/u/${user.userID}")
                                                                     : null,
                                                                 child: Text(
                                                                   user.name,
@@ -314,16 +321,24 @@ class _CommentScreenState extends ConsumerState<CommentsCard> {
                                                                               myData.userID
                                                                           ? null
                                                                           : null,
-                                                                  child: Text(
-                                                                    "@${user.userName}",
-                                                                    style: const TextStyle(
-                                                                        fontWeight:
-                                                                            FontWeight
-                                                                                .bold,
-                                                                        fontSize:
-                                                                            14,
-                                                                        color: Colors
-                                                                            .grey),
+                                                                  child:
+                                                                      GestureDetector(
+                                                                    onTap: () => user.userID !=
+                                                                            myData
+                                                                                .userID
+                                                                        ? context
+                                                                            .push("/u/${user.userID}")
+                                                                        : null,
+                                                                    child: Text(
+                                                                      "@${user.userName}",
+                                                                      style: const TextStyle(
+                                                                          fontWeight: FontWeight
+                                                                              .bold,
+                                                                          fontSize:
+                                                                              14,
+                                                                          color:
+                                                                              Colors.grey),
+                                                                    ),
                                                                   ),
                                                                 ),
                                                               ),
@@ -556,10 +571,8 @@ class _CommentScreenState extends ConsumerState<CommentsCard> {
                                                                             .completed:
                                                                         return GestureDetector(
                                                                           onTap: () =>
-                                                                              Navigator.of(context).push(
-                                                                            MaterialPageRoute(
-                                                                              builder: ((context) => ImageSlidePage(imageUrl: paresedImg)),
-                                                                            ),
+                                                                              context.push(
+                                                                            "/img/slide/${base64UrlEncode(utf8.encode(comment.photoUrl))}",
                                                                           ),
                                                                           child:
                                                                               ExtendedRawImage(

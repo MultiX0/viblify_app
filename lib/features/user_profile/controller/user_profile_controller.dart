@@ -14,6 +14,21 @@ import 'package:viblify_app/models/user_model.dart';
 
 import '../repository/user_profile_repository.dart';
 
+final searchUsersProvider = StreamProvider.family((ref, String query) {
+  return ref
+      .watch(userProfileControllerProvider.notifier)
+      .searchCommunity(query);
+});
+
+final getFollowersProvider = StreamProvider.family((ref, String userID) {
+  final userController = ref.watch(userProfileControllerProvider.notifier);
+  return userController.getFollowersStream(userID);
+});
+final getFollowingProvider = StreamProvider.family((ref, String userID) {
+  final userController = ref.watch(userProfileControllerProvider.notifier);
+  return userController.getFollowingStream(userID);
+});
+
 final userProfileControllerProvider =
     StateNotifierProvider<UserProfileController, bool>((ref) {
   final repository = ref.watch(userProfileRepositoryProvider);
@@ -27,6 +42,7 @@ final usernameTakenProvider =
   final user = ref.read(userProvider)!;
   return repository.isUsernameTaken(username, user.userID);
 });
+
 final isUserFollowingProvider =
     StreamProvider.family<bool, String>((ref, username) {
   final repository = ref.read(userProfileRepositoryProvider);
@@ -122,5 +138,22 @@ class UserProfileController extends StateNotifier<bool> {
 
   Future<void> updateActiveStatus(bool isOnline, String userID) async {
     _repository.updateActiveStatus(isOnline, userID);
+  }
+
+  Stream<List<UserModel>> searchCommunity(String query) {
+    return _repository.searchUsers(query);
+  }
+
+  Future<void> updateProfileTheme(
+      String uid, String color, String dividerColor, bool isThemeDark) async {
+    _repository.updateProfileTheme(uid, color, dividerColor, isThemeDark);
+  }
+
+  Stream<List<dynamic>> getFollowersStream(String userID) {
+    return _repository.getFollowersStream(userID);
+  }
+
+  Stream<List<dynamic>> getFollowingStream(String userID) {
+    return _repository.getFollowingStream(userID);
   }
 }

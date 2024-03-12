@@ -1,8 +1,11 @@
+import 'dart:io';
+
 import 'package:clipboard/clipboard.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:image_cropper/image_cropper.dart';
 import 'package:viblify_app/features/auth/controller/auth_controller.dart';
 import 'package:viblify_app/features/post/controller/post_controller.dart';
 
@@ -25,6 +28,51 @@ Future<FilePickerResult?> pickImage() async {
     type: FileType.image,
   );
   return image;
+}
+
+Future<File?> cropImage(File? imageFile) async {
+  CroppedFile? cropped = await ImageCropper().cropImage(
+    sourcePath: imageFile!.path,
+    aspectRatioPresets: [
+      CropAspectRatioPreset.square,
+    ],
+    uiSettings: [
+      AndroidUiSettings(
+        toolbarTitle: 'Crop',
+        toolbarColor: Colors.blue,
+        toolbarWidgetColor: Colors.white,
+        initAspectRatio: CropAspectRatioPreset.square,
+        lockAspectRatio: true,
+      ),
+    ],
+  );
+
+  if (cropped != null) {
+    return File(cropped.path);
+  }
+  return null;
+}
+
+bool containsUrl(String input) {
+  // Regular expression to match a URL
+  final urlRegExp = RegExp(
+    r'https?://(?:www\.)?[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}(?:/[^/\s]*)?',
+    caseSensitive: false,
+  );
+
+  // Check if the input string contains a URL
+  return urlRegExp.hasMatch(input);
+}
+
+List<String> extractUrls(String text) {
+  final RegExp urlRegExp = RegExp(
+    r'(?:(?:https?|ftp):\/\/)?[\w/\-?=%.]+\.[\w/\-?=%.]+',
+    caseSensitive: false,
+  );
+
+  Iterable<Match> matches = urlRegExp.allMatches(text);
+  List<String> urls = matches.map((match) => match.group(0)!).toList();
+  return urls;
 }
 
 String extractWebsiteName(String url) {

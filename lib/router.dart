@@ -1,3 +1,4 @@
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -5,29 +6,42 @@ import 'package:go_router/go_router.dart';
 import 'package:viblify_app/features/Feed/feed_screen.dart';
 import 'package:viblify_app/features/Feed/tag_feed_screen.dart';
 import 'package:viblify_app/features/auth/screens/login_screen.dart';
+import 'package:viblify_app/features/chats/screens/chat_screen.dart';
+import 'package:viblify_app/features/chats/screens/inbox_screen.dart';
 import 'package:viblify_app/features/comments/screens/comment_screen.dart';
 import 'package:viblify_app/features/community/screens/community_screen.dart';
 import 'package:viblify_app/features/community/screens/create_community.dart';
+import 'package:viblify_app/features/dash/screens/dash_add_screen.dart';
+import 'package:viblify_app/features/dash/screens/dash_screen.dart';
 import 'package:viblify_app/features/home/screens/home_screen.dart';
 import 'package:viblify_app/features/splash_screen/splash_screen.dart';
 import 'package:viblify_app/features/stt/screens/stt_profile_screen.dart';
 import 'package:viblify_app/features/stt/screens/stt_screen.dart';
 import 'package:viblify_app/features/user_profile/screens/add_post.dart';
 import 'package:viblify_app/features/user_profile/screens/edit_profile_screen.dart';
+import 'package:viblify_app/features/user_profile/screens/following_screen.dart';
 import 'package:viblify_app/features/user_profile/screens/search_screen.dart';
 import 'package:viblify_app/features/user_profile/screens/user_profile_screen.dart';
 import 'package:viblify_app/features/user_profile/screens/video_screen.dart';
-import 'package:viblify_app/widgets/feeds_widget.dart';
+import 'package:viblify_app/widgets/image_slide.dart';
 import 'features/auth/controller/auth_controller.dart';
 import 'widgets/profile_pic_widget.dart';
 
-final _key = GlobalKey<NavigatorState>();
+class Navigation {
+  Navigation._();
 
+  static const addDash = "create";
+}
+
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 final routerProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(authChangeState);
 
   return GoRouter(
-    navigatorKey: _key,
+    observers: [
+      FirebaseAnalyticsObserver(analytics: FirebaseAnalytics.instance),
+    ],
+    navigatorKey: navigatorKey,
     debugLogDiagnostics: true,
     initialLocation: "/splash",
     routes: [
@@ -71,6 +85,14 @@ final routerProvider = Provider<GoRouter>((ref) {
           StatefulShellBranch(
             routes: <RouteBase>[
               GoRoute(
+                path: "/dash",
+                builder: (context, state) => const DashScreen(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: <RouteBase>[
+              GoRoute(
                 path: "/profile",
                 builder: (context, state) => UserProfileScreen(
                   uid: FirebaseAuth.instance.currentUser!.uid,
@@ -85,9 +107,9 @@ final routerProvider = Provider<GoRouter>((ref) {
         pageBuilder: (context, state) {
           final user = ref.watch(userProvider.notifier).state;
           if (user == null) {
-            return NoTransitionPage(child: SplashScreen());
+            return const NoTransitionPage(child: SplashScreen());
           }
-          return NoTransitionPage(child: const SplashScreen());
+          return const NoTransitionPage(child: SplashScreen());
         },
       ),
       GoRoute(
@@ -102,6 +124,12 @@ final routerProvider = Provider<GoRouter>((ref) {
         pageBuilder: (context, state) {
           String id = state.pathParameters['id']!;
           return NoTransitionPage(child: CommentScreen(feedID: id));
+        },
+      ),
+      GoRoute(
+        path: "/inbox",
+        pageBuilder: (context, state) {
+          return const NoTransitionPage(child: InboxScreen());
         },
       ),
       GoRoute(
@@ -139,14 +167,46 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: "/login",
         pageBuilder: (context, state) {
-          return NoTransitionPage(child: const LoginScreen());
+          return const NoTransitionPage(child: LoginScreen());
         },
       ),
       GoRoute(
         path: "/c/create",
         pageBuilder: (context, state) {
-          return NoTransitionPage(child: const CreateComunityScreen());
+          return const NoTransitionPage(child: CreateComunityScreen());
         },
+      ),
+      GoRoute(
+        path: "/chat/:uid/:chatid",
+        pageBuilder: (context, state) {
+          return NoTransitionPage(
+            child: ChatScreen(
+              targetUserID: state.pathParameters['uid']!,
+              chatID: state.pathParameters['chatid']!,
+            ),
+          );
+        },
+      ),
+      GoRoute(
+        path: "/dash",
+        pageBuilder: (context, state) {
+          return const NoTransitionPage(
+            child: DashScreen(),
+          );
+        },
+        routes: [
+          GoRoute(
+            name: Navigation.addDash,
+            path: "create",
+            pageBuilder: (context, state) {
+              return NoTransitionPage(
+                child: AddNewDash(
+                  path: state.extra as Map<String, dynamic>,
+                ),
+              );
+            },
+          ),
+        ],
       ),
       GoRoute(
         path: "/c/:name",
@@ -158,7 +218,25 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: "/stt",
         pageBuilder: (context, state) {
-          return NoTransitionPage(child: const MySttScreen());
+          return const NoTransitionPage(child: MySttScreen());
+        },
+      ),
+      GoRoute(
+        path: "/following/:uid",
+        pageBuilder: (context, state) {
+          return NoTransitionPage(
+              child: FollowingScreen(
+            userID: state.pathParameters['uid']!,
+          ));
+        },
+      ),
+      GoRoute(
+        path: "/followers/:uid",
+        pageBuilder: (context, state) {
+          return NoTransitionPage(
+              child: FollowersScreen(
+            userID: state.pathParameters['uid']!,
+          ));
         },
       ),
       GoRoute(
@@ -180,13 +258,13 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: "/addpost",
         pageBuilder: (context, state) {
-          return NoTransitionPage(child: const AddPostScreen());
+          return const NoTransitionPage(child: AddPostScreen());
         },
       ),
       GoRoute(
         path: "/update",
         pageBuilder: (context, state) {
-          return NoTransitionPage(child: const SizedBox());
+          return const NoTransitionPage(child: SizedBox());
         },
       ),
     ],

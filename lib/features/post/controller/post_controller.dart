@@ -31,6 +31,11 @@ final getUserFeedsProvider = StreamProvider.family((ref, String uid) {
   final communityController = ref.watch(postControllerProvider.notifier);
   return communityController.getUserFeeds(uid);
 });
+final getFollowingFeedsProvider =
+    StreamProvider.family((ref, List<dynamic> uid) {
+  final communityController = ref.watch(postControllerProvider.notifier);
+  return communityController.getFollowingFeeds(uid);
+});
 final getFeedsByTagsProvider = StreamProvider.family((ref, String tag) {
   final communityController = ref.watch(postControllerProvider.notifier);
   return communityController.getFeedsByTags(tag);
@@ -130,7 +135,8 @@ class PostController extends StateNotifier<bool> {
     final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
     String generateNewFeedID() {
-      const chars = '0123456789';
+      const chars =
+          '0123456789qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM';
       final random = Random.secure();
       return List.generate(10, (index) => chars[random.nextInt(chars.length)])
           .join();
@@ -176,6 +182,10 @@ class PostController extends StateNotifier<bool> {
 
   Stream<List<Feeds>> getUserFeeds(String uid) {
     return _repository.getUserFeeds(uid);
+  }
+
+  Stream<List<Feeds>> getFollowingFeeds(List<dynamic> uid) {
+    return _repository.getFollowingFeeds(uid);
   }
 
   Stream<List<Feeds>> getFeedsByTags(String tag) {
