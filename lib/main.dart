@@ -1,6 +1,6 @@
-// ignore_for_file: avoid_print
 import 'dart:convert';
 import 'dart:developer';
+
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -17,9 +17,9 @@ import 'package:pub_semver/pub_semver.dart';
 import 'package:viblify_app/core/common/error_text.dart';
 import 'package:viblify_app/features/auth/controller/auth_controller.dart';
 import 'package:viblify_app/features/splash_screen/splash_screen.dart';
-import 'package:viblify_app/firebase_options.dart';
 import 'package:viblify_app/router.dart';
 import 'features/remote_config/repository/remote_config_repository.dart';
+import 'firebase_options.dart';
 import 'models/user_model.dart';
 import 'theme/Pallete.dart';
 
@@ -31,8 +31,7 @@ const AndroidNotificationChannel channel = AndroidNotificationChannel(
   playSound: true,
 );
 
-final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-    FlutterLocalNotificationsPlugin();
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
 Future<void> _firebaseMessagingBackGroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
@@ -80,8 +79,7 @@ Future<void> main() async {
 
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackGroundHandler);
   await flutterLocalNotificationsPlugin
-      .resolvePlatformSpecificImplementation<
-          AndroidFlutterLocalNotificationsPlugin>()
+      .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
       ?.createNotificationChannel(channel);
 
   await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
@@ -114,10 +112,7 @@ class _MyAppState extends ConsumerState<MyApp> {
   String appVersion = '';
   int buildNumber = 1;
   void getData(WidgetRef ref, User data) async {
-    userModel = await ref
-        .read(authControllerProvider.notifier)
-        .getUserData(data.uid)
-        .first;
+    userModel = await ref.read(authControllerProvider.notifier).getUserData(data.uid).first;
 
     ref.read(userProvider.notifier).update((state) => userModel);
     setState(() {});
@@ -168,8 +163,7 @@ class _MyAppState extends ConsumerState<MyApp> {
   }
 
   Future<void> _loadAppVersion() async {
-    await Future.delayed(
-        Duration.zero); // Introduce a delay to wait for the build to complete
+    await Future.delayed(Duration.zero); // Introduce a delay to wait for the build to complete
 
     final packageInfo = await PackageInfo.fromPlatform();
     setState(() {
@@ -193,13 +187,11 @@ class _MyAppState extends ConsumerState<MyApp> {
                   }
                   if (appVersion.isNotEmpty &&
                           update.version.isNotEmpty &&
-                          Version.parse(appVersion) <
-                              Version.parse(update.version) ||
+                          Version.parse(appVersion) < Version.parse(update.version) ||
                       buildNumber < update.buildNumber) {
                     return MaterialApp(
                       navigatorObservers: [
-                        FirebaseAnalyticsObserver(
-                            analytics: FirebaseAnalytics.instance),
+                        FirebaseAnalyticsObserver(analytics: FirebaseAnalytics.instance),
                       ],
                       navigatorKey: navigatorKey,
                       theme: Pallete.darkModeAppTheme,
@@ -230,8 +222,7 @@ class _MyAppState extends ConsumerState<MyApp> {
                 error: (error, trace) => ErrorText(error: error.toString()),
                 loading: () => MaterialApp(
                   navigatorObservers: [
-                    FirebaseAnalyticsObserver(
-                        analytics: FirebaseAnalytics.instance),
+                    FirebaseAnalyticsObserver(analytics: FirebaseAnalytics.instance),
                   ],
                   theme: Pallete.darkModeAppTheme,
                   debugShowCheckedModeBanner: false,

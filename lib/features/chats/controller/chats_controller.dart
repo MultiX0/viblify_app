@@ -54,22 +54,17 @@ final getChatStatus = StreamProvider.family((ref, Tuple2 tuple2) {
   final commentsController = ref.watch(chatsControllerProvider.notifier);
   return commentsController.chatStatusStream(tuple2.item1, tuple2.item2);
 });
-final chatsControllerProvider =
-    StateNotifierProvider<ChatsController, bool>((ref) {
+final chatsControllerProvider = StateNotifierProvider<ChatsController, bool>((ref) {
   final _repository = ref.watch(chatsRepositoryProvider);
   final _storageRepository = ref.watch(firebaseStorageProvider);
-  return ChatsController(
-      repository: _repository, ref: ref, storageRepository: _storageRepository);
+  return ChatsController(repository: _repository, ref: ref, storageRepository: _storageRepository);
 });
 
 class ChatsController extends StateNotifier<bool> {
   ChatsRepository _repository;
   final Ref _ref;
   final StorageRepository _storageRepository;
-  ChatsController(
-      {required ChatsRepository repository,
-      required Ref ref,
-      required StorageRepository storageRepository})
+  ChatsController({required ChatsRepository repository, required Ref ref, required StorageRepository storageRepository})
       : _repository = repository,
         _ref = ref,
         _storageRepository = storageRepository,
@@ -77,23 +72,17 @@ class ChatsController extends StateNotifier<bool> {
   FirebaseFirestore get _firestore => FirebaseFirestore.instance;
 
   var uuid = const Uuid();
-  Future<ChatModel?> getChatRoom(
-      UserModel userModel, UserModel targetUser, BuildContext context) async {
+  Future<ChatModel?> getChatRoom(UserModel userModel, UserModel targetUser, BuildContext context) async {
     ChatModel chatModel = ChatModel();
 
-    QuerySnapshot snapshot = await _firestore
-        .collection("users")
-        .doc(userModel.userID)
-        .collection(FirebaseConstant.chatsCollection)
-        .get();
+    QuerySnapshot snapshot =
+        await _firestore.collection("users").doc(userModel.userID).collection(FirebaseConstant.chatsCollection).get();
     if (snapshot.docs.isNotEmpty) {
-      chatModel =
-          ChatModel.fromMap(snapshot.docs.first.data() as Map<String, dynamic>);
+      chatModel = ChatModel.fromMap(snapshot.docs.first.data() as Map<String, dynamic>);
       log("isAvailable");
     }
     return _repository.getChatRoom(userModel, targetUser, chatModel).then(
-          (value) =>
-              context.push("/chat/${targetUser.userID}/${chatModel.id ?? ""}"),
+          (value) => context.push("/chat/${targetUser.userID}/${chatModel.id ?? ""}"),
         );
   }
 
@@ -141,11 +130,11 @@ class ChatsController extends StateNotifier<bool> {
     }
 
     return _repository.sendMessage(reciver, sender, messageModel).then((value) {
-      if (inTheChat == false) {
-        APIS.pushNotification(
-            myData, targetUser, image != null ? "image" : content, chatID);
-        log(myData.notificationsToken);
-      }
+      // if (inTheChat == false) {
+
+      // }
+      APIS.pushNotification(myData, targetUser, image != null ? "image" : content, chatID);
+      log(myData.notificationsToken);
       return null;
     });
   }
@@ -177,8 +166,7 @@ class ChatsController extends StateNotifier<bool> {
     String messageID,
     String chatID,
   ) {
-    _repository.setChatMessageSeen(
-        context, reciverUserID, senderID, messageID, chatID);
+    _repository.setChatMessageSeen(context, reciverUserID, senderID, messageID, chatID);
   }
 
   void deleteChat(String senderID, String reciverID) {
