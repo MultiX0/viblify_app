@@ -43,8 +43,7 @@ class _FeedScreenState extends ConsumerState<FeedScreen> {
         },
         child: ref.read(getAllFeedsProvider(uid)).when(
               data: (posts) => posts.isNotEmpty
-                  ? FeedsWidget(
-                      posts: posts, isThemeDark: true, dividerColor: "")
+                  ? FeedsWidget(isUserProfile: false, posts: posts, isThemeDark: true, dividerColor: "")
                   : const Center(
                       child: MyEmptyShowen(text: "ليست هنالك أي مناشير بعد"),
                     ),
@@ -84,6 +83,7 @@ class FollowingTimeLine extends ConsumerWidget {
             return ref.watch(getFollowingFeedsProvider(users)).when(
                 data: (data) {
                   return FeedsWidget(
+                    isUserProfile: false,
                     posts: data,
                     isThemeDark: true,
                     dividerColor: "",

@@ -11,11 +11,7 @@ class UserFeedsScreen extends ConsumerWidget {
   final String uid;
   final bool isThemeDark;
   final String dividerColor;
-  const UserFeedsScreen(
-      {super.key,
-      required this.uid,
-      required this.isThemeDark,
-      required this.dividerColor});
+  const UserFeedsScreen({super.key, required this.uid, required this.isThemeDark, required this.dividerColor});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -25,6 +21,7 @@ class UserFeedsScreen extends ConsumerWidget {
                   posts: posts,
                   isThemeDark: isThemeDark,
                   dividerColor: dividerColor,
+                  isUserProfile: true,
                 )
               : Column(
                   mainAxisAlignment: MainAxisAlignment.center,

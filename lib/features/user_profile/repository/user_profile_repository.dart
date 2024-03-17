@@ -22,10 +22,8 @@ final userProfileRepositoryProvider = Provider((ref) {
 
 class UserRepository {
   final FirebaseFirestore _firebaseFirestore;
-  UserRepository({required FirebaseFirestore firebaseFirestore})
-      : _firebaseFirestore = firebaseFirestore;
-  CollectionReference get _users =>
-      _firebaseFirestore.collection(FirebaseConstant.usersCollection);
+  UserRepository({required FirebaseFirestore firebaseFirestore}) : _firebaseFirestore = firebaseFirestore;
+  CollectionReference get _users => _firebaseFirestore.collection(FirebaseConstant.usersCollection);
 
   FutureVoid editProfile(UserModel user) async {
     try {
@@ -40,9 +38,7 @@ class UserRepository {
   Future<void> toggleFollow(String userID, followerID) async {
     // Update the current user's following list
     final followingRef = _users.doc(userID);
-    final isFollowing = await followingRef
-        .get()
-        .then((doc) => doc['following']?.contains(followerID) ?? false);
+    final isFollowing = await followingRef.get().then((doc) => doc['following']?.contains(followerID) ?? false);
 
     if (isFollowing) {
       await followingRef.update({
@@ -56,9 +52,7 @@ class UserRepository {
 
     // Update the other user's followers list
     final otherUserRef = _users.doc(followerID);
-    final isFollowedByOtherUser = await otherUserRef
-        .get()
-        .then((doc) => doc['followers']?.contains(userID) ?? false);
+    final isFollowedByOtherUser = await otherUserRef.get().then((doc) => doc['followers']?.contains(userID) ?? false);
 
     if (isFollowedByOtherUser) {
       await otherUserRef.update({
@@ -91,16 +85,13 @@ class UserRepository {
           print("not exist");
           directory.create();
         }
-        const chars = '1234567890';
+        const chars = '1234567890qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM';
         final random = Random();
-        final id =
-            List.generate(13, (index) => chars[random.nextInt(chars.length)])
-                .join();
+        final id = List.generate(20, (index) => chars[random.nextInt(chars.length)]).join();
 
         final file = File('${directory.path}/$id.jpg');
         // Save the image to the gallery
-        await ImageGallerySaver.saveImage(Uint8List.fromList(bytes),
-            name: file.path);
+        await ImageGallerySaver.saveImage(Uint8List.fromList(bytes), name: file.path);
 
         return right(await file.writeAsBytes(bytes));
       } else {
@@ -186,11 +177,7 @@ class UserRepository {
   }
 
   Future<bool> isUsernameTaken(String username, String currentUserId) {
-    return _users
-        .where('userName', isEqualTo: username)
-        .limit(1)
-        .get()
-        .then((QuerySnapshot querySnapshot) {
+    return _users.where('userName', isEqualTo: username).limit(1).get().then((QuerySnapshot querySnapshot) {
       if (querySnapshot.size > 0) {
         // Check if the existing username belongs to the current user
         final userDoc = querySnapshot.docs.first;
@@ -210,8 +197,7 @@ class UserRepository {
     });
   }
 
-  Future<void> updateProfileTheme(
-      String uid, String color, String dividerColor, bool isThemeDark) async {
+  Future<void> updateProfileTheme(String uid, String color, String dividerColor, bool isThemeDark) async {
     _users.doc(uid).update({
       'profile_theme': color,
       'divider_color': dividerColor,

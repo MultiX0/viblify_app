@@ -25,12 +25,14 @@ import 'package:viblify_app/features/user_profile/screens/user_profile_screen.da
 import 'package:viblify_app/features/user_profile/screens/video_screen.dart';
 import 'package:viblify_app/widgets/image_slide.dart';
 import 'features/auth/controller/auth_controller.dart';
+import 'features/dash/screens/view_dash_screen.dart';
 import 'widgets/profile_pic_widget.dart';
 
 class Navigation {
   Navigation._();
 
-  static const addDash = "create";
+  static const addDash = "newDash";
+  static const dashview = "dashview";
 }
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -137,8 +139,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         pageBuilder: (context, state) {
           String id = state.pathParameters['id']!;
           String title = state.pathParameters['title']!;
-          return NoTransitionPage(
-              child: VideoScreen(id: id, nameOfVideo: title));
+          return NoTransitionPage(child: VideoScreen(id: id, nameOfVideo: title));
         },
       ),
       GoRoute(
@@ -153,8 +154,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         pageBuilder: (context, state) {
           String uid = state.pathParameters['uid']!;
           String name = state.pathParameters['name']!;
-          return NoTransitionPage(
-              child: SayTheTruth(userID: uid, useraName: name));
+          return NoTransitionPage(child: SayTheTruth(userID: uid, useraName: name));
         },
       ),
       GoRoute(
@@ -194,19 +194,26 @@ final routerProvider = Provider<GoRouter>((ref) {
             child: DashScreen(),
           );
         },
-        routes: [
-          GoRoute(
-            name: Navigation.addDash,
-            path: "create",
-            pageBuilder: (context, state) {
-              return NoTransitionPage(
-                child: AddNewDash(
-                  path: state.extra as Map<String, dynamic>,
-                ),
-              );
-            },
-          ),
-        ],
+      ),
+      GoRoute(
+        name: Navigation.addDash,
+        path: "/dash/create",
+        pageBuilder: (context, state) {
+          return NoTransitionPage(
+            child: AddNewDash(
+              path: state.extra as Map<String, dynamic>,
+            ),
+          );
+        },
+      ),
+      GoRoute(
+        name: Navigation.dashview,
+        path: "/dash/view",
+        builder: (context, state) {
+          return DashViewScreen(
+            data: state.extra as Map<String, dynamic>,
+          );
+        },
       ),
       GoRoute(
         path: "/c/:name",
@@ -242,8 +249,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: "/edit/profile/:uid",
         pageBuilder: (context, state) {
-          return NoTransitionPage(
-              child: EditProfileScreen(uid: state.pathParameters['uid']!));
+          return NoTransitionPage(child: EditProfileScreen(uid: state.pathParameters['uid']!));
         },
       ),
       GoRoute(
@@ -251,8 +257,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, GoRouterState state) {
           final url = state.pathParameters['url']!;
           final link = Uri.decodeComponent(url);
-          return ProfileImageScreen(
-              tag: state.pathParameters['tag']!, url: link);
+          return ProfileImageScreen(tag: state.pathParameters['tag']!, url: link);
         },
       ),
       GoRoute(

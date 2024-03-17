@@ -1,4 +1,5 @@
 // ignore_for_file: use_build_context_synchronously, unused_result
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -8,6 +9,7 @@ import 'package:go_router/go_router.dart';
 import 'package:viblify_app/core/common/error_text.dart';
 import 'package:viblify_app/core/common/loader.dart';
 import 'package:viblify_app/features/dash/controller/dash_controller.dart';
+import 'package:viblify_app/models/dash_model.dart';
 import 'package:viblify_app/theme/pallete.dart';
 import 'package:viblify_app/widgets/empty_widget.dart';
 
@@ -22,8 +24,7 @@ class DashScreen extends ConsumerStatefulWidget {
 }
 
 class _DashScreenState extends ConsumerState<DashScreen> {
-  RefreshController _refreshController =
-      RefreshController(initialRefresh: false);
+  RefreshController _refreshController = RefreshController(initialRefresh: false);
   String? path;
 
   void imagePicker() async {
@@ -75,18 +76,24 @@ class _DashScreenState extends ConsumerState<DashScreen> {
                     ? MasonryGridView.builder(
                         padding: const EdgeInsets.symmetric(vertical: 5),
                         itemCount: dashs.length,
-                        gridDelegate:
-                            const SliverSimpleGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 2),
+                        gridDelegate: const SliverSimpleGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
                         itemBuilder: (context, index) {
                           final dash = dashs[index];
 
                           return Padding(
                             padding: const EdgeInsets.all(5.0),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(10),
-                              child: CachedNetworkImage(
-                                imageUrl: dash.contentUrl,
+                            child: Hero(
+                              tag: dash.dashID,
+                              child: GestureDetector(
+                                onTap: () => navigateToDashView(
+                                  dash,
+                                ),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(10),
+                                  child: CachedNetworkImage(
+                                    imageUrl: dash.contentUrl,
+                                  ),
+                                ),
                               ),
                             ),
                           );
@@ -99,6 +106,13 @@ class _DashScreenState extends ConsumerState<DashScreen> {
               loading: () => const Loader(),
             ),
       ),
+    );
+  }
+
+  void navigateToDashView(Dash dash) {
+    context.pushNamed(
+      Navigation.dashview,
+      extra: dash.toMap(),
     );
   }
 }
