@@ -5,9 +5,12 @@ import 'dart:ui' as ui;
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:viblify_app/core/utils.dart';
+import 'package:viblify_app/features/auth/controller/auth_controller.dart';
 import 'package:viblify_app/features/dash/widgets/user_card.dart';
 import 'package:viblify_app/features/user_profile/controller/user_profile_controller.dart';
 import 'package:viblify_app/models/dash_model.dart';
+
+import '../widgets/comments_card.dart';
 
 class DashViewScreen extends ConsumerWidget {
   final Map<String, dynamic> data;
@@ -16,6 +19,7 @@ class DashViewScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final myData = ref.read(userProvider)!;
     final dash = Dash.fromMap(data);
 
     bool isArabic = Bidi.hasAnyRtl(dash.description);
@@ -48,6 +52,7 @@ class DashViewScreen extends ConsumerWidget {
               textDirection: isArabic ? ui.TextDirection.rtl : ui.TextDirection.ltr,
             ),
           ),
+          MyCommentCard(dash: dash, myData: myData),
         ],
       ),
     );
