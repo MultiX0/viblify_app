@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:clipboard/clipboard.dart';
@@ -106,5 +107,14 @@ void copyProfileUrl(String uid, BuildContext context) {
   FlutterClipboard.copy('https://viblify.com/u/$uid').then((value) {
     Navigator.of(context).pop();
     Fluttertoast.showToast(msg: "تم نسخ رابط الملف الشخصي");
+  });
+}
+
+void copyDashUrl(Map<String, dynamic> data, BuildContext context) {
+  final encodedExtraData = Uri.encodeComponent(jsonEncode(data));
+
+  FlutterClipboard.copy('https://viblify.com/dash/view/$encodedExtraData').then((value) {
+    Navigator.of(context).pop();
+    Fluttertoast.showToast(msg: "تم نسخ الرابط");
   });
 }

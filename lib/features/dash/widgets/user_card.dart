@@ -26,7 +26,7 @@ class UserCard extends ConsumerWidget {
     return ref.watch(getUserDataProvider(uid)).when(
         data: (user) {
           return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 15),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,

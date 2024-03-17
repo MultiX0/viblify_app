@@ -9,7 +9,7 @@ class Dash {
   final String description;
   final int commentCount;
   final int views;
-  final Timestamp createdAt; // Added field
+  final String createdAt; // Added field
   final List<dynamic> shares; // Added field
   final List<dynamic> tags; // Added field
 
@@ -34,7 +34,7 @@ class Dash {
     String? description,
     int? commentCount,
     int? views,
-    Timestamp? createdAt,
+    String? createdAt,
     List? shares,
     List? tags,
   }) {
@@ -76,7 +76,7 @@ class Dash {
       description: map['description'] ?? "",
       commentCount: map['commentCount'] ?? 0,
       views: map['views'] ?? 0,
-      createdAt: map['createdAt'] ?? Timestamp.now(),
+      createdAt: map['createdAt'] ?? Timestamp.now().millisecondsSinceEpoch.toString(),
       shares: List.from(map['shares'] ?? []),
       tags: List.from(map['tags'] ?? []),
     );

@@ -20,22 +20,17 @@ final getAllDashesProvider = FutureProvider((ref) {
   return dashController.getAllDashes(myID);
 });
 
-final dashControllerProvider =
-    StateNotifierProvider<DashController, bool>((ref) {
+final dashControllerProvider = StateNotifierProvider<DashController, bool>((ref) {
   final _repository = ref.watch(dashRepositoryProvider);
   final _storageRepository = ref.watch(firebaseStorageProvider);
-  return DashController(
-      repository: _repository, ref: ref, storageRepository: _storageRepository);
+  return DashController(repository: _repository, ref: ref, storageRepository: _storageRepository);
 });
 
 class DashController extends StateNotifier<bool> {
   DashRepository _repository;
   final Ref _ref;
   final StorageRepository _storageRepository;
-  DashController(
-      {required DashRepository repository,
-      required Ref ref,
-      required StorageRepository storageRepository})
+  DashController({required DashRepository repository, required Ref ref, required StorageRepository storageRepository})
       : _repository = repository,
         _ref = ref,
         _storageRepository = storageRepository,
@@ -62,7 +57,7 @@ class DashController extends StateNotifier<bool> {
       contentUrl: "",
       description: description,
       commentCount: 0,
-      createdAt: Timestamp.now(),
+      createdAt: Timestamp.now().millisecondsSinceEpoch.toString(),
     );
 
     if (dash.dashID.isEmpty) {
@@ -94,11 +89,9 @@ class DashController extends StateNotifier<bool> {
     final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
     String generateNewFeedID() {
-      const chars =
-          '0123456789qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM';
+      const chars = '0123456789qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM';
       final random = Random.secure();
-      return List.generate(10, (index) => chars[random.nextInt(chars.length)])
-          .join();
+      return List.generate(10, (index) => chars[random.nextInt(chars.length)]).join();
     }
 
     String newDashID = "";

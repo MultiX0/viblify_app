@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:ui' as ui;
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:viblify_app/core/utils.dart';
 import 'package:viblify_app/features/dash/widgets/user_card.dart';
 import 'package:viblify_app/features/user_profile/controller/user_profile_controller.dart';
 import 'package:viblify_app/models/dash_model.dart';
@@ -25,7 +26,7 @@ class DashViewScreen extends ConsumerWidget {
         title: const Text("Details"),
         actions: [
           IconButton(
-            onPressed: () => more(context, ref, dash.contentUrl),
+            onPressed: () => more(context, ref, dash.contentUrl, data),
             icon: const Icon(Icons.more_horiz),
           )
         ],
@@ -38,11 +39,11 @@ class DashViewScreen extends ConsumerWidget {
           ),
           UserCard(uid: dash.userID),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 5),
+            padding: const EdgeInsets.symmetric(horizontal: 10),
             child: Text(
               dash.description,
               style: TextStyle(
-                color: Colors.grey[300],
+                color: Colors.grey[400],
               ),
               textDirection: isArabic ? ui.TextDirection.rtl : ui.TextDirection.ltr,
             ),
@@ -57,7 +58,7 @@ class DashViewScreen extends ConsumerWidget {
     context.pop(context);
   }
 
-  void more(BuildContext context, WidgetRef ref, String url) {
+  void more(BuildContext context, WidgetRef ref, String url, Map<String, dynamic> data) {
     showModalBottomSheet(
       context: context,
       builder: (context) {
@@ -68,7 +69,12 @@ class DashViewScreen extends ConsumerWidget {
               title: const Text("تحميل الصورة"),
               leading: const Icon(Icons.download_rounded),
               onTap: () => download(ref, url, context),
-            )
+            ),
+            ListTile(
+              title: const Text("نسخ الرابط"),
+              leading: const Icon(Icons.link),
+              onTap: () => copyDashUrl(data, context),
+            ),
           ],
         );
       },

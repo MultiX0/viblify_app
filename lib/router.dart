@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -213,6 +215,13 @@ final routerProvider = Provider<GoRouter>((ref) {
           return DashViewScreen(
             data: state.extra as Map<String, dynamic>,
           );
+        },
+      ),
+      GoRoute(
+        path: '/dash/view/:extra',
+        builder: (context, state) {
+          final extraData = jsonDecode(Uri.decodeComponent(state.pathParameters['extra']!));
+          return DashViewScreen(data: extraData);
         },
       ),
       GoRoute(
