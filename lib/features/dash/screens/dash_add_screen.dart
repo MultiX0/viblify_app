@@ -4,8 +4,11 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_mlkit_image_labeling/google_mlkit_image_labeling.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:viblify_app/features/dash/controller/dash_controller.dart';
+
+import '../../../core/ai/image_labeling.dart';
 
 TextEditingController hashTags = TextEditingController();
 TextEditingController titleController = TextEditingController();
@@ -20,6 +23,7 @@ class AddNewDash extends ConsumerStatefulWidget {
 }
 
 class _AddNewDashState extends ConsumerState<AddNewDash> {
+  dynamic imageLabeler;
   final ScrollController _scrollController = ScrollController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   String? validateTitle(String value) {
@@ -35,6 +39,8 @@ class _AddNewDashState extends ConsumerState<AddNewDash> {
   @override
   void initState() {
     super.initState();
+    final ImageLabelerOptions options = ImageLabelerOptions(confidenceThreshold: 0.6);
+    imageLabeler = ImageLabeler(options: options);
     focusNode.addListener(() {
       if (focusNode.hasFocus) {
         _scrollToTextField();
@@ -55,7 +61,7 @@ class _AddNewDashState extends ConsumerState<AddNewDash> {
   void _scrollToTextField() {
     _scrollController.animateTo(
       _scrollController.position.maxScrollExtent,
-      duration: Duration(milliseconds: 500),
+      duration: const Duration(milliseconds: 500),
       curve: Curves.easeInOut,
     );
   }
@@ -77,15 +83,23 @@ class _AddNewDashState extends ConsumerState<AddNewDash> {
   Widget build(BuildContext context) {
     final data = widget.path['path'] ?? "";
 
-    void addDash() {
+    Future<List<dynamic>> getLabels() async {
+      final labels = await doImageLabeling(File(data), imageLabeler);
+
+      return labels;
+    }
+
+    void addDash() async {
       if (_formKey.currentState?.validate() ?? false) {
         ref.watch(dashControllerProvider.notifier).addDash(
-            file: File(data),
-            title: titleController.text.trim(),
-            description: descriptionController.text.trim(),
-            context: context,
-            tags: tags,
-            isCommentsOpen: true);
+              file: File(data),
+              title: titleController.text.trim(),
+              description: descriptionController.text.trim(),
+              context: context,
+              tags: tags,
+              isCommentsOpen: true,
+              labels: await getLabels(),
+            );
         titleController.clear();
         descriptionController.clear();
         tags.clear();

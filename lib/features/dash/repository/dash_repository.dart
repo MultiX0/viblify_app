@@ -16,11 +16,9 @@ final dashRepositoryProvider = Provider((ref) {
 
 class DashRepository {
   final FirebaseFirestore _firebaseFirestore;
-  DashRepository({required FirebaseFirestore firebaseFirestore})
-      : _firebaseFirestore = firebaseFirestore;
+  DashRepository({required FirebaseFirestore firebaseFirestore}) : _firebaseFirestore = firebaseFirestore;
 
-  CollectionReference get _dash =>
-      _firebaseFirestore.collection(FirebaseConstant.dashCollection);
+  CollectionReference get _dash => _firebaseFirestore.collection(FirebaseConstant.dashCollection);
 
   FutureVoid addPost(Dash dash) async {
     try {
@@ -37,6 +35,28 @@ class DashRepository {
       final QuerySnapshot<Map<String, dynamic>> snapshot = await _dash
           // .where('userID', isNotEqualTo: uid)
           .get() as QuerySnapshot<Map<String, dynamic>>;
+
+      List<Dash> dashs = snapshot.docs
+          .map(
+            (doc) => Dash.fromMap(
+              doc.data(),
+            ),
+          )
+          .toList();
+
+      dashs.shuffle();
+
+      return dashs;
+    } catch (error) {
+      log("Error getting feeds: $error");
+      rethrow;
+    }
+  }
+
+  Future<List<Dash>> getDash(String id) async {
+    try {
+      final QuerySnapshot<Map<String, dynamic>> snapshot =
+          await _dash.where('dashID', isNotEqualTo: id).get() as QuerySnapshot<Map<String, dynamic>>;
 
       List<Dash> dashs = snapshot.docs
           .map(

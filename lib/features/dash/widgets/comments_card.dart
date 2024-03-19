@@ -16,7 +16,7 @@ class MyCommentCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 5, vertical: 15),
+      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 15),
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 20),
       width: MediaQuery.of(context).size.width,
       decoration: BoxDecoration(
@@ -30,15 +30,17 @@ class MyCommentCard extends StatelessWidget {
             height: 10,
           ),
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const Text(
                 "Comments",
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
+              const SizedBox(
+                width: 5,
+              ),
               Text(
                 dash.commentCount.toString(),
-                style: const TextStyle(fontWeight: FontWeight.bold),
+                style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey[600]!),
               )
             ],
           ),
@@ -60,7 +62,7 @@ class MyCommentCard extends StatelessWidget {
                   style: TextStyle(
                     color: Colors.grey[400],
                   ),
-                )
+                ),
               ],
             ),
           ),

@@ -20,6 +20,12 @@ final getAllDashesProvider = FutureProvider((ref) {
   return dashController.getAllDashes(myID);
 });
 
+final getDashProvider = FutureProvider.family((ref, String id) {
+  final dashController = ref.watch(dashControllerProvider.notifier);
+
+  return dashController.getDash(id);
+});
+
 final dashControllerProvider = StateNotifierProvider<DashController, bool>((ref) {
   final _repository = ref.watch(dashRepositoryProvider);
   final _storageRepository = ref.watch(firebaseStorageProvider);
@@ -43,6 +49,7 @@ class DashController extends StateNotifier<bool> {
     required BuildContext context,
     required List<dynamic> tags,
     required bool isCommentsOpen,
+    required List<dynamic> labels,
   }) async {
     state = true;
     final uid = _ref.read(userProvider)?.userID ?? "";
@@ -58,6 +65,7 @@ class DashController extends StateNotifier<bool> {
       description: description,
       commentCount: 0,
       createdAt: Timestamp.now().millisecondsSinceEpoch.toString(),
+      labels: labels,
     );
 
     if (dash.dashID.isEmpty) {
@@ -114,5 +122,9 @@ class DashController extends StateNotifier<bool> {
 
   Future<List<Dash>> getAllDashes(String uid) async {
     return _repository.getAllDashes(uid);
+  }
+
+  Future<List<Dash>> getDash(String id) async {
+    return _repository.getDash(id);
   }
 }

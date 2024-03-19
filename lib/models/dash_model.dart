@@ -12,6 +12,7 @@ class Dash {
   final String createdAt; // Added field
   final List<dynamic> shares; // Added field
   final List<dynamic> tags; // Added field
+  final List<dynamic> labels;
 
   Dash({
     required this.userID,
@@ -20,6 +21,7 @@ class Dash {
     required this.contentUrl,
     required this.description,
     required this.commentCount,
+    required this.labels,
     required this.views,
     required this.createdAt,
     required this.shares,
@@ -37,6 +39,7 @@ class Dash {
     String? createdAt,
     List? shares,
     List? tags,
+    List? labels,
   }) {
     return Dash(
       userID: userID ?? this.userID,
@@ -49,6 +52,7 @@ class Dash {
       createdAt: createdAt ?? this.createdAt,
       shares: shares ?? this.shares,
       tags: tags ?? this.tags,
+      labels: labels ?? this.labels,
     );
   }
 
@@ -64,6 +68,7 @@ class Dash {
       'createdAt': createdAt,
       'shares': shares,
       'tags': tags,
+      'labels': labels,
     };
   }
 
@@ -79,6 +84,7 @@ class Dash {
       createdAt: map['createdAt'] ?? Timestamp.now().millisecondsSinceEpoch.toString(),
       shares: List.from(map['shares'] ?? []),
       tags: List.from(map['tags'] ?? []),
+      labels: List.from(map['labels'] ?? []),
     );
   }
 

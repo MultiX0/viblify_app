@@ -1,14 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'dart:ui' as ui;
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:viblify_app/core/common/error_text.dart';
+import 'package:viblify_app/core/common/loader.dart';
 import 'package:viblify_app/core/utils.dart';
 import 'package:viblify_app/features/auth/controller/auth_controller.dart';
+import 'package:viblify_app/features/dash/controller/dash_controller.dart';
 import 'package:viblify_app/features/dash/widgets/user_card.dart';
 import 'package:viblify_app/features/user_profile/controller/user_profile_controller.dart';
 import 'package:viblify_app/models/dash_model.dart';
+import 'package:viblify_app/widgets/empty_widget.dart';
 
 import '../widgets/comments_card.dart';
 
@@ -39,7 +44,14 @@ class DashViewScreen extends ConsumerWidget {
         children: [
           Hero(
             tag: dash.dashID,
-            child: CachedNetworkImage(imageUrl: dash.contentUrl),
+            child: Container(
+              constraints: BoxConstraints(
+                  maxHeight: MediaQuery.of(context).size.height * 0.8, maxWidth: MediaQuery.of(context).size.width),
+              child: CachedNetworkImage(
+                imageUrl: dash.contentUrl,
+                fit: BoxFit.cover,
+              ),
+            ),
           ),
           UserCard(uid: dash.userID),
           Padding(
@@ -53,6 +65,9 @@ class DashViewScreen extends ConsumerWidget {
             ),
           ),
           MyCommentCard(dash: dash, myData: myData),
+          DashRecommandations(
+            id: dash.dashID,
+          ),
         ],
       ),
     );
@@ -84,5 +99,44 @@ class DashViewScreen extends ConsumerWidget {
         );
       },
     );
+  }
+}
+
+class DashRecommandations extends ConsumerWidget {
+  final String id;
+  const DashRecommandations({super.key, required this.id});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return ref.watch(getDashProvider(id)).when(
+          data: (dashs) {
+            if (dashs.isNotEmpty) {
+              return Wrap(
+                children: dashs.map((dash) {
+                  return Padding(
+                    padding: const EdgeInsets.all(5.0),
+                    child: Hero(
+                      tag: dash.dashID,
+                      child: GestureDetector(
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(10),
+                          child: CachedNetworkImage(
+                            imageUrl: dash.contentUrl,
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                }).toList(),
+              );
+            } else {
+              return const MyEmptyShowen(text: "لايوجد محتوى بعد");
+            }
+          },
+          error: (error, trace) => ErrorText(
+            error: error.toString(),
+          ),
+          loading: () => const Loader(),
+        );
   }
 }
