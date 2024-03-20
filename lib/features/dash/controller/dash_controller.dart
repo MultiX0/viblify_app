@@ -5,6 +5,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:tuple/tuple.dart';
 import 'package:viblify_app/core/utils.dart';
 import 'package:viblify_app/features/auth/controller/auth_controller.dart';
 import 'package:viblify_app/features/dash/repository/dash_repository.dart';
@@ -20,10 +22,10 @@ final getAllDashesProvider = FutureProvider((ref) {
   return dashController.getAllDashes(myID);
 });
 
-final getDashProvider = FutureProvider.family((ref, String id) {
+final getRecommendedDashProvider = FutureProvider.family((ref, Tuple3 tuple3) {
   final dashController = ref.watch(dashControllerProvider.notifier);
 
-  return dashController.getDash(id);
+  return dashController.getRecommendedDash(tuple3.item1, tuple3.item2, tuple3.item3);
 });
 
 final dashControllerProvider = StateNotifierProvider<DashController, bool>((ref) {
@@ -94,8 +96,6 @@ class DashController extends StateNotifier<bool> {
   }
 
   Future<String> generateUniqueFeedID() async {
-    final FirebaseFirestore firestore = FirebaseFirestore.instance;
-
     String generateNewFeedID() {
       const chars = '0123456789qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM';
       final random = Random.secure();
@@ -104,17 +104,15 @@ class DashController extends StateNotifier<bool> {
 
     String newDashID = "";
     bool isUnique = false;
+    final supabase = Supabase.instance.client;
 
     while (!isUnique) {
       newDashID = generateNewFeedID();
 
-      final querySnapshot = await firestore
-          .collection(FirebaseConstant.dashCollection)
-          .where('feedID', isEqualTo: newDashID)
-          .limit(1)
-          .get();
+      final querySnapshot =
+          await supabase.from(FirebaseConstant.dashCollection).select().eq("dashID", newDashID).limit(1);
 
-      isUnique = querySnapshot.docs.isEmpty;
+      isUnique = querySnapshot.isEmpty;
     }
 
     return newDashID;
@@ -124,7 +122,17 @@ class DashController extends StateNotifier<bool> {
     return _repository.getAllDashes(uid);
   }
 
-  Future<List<Dash>> getDash(String id) async {
-    return _repository.getDash(id);
+  Future<List<Dash>> getRecommendedDash(String id, List<dynamic> labels, List<dynamic> tags) async {
+    return _repository.getRecommendedDash(id, labels, tags);
+  }
+}
+
+Future<void> addToSupabase(Dash dash) async {
+  final supabase = Supabase.instance.client;
+
+  try {
+    await supabase.from('dashs').insert(dash.toMap());
+  } catch (e) {
+    rethrow;
   }
 }

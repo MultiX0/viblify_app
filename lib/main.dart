@@ -18,6 +18,7 @@ import 'package:viblify_app/core/common/error_text.dart';
 import 'package:viblify_app/features/auth/controller/auth_controller.dart';
 import 'package:viblify_app/features/splash_screen/splash_screen.dart';
 import 'package:viblify_app/router.dart';
+import 'package:viblify_app/supabase_options.dart';
 import 'features/remote_config/repository/remote_config_repository.dart';
 import 'firebase_options.dart';
 import 'models/user_model.dart';
@@ -76,6 +77,7 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  await SupabaseOptions.initializeApp();
 
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackGroundHandler);
   await flutterLocalNotificationsPlugin

@@ -1,12 +1,10 @@
-import 'dart:developer';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fpdart/fpdart.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:viblify_app/core/Constant/firebase_constant.dart';
 import 'package:viblify_app/core/failure.dart';
 import 'package:viblify_app/core/providers/firebase_providers.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:viblify_app/core/type_defs.dart';
 import 'package:viblify_app/models/feeds_model.dart';
 
@@ -15,9 +13,9 @@ final postRepositoryProvider = Provider((ref) {
 });
 
 class PostRepository {
+  final supabase = Supabase.instance.client;
   final FirebaseFirestore _firebaseFirestore;
-  PostRepository({required FirebaseFirestore firebaseFirestore})
-      : _firebaseFirestore = firebaseFirestore;
+  PostRepository({required FirebaseFirestore firebaseFirestore}) : _firebaseFirestore = firebaseFirestore;
 
   FutureVoid addPost(Feeds feeds) async {
     try {
@@ -29,44 +27,33 @@ class PostRepository {
     }
   }
 
-  void likeHandling(String docID, String uid) async {
-    final likingRef = _posts.doc(docID);
+  Future<void> likeHandling(String docID, String uid) async {
+    try {
+      // Fetch the post's current likes
+      final response = await supabase.from('posts').select('likes').eq('feedID', docID).single();
 
-    // Fetch the current data
-    final currentData = await likingRef.get();
-    final isLiked = currentData['likes']?.contains(uid) ?? false;
+      final List<dynamic>? currentLikes = response['likes'] as List<dynamic>?;
+      List<dynamic> updatedLikes;
 
-    // Update the likes and likeCount fields
-    if (isLiked) {
-      await likingRef.update({
-        'likes': FieldValue.arrayRemove([uid]),
-        'likeCount': FieldValue.increment(-1),
-      });
-    } else {
-      await likingRef.update({
-        'likes': FieldValue.arrayUnion([uid]),
-        'likeCount': FieldValue.increment(1),
-      });
-      await FirebaseAnalytics.instance.logEvent(
-        name: "select_content",
-        parameters: {
-          "content_type": "post",
-          "item_id": docID,
-        },
-      ).then((value) => log("done"));
+      if (currentLikes != null && currentLikes.contains(uid)) {
+        // If the user's UID is already in the likes, remove it (unlike)
+        updatedLikes = currentLikes.where((id) => id != uid).toList();
+      } else {
+        // Add the user's UID to the likes (like)
+        updatedLikes = [...currentLikes ?? [], uid];
+      }
+
+      // Update the post with new likes and like count
+      final updateResponse = await supabase
+          .from('posts')
+          .update({'likes': updatedLikes, 'likeCount': updatedLikes.length}).eq('feedID', docID);
+
+      if (updateResponse.error != null) {
+        throw updateResponse.error!;
+      }
+    } catch (error) {
+      print('Error handling like: ${error.toString()}');
     }
-
-    // Fetch the updated data after the like handling
-    final updatedData = await likingRef.get();
-
-    // Calculate the new score using your custom scoring function
-    int newScore =
-        customScoringFunction(updatedData.data() as Map<String, dynamic>);
-
-    // Update the score field in Firestore
-    await likingRef.update({
-      'score': newScore,
-    });
   }
 
   Future<void> viewDocument(String docID, String uid) async {
@@ -88,9 +75,8 @@ class PostRepository {
 
   Future<List<Feeds>> getAllFeeds(String uid) async {
     try {
-      final QuerySnapshot<Map<String, dynamic>> snapshot = await _posts
-          .where('userID', isNotEqualTo: uid)
-          .get() as QuerySnapshot<Map<String, dynamic>>;
+      final QuerySnapshot<Map<String, dynamic>> snapshot =
+          await _posts.where('userID', isNotEqualTo: uid).get() as QuerySnapshot<Map<String, dynamic>>;
 
       List<Feeds> feeds = snapshot.docs
           .map(
@@ -131,8 +117,7 @@ class PostRepository {
     // Calculate the score based on the weighted factors
     int score = (likes.length * likesWeight).toInt() +
         (comments * commentsWeight).toInt() +
-        ((DateTime.now().millisecondsSinceEpoch -
-                    timestamp.millisecondsSinceEpoch) ~/
+        ((DateTime.now().millisecondsSinceEpoch - timestamp.millisecondsSinceEpoch) ~/
                 (1000 * 60 * 60 * 24) *
                 recencyWeight)
             .toInt();
@@ -141,11 +126,7 @@ class PostRepository {
   }
 
   Stream<List<Feeds>> getUserFeeds(String uid) {
-    return _posts
-        .where("userID", isEqualTo: uid)
-        .orderBy('createdAt', descending: true)
-        .snapshots()
-        .map((event) {
+    return _posts.where("userID", isEqualTo: uid).orderBy('createdAt', descending: true).snapshots().map((event) {
       List<Feeds> feeds = [];
       for (var doc in event.docs) {
         feeds.add(Feeds.fromMap(doc.data() as Map<String, dynamic>));
@@ -155,11 +136,7 @@ class PostRepository {
   }
 
   Stream<List<Feeds>> getFollowingFeeds(List<dynamic> uids) {
-    return _posts
-        .orderBy('createdAt', descending: true)
-        .where("userID", whereIn: uids)
-        .snapshots()
-        .map((event) {
+    return _posts.orderBy('createdAt', descending: true).where("userID", whereIn: uids).snapshots().map((event) {
       List<Feeds> feeds = [];
       for (var doc in event.docs) {
         feeds.add(Feeds.fromMap(doc.data() as Map<String, dynamic>));
@@ -220,8 +197,7 @@ class PostRepository {
     }
   }
 
-  CollectionReference get _posts =>
-      _firebaseFirestore.collection(FirebaseConstant.postsCollection);
+  CollectionReference get _posts => _firebaseFirestore.collection(FirebaseConstant.postsCollection);
 }
 
 // void main() async {

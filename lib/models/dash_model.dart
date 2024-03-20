@@ -1,4 +1,6 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+// ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 
 class Dash {
@@ -74,17 +76,17 @@ class Dash {
 
   factory Dash.fromMap(Map<String, dynamic> map) {
     return Dash(
-      userID: map['userID'] ?? "",
-      dashID: map['dashID'] ?? "",
-      likes: List.from(map['likes'] ?? []),
-      contentUrl: map['contentUrl'] ?? "",
-      description: map['description'] ?? "",
-      commentCount: map['commentCount'] ?? 0,
-      views: map['views'] ?? 0,
-      createdAt: map['createdAt'] ?? Timestamp.now().millisecondsSinceEpoch.toString(),
-      shares: List.from(map['shares'] ?? []),
-      tags: List.from(map['tags'] ?? []),
-      labels: List.from(map['labels'] ?? []),
+      userID: map['userID'] as String,
+      dashID: map['dashID'] as String,
+      likes: List<dynamic>.from(map['likes'] as List<dynamic>),
+      contentUrl: map['contentUrl'] as String,
+      description: map['description'] as String,
+      commentCount: map['commentCount'] as int,
+      views: map['views'] as int,
+      createdAt: map['createdAt'] as String,
+      shares: List<dynamic>.from(map['shares'] as List<dynamic>),
+      tags: List<dynamic>.from(map['tags'] as List<dynamic>),
+      labels: List<dynamic>.from(map['labels'] as List<dynamic>),
     );
   }
 
@@ -122,4 +124,8 @@ class Dash {
         shares.hashCode ^
         tags.hashCode;
   }
+
+  String toJson() => json.encode(toMap());
+
+  factory Dash.fromJson(String source) => Dash.fromMap(json.decode(source) as Map<String, dynamic>);
 }

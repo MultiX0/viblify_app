@@ -1,8 +1,11 @@
+// ignore_for_file: void_checks
+
 import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fpdart/fpdart.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:viblify_app/core/failure.dart';
 import 'package:viblify_app/core/providers/firebase_providers.dart';
 import 'package:viblify_app/models/dash_model.dart';
@@ -15,6 +18,7 @@ final dashRepositoryProvider = Provider((ref) {
 });
 
 class DashRepository {
+  final supabase = Supabase.instance.client;
   final FirebaseFirestore _firebaseFirestore;
   DashRepository({required FirebaseFirestore firebaseFirestore}) : _firebaseFirestore = firebaseFirestore;
 
@@ -22,7 +26,7 @@ class DashRepository {
 
   FutureVoid addPost(Dash dash) async {
     try {
-      return right(_dash.doc(dash.dashID).set(dash.toMap()));
+      return right(await supabase.from('dashs').insert(dash.toMap()));
     } on FirebaseException catch (e) {
       throw e.message!;
     } catch (e) {
@@ -32,43 +36,43 @@ class DashRepository {
 
   Future<List<Dash>> getAllDashes(String uid) async {
     try {
-      final QuerySnapshot<Map<String, dynamic>> snapshot = await _dash
-          // .where('userID', isNotEqualTo: uid)
-          .get() as QuerySnapshot<Map<String, dynamic>>;
+      final supabase = Supabase.instance.client;
 
-      List<Dash> dashs = snapshot.docs
-          .map(
-            (doc) => Dash.fromMap(
-              doc.data(),
-            ),
-          )
-          .toList();
+      final data = await supabase.from('dashs').select();
 
-      dashs.shuffle();
+      // .neq('userID', uid); // does
 
-      return dashs;
+      final List<Dash> dashes = data.map<Dash>((data) => Dash.fromMap(data)).toList();
+      dashes.shuffle();
+
+      return dashes;
     } catch (error) {
-      log("Error getting feeds: $error");
+      Failure("Error getting dashes: $error");
       rethrow;
     }
   }
 
-  Future<List<Dash>> getDash(String id) async {
+  Future<List<Dash>> getRecommendedDash(String id, List<dynamic> labels, List<dynamic> tags) async {
     try {
-      final QuerySnapshot<Map<String, dynamic>> snapshot =
-          await _dash.where('dashID', isNotEqualTo: id).get() as QuerySnapshot<Map<String, dynamic>>;
+      final result = await supabase.from(FirebaseConstant.dashCollection).select();
+      final filteredData = result.where((dash) {
+        final dashLabels = dash['labels'] as List<dynamic>;
+        return labels.any((label) => dashLabels.contains(label));
+      }).toList();
 
-      List<Dash> dashs = snapshot.docs
+      List<Dash> dashes = filteredData
           .map(
-            (doc) => Dash.fromMap(
-              doc.data(),
-            ),
+            (doc) => Dash.fromMap(doc),
           )
           .toList();
 
-      dashs.shuffle();
+      // filter out dashes where dashID is equal to the provided id
+      dashes = dashes.where((dash) => dash.dashID != id).toList();
 
-      return dashs;
+      // Shuffle the dashes
+      dashes.shuffle();
+
+      return dashes;
     } catch (error) {
       log("Error getting feeds: $error");
       rethrow;
