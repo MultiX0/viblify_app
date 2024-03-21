@@ -1,4 +1,4 @@
-// ignore_for_file: void_checks
+// ignore_for_file: void_checks, unnecessary_null_comparison
 
 import 'dart:developer';
 
@@ -18,8 +18,7 @@ final communityRepositoryProvider = Provider((ref) {
 
 class CommunitRepository {
   final supabase = Supabase.instance.client;
-  final FirebaseFirestore _firebaseFirestore;
-  CommunitRepository({required FirebaseFirestore firebaseFirestore}) : _firebaseFirestore = firebaseFirestore;
+  CommunitRepository({required FirebaseFirestore firebaseFirestore});
 
   FutureVoid createCommunity(Community community) async {
     try {
@@ -39,9 +38,10 @@ class CommunitRepository {
 
   FutureVoid joinCommunity(String communityName, String userID) async {
     try {
-      return right(_communities.doc(communityName).update({
-        'members': FieldValue.arrayUnion([userID])
-      }));
+      final response = await _communities.select().eq('name', communityName).single();
+      final existingMods = response['members'] as List<dynamic>;
+      existingMods.add(userID);
+      return right(await _communities.update({"members": existingMods}).eq("name", communityName));
     } on FirebaseException catch (e) {
       throw e.message!;
     } catch (e) {
@@ -51,9 +51,10 @@ class CommunitRepository {
 
   FutureVoid leaveCommunity(String communityName, String userID) async {
     try {
-      return right(_communities.doc(communityName).update({
-        'members': FieldValue.arrayRemove([userID])
-      }));
+      final response = await _communities.select().eq('name', communityName).single();
+      final existingMods = response['members'] as List<dynamic>;
+      existingMods.remove(userID);
+      return right(await _communities.update({"members": existingMods}).eq("name", communityName));
     } on FirebaseException catch (e) {
       throw e.message!;
     } catch (e) {
@@ -63,9 +64,10 @@ class CommunitRepository {
 
   Stream<List<Community>> getUserCommunities(String uid) {
     try {
-      return supabase
-          .from(FirebaseConstant.communitiesCollection)
-          .stream(primaryKey: ['id']).map((data) => data.map(Community.fromMap).toList());
+      return _communities
+          .stream(primaryKey: ['id'])
+          .map((data) => data.map(Community.fromMap).toList())
+          .map((communities) => communities.where((community) => community.members.contains(uid)).toList());
     } catch (error) {
       log("Error getting user communities: $error");
       rethrow;
@@ -73,20 +75,17 @@ class CommunitRepository {
   }
 
   Stream<Community> getCommunityByName(String name) {
-    return supabase
-        .from(FirebaseConstant.communitiesCollection)
-        .stream(primaryKey: ['id'])
-        .eq("name", name)
-        .limit(1)
-        .map((event) => Community.fromMap(event.first));
+    try {
+      return _communities.stream(primaryKey: ['id']).eq("name", name).map((data) => Community.fromMap(data.first));
+    } catch (error) {
+      log("Error getting community by name: $error");
+      rethrow;
+    }
   }
 
   FutureVoid editCommunity(Community community) async {
     try {
-      return right(
-          supabase.from(FirebaseConstant.communitiesCollection).update(community.toMap()).eq("name", community.name));
-    } on FirebaseException catch (e) {
-      throw e.message!;
+      return right(await _communities.update(community.toMap()).eq("name", community.name));
     } catch (e) {
       return left(Failure(e.toString()));
     }
@@ -94,15 +93,7 @@ class CommunitRepository {
 
   FutureVoid addMods(String communityName, List<String> uids) async {
     try {
-      final response =
-          await supabase.from(FirebaseConstant.communitiesCollection).select().eq('name', communityName).single();
-      final existingMods = response['mods'] as List<dynamic>;
-      for (String uid in uids) {
-        existingMods.add(uid);
-      }
-      return right(await supabase
-          .from(FirebaseConstant.communitiesCollection)
-          .update({"mods": existingMods}).eq("name", communityName));
+      return right(await _communities.update({"mods": uids}).eq("name", communityName));
     } on FirebaseException catch (e) {
       throw e.message!;
     } catch (e) {
@@ -117,12 +108,7 @@ class CommunitRepository {
             String.fromCharCode(
               query.codeUnitAt(query.length - 1) + 1,
             );
-    final db = supabase
-        .from(FirebaseConstant.communitiesCollection)
-        .select()
-        .gte('name', query.isEmpty ? 0 : query)
-        .lt('name', value!)
-        .asStream();
+    final db = _communities.select().gte('name', query.isEmpty ? 0 : query).lt('name', value!).asStream();
     return db.map((event) {
       List<Community> communities = [];
       for (var community in event) {
@@ -134,17 +120,24 @@ class CommunitRepository {
 
   Future<bool> isUsernameTaken(String name) async {
     try {
-      final response =
-          supabase.from(FirebaseConstant.communitiesCollection).stream(primaryKey: ['id']).eq('name', name).limit(1);
-      log("message");
+      final response = await _communities.select().eq('name', name).limit(1).single();
+      if (response == null) {
+        log('No data found');
+        return true;
+      }
 
-      // Return true if the username is taken otherwise false
-      return response.length != 0;
+      if (response != null) {
+        log('No data found 2');
+        return true;
+      }
+
+      log('Data found');
+      return false;
     } catch (error) {
-      log("Error checking username: $error");
+      log('Error checking username: ${error.toString()}');
       rethrow;
     }
   }
 
-  CollectionReference get _communities => _firebaseFirestore.collection(FirebaseConstant.communitiesCollection);
+  SupabaseQueryBuilder get _communities => supabase.from(FirebaseConstant.communitiesCollection);
 }

@@ -1,3 +1,7 @@
+// ignore_for_file: unused_result
+
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -11,8 +15,7 @@ class CreateComunityScreen extends ConsumerStatefulWidget {
   const CreateComunityScreen({super.key});
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() =>
-      _CreateComunityScreenState();
+  ConsumerState<ConsumerStatefulWidget> createState() => _CreateComunityScreenState();
 }
 
 class _CreateComunityScreenState extends ConsumerState<CreateComunityScreen> {
@@ -27,16 +30,15 @@ class _CreateComunityScreenState extends ConsumerState<CreateComunityScreen> {
   Widget build(BuildContext context) {
     final isNameAccepted = ref.watch(communityNameTakenProvider(communityName));
 
-    final bool isUsernameTaken = isNameAccepted.maybeWhen(
+    final bool check = isNameAccepted.maybeWhen(
       data: (boolValue) => boolValue, // Use a default value if null
       orElse: () => false, // Handle other cases (loading, error)
     );
+    final bool isUsernameTaken = !check;
     void createCommunity() {
       if (!length) {
         if (isUsernameTaken) {
-          ref
-              .read(communitControllerProvider.notifier)
-              .createCommunity(communityName, context);
+          ref.read(communitControllerProvider.notifier).createCommunity(communityName, context);
         } else {
           showSnackBar(context, "The Name is Already used");
         }
@@ -74,6 +76,8 @@ class _CreateComunityScreenState extends ConsumerState<CreateComunityScreen> {
                       length = false;
                     });
                   }
+                  ref.refresh(communityNameTakenProvider(communityName));
+                  log("refreshed");
                 },
                 inputFormatters: [
                   FilteringTextInputFormatter.allow(RegExp('[$allowedChars]')),

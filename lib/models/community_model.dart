@@ -51,8 +51,8 @@ class Community {
       name: map['name'] ?? '',
       banner: map['banner'] ?? '',
       avatar: map['avatar'] ?? '',
-      members: List<String>.from(map['members']),
-      mods: List<String>.from(map['mods']),
+      members: List<String>.from(map['members'] ?? []),
+      mods: List<String>.from(map['mods'] ?? []),
     );
   }
 
@@ -76,11 +76,6 @@ class Community {
 
   @override
   int get hashCode {
-    return id.hashCode ^
-        name.hashCode ^
-        banner.hashCode ^
-        avatar.hashCode ^
-        members.hashCode ^
-        mods.hashCode;
+    return id.hashCode ^ name.hashCode ^ banner.hashCode ^ avatar.hashCode ^ members.hashCode ^ mods.hashCode;
   }
 }

@@ -1,4 +1,5 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:viblify_app/core/common/error_text.dart';
@@ -20,11 +21,8 @@ class CommunityScreen extends ConsumerWidget {
     BuildContext context,
     WidgetRef ref,
   ) {
-    void joinCommunity(
-        WidgetRef ref, Community community, BuildContext context) {
-      ref
-          .read(communitControllerProvider.notifier)
-          .joinCommunity(community, context);
+    void joinCommunity(WidgetRef ref, Community community, BuildContext context) {
+      ref.read(communitControllerProvider.notifier).joinCommunity(community, context);
     }
 
     void navigationToSettings(BuildContext context) {
@@ -50,8 +48,8 @@ class CommunityScreen extends ConsumerWidget {
                     flexibleSpace: Stack(
                       children: [
                         Positioned.fill(
-                          child: Image.network(
-                            community.banner,
+                          child: Image(
+                            image: CachedNetworkImageProvider(community.banner),
                             fit: BoxFit.cover,
                           ),
                         ),
@@ -66,7 +64,7 @@ class CommunityScreen extends ConsumerWidget {
                           Align(
                             alignment: Alignment.topLeft,
                             child: CircleAvatar(
-                              backgroundImage: NetworkImage(community.avatar),
+                              backgroundImage: CachedNetworkImageProvider(community.avatar),
                               radius: 35,
                             ),
                           ),
@@ -78,41 +76,29 @@ class CommunityScreen extends ConsumerWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 8.0),
+                                padding: const EdgeInsets.symmetric(vertical: 8.0),
                                 child: Text(
                                   community.name,
-                                  style: const TextStyle(
-                                      fontSize: 19,
-                                      fontWeight: FontWeight.bold),
+                                  style: const TextStyle(fontSize: 19, fontWeight: FontWeight.bold),
                                 ),
                               ),
                               community.mods.contains(user.userID)
                                   ? OutlinedButton(
                                       style: ElevatedButton.styleFrom(
                                           shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(20),
+                                            borderRadius: BorderRadius.circular(20),
                                           ),
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 25)),
-                                      onPressed: () =>
-                                          navigationToSettings(context),
+                                          padding: const EdgeInsets.symmetric(horizontal: 25)),
+                                      onPressed: () => navigationToSettings(context),
                                       child: const Text("settings"))
                                   : OutlinedButton(
                                       style: ElevatedButton.styleFrom(
                                           shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(20),
+                                            borderRadius: BorderRadius.circular(20),
                                           ),
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 25)),
-                                      onPressed: () => joinCommunity(
-                                          ref, community, context),
-                                      child: Text(community.members
-                                              .contains(user.userID)
-                                          ? "leave"
-                                          : "Join")),
+                                          padding: const EdgeInsets.symmetric(horizontal: 25)),
+                                      onPressed: () => joinCommunity(ref, community, context),
+                                      child: Text(community.members.contains(user.userID) ? "leave" : "Join")),
                             ],
                           ),
                           Text("${community.members.length} members"),

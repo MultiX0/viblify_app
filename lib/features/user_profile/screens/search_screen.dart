@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:viblify_app/core/common/error_text.dart';
 import 'package:viblify_app/core/common/loader.dart';
-import 'package:viblify_app/features/user_profile/controller/user_profile_controller.dart';
+import 'package:viblify_app/features/community/controller/community_controller.dart';
 import 'package:viblify_app/theme/pallete.dart';
 import 'package:viblify_app/widgets/empty_widget.dart';
 
@@ -41,8 +41,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                   decoration: InputDecoration(
                     border: InputBorder.none,
                     filled: true,
-                    contentPadding: const EdgeInsets.symmetric(
-                        vertical: 5, horizontal: 20.0),
+                    contentPadding: const EdgeInsets.symmetric(vertical: 5, horizontal: 20.0),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(20),
                     ),
@@ -55,8 +54,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                     ),
                     prefixIconColor: Colors.white,
                     hintText: 'Search Viblify',
-                    hintStyle: const TextStyle(
-                        color: Colors.white, fontFamily: "LobsterTwo"),
+                    hintStyle: const TextStyle(color: Colors.white, fontFamily: "LobsterTwo"),
                   ),
                 ),
               ),
@@ -64,30 +62,26 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
           ),
         ),
         body: query.isNotEmpty
-            ? ref.watch(searchUsersProvider(query)).when(
+            ? ref.watch(searchCommunityProvider(query)).when(
                   data: (users) => ListView.builder(
                     itemCount: users.length,
                     itemBuilder: (BuildContext context, int index) {
                       final user = users[index];
                       return ListTile(
                         leading: CircleAvatar(
-                          backgroundImage:
-                              CachedNetworkImageProvider(user.profilePic),
+                          backgroundImage: CachedNetworkImageProvider(user.avatar),
                         ),
                         title: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(user.name),
                             Text(
-                              "@${user.userName}",
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 10,
-                                  color: Colors.grey.shade400),
+                              "@${user.name}",
+                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 10, color: Colors.grey.shade400),
                             ),
                           ],
                         ),
-                        onTap: () => navigateToUserScreen(context, user.userID),
+                        onTap: () => navigateToUserScreen(context, user.name),
                       );
                     },
                   ),
@@ -99,7 +93,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
             : const MyEmptyShowen(text: "لاتوجد نتائج"));
   }
 
-  void navigateToUserScreen(BuildContext context, String userID) {
-    context.push("/u/$userID");
+  void navigateToUserScreen(BuildContext context, String name) {
+    context.push("/c/$name");
   }
 }

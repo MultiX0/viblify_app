@@ -1,9 +1,11 @@
+import 'dart:developer';
+
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:viblify_app/core/common/loader.dart';
 import 'package:viblify_app/features/community/controller/community_controller.dart';
-import 'package:viblify_app/models/community_model.dart';
 
 import '../../../core/common/error_text.dart';
 
@@ -14,8 +16,8 @@ class CommunityListDrawer extends ConsumerWidget {
     context.push("/c/create");
   }
 
-  void navigationToCommunity(BuildContext context, Community community) {
-    context.push("/c/${community.name}");
+  void navigationToCommunity(BuildContext context, String community) {
+    context.push("/c/$community");
   }
 
   @override
@@ -37,17 +39,20 @@ class CommunityListDrawer extends ConsumerWidget {
                       final community = communities[index];
                       return ListTile(
                         leading: CircleAvatar(
-                          backgroundImage: NetworkImage(community.avatar),
+                          backgroundImage: CachedNetworkImageProvider(community.avatar),
                         ),
                         title: Text(community.name),
-                        onTap: () => navigationToCommunity(context, community),
+                        onTap: () => navigationToCommunity(context, community.name),
                       );
                     },
                   ),
                 ),
-                error: (error, stackTrace) => ErrorText(
-                  error: error.toString(),
-                ),
+                error: (error, stackTrace) {
+                  log(error.toString());
+                  return ErrorText(
+                    error: error.toString(),
+                  );
+                },
                 loading: () => const Loader(),
               ),
         ],
