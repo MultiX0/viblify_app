@@ -31,8 +31,7 @@ final getUserFeedsProvider = StreamProvider.family((ref, String uid) {
   final communityController = ref.watch(postControllerProvider.notifier);
   return communityController.getUserFeeds(uid);
 });
-final getFollowingFeedsProvider =
-    StreamProvider.family((ref, List<dynamic> uid) {
+final getFollowingFeedsProvider = StreamProvider.family((ref, List<dynamic> uid) {
   final communityController = ref.watch(postControllerProvider.notifier);
   return communityController.getFollowingFeeds(uid);
 });
@@ -41,22 +40,17 @@ final getFeedsByTagsProvider = StreamProvider.family((ref, String tag) {
   return communityController.getFeedsByTags(tag);
 });
 
-final postControllerProvider =
-    StateNotifierProvider<PostController, bool>((ref) {
+final postControllerProvider = StateNotifierProvider<PostController, bool>((ref) {
   final _repository = ref.watch(postRepositoryProvider);
   final _storageRepository = ref.watch(firebaseStorageProvider);
-  return PostController(
-      repository: _repository, ref: ref, storageRepository: _storageRepository);
+  return PostController(repository: _repository, ref: ref, storageRepository: _storageRepository);
 });
 
 class PostController extends StateNotifier<bool> {
   PostRepository _repository;
   final Ref _ref;
   final StorageRepository _storageRepository;
-  PostController(
-      {required PostRepository repository,
-      required Ref ref,
-      required StorageRepository storageRepository})
+  PostController({required PostRepository repository, required Ref ref, required StorageRepository storageRepository})
       : _repository = repository,
         _ref = ref,
         _storageRepository = storageRepository,
@@ -135,11 +129,9 @@ class PostController extends StateNotifier<bool> {
     final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
     String generateNewFeedID() {
-      const chars =
-          '0123456789qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM';
+      const chars = '0123456789qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM';
       final random = Random.secure();
-      return List.generate(10, (index) => chars[random.nextInt(chars.length)])
-          .join();
+      return List.generate(10, (index) => chars[random.nextInt(chars.length)]).join();
     }
 
     String newFeedID = "";

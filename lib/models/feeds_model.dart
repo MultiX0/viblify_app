@@ -77,8 +77,7 @@ class Feeds {
       score: score ?? this.score,
       isShowed: isShowed ?? this.isShowed,
       gif: gif ?? this.gif,
-      youtubeVideoID:
-          youtubeVideoID ?? this.youtubeVideoID, // New field: youtubeVideoID
+      youtubeVideoID: youtubeVideoID ?? this.youtubeVideoID, // New field: youtubeVideoID
     );
   }
 
@@ -94,14 +93,13 @@ class Feeds {
       'views': views,
       'commentCount': commentCount,
       'likeCount': likeCount,
-      'createdAt': createdAt,
+      'createdAt': createdAt.millisecondsSinceEpoch.toString(),
       'isCommentsOpen': isCommentsOpen,
       'score': score,
       'isShowed': isShowed,
       'sttID': sttID,
       'gif': gif,
-      'youtubeVideoID':
-          youtubeVideoID, // Include the new field in the map: youtubeVideoID
+      'youtubeVideoID': youtubeVideoID, // Include the new field in the map: youtubeVideoID
     };
   }
 
@@ -118,13 +116,14 @@ class Feeds {
       views: List<dynamic>.from(map['views'] as List),
       commentCount: map['commentCount'] as int,
       likeCount: map['likeCount'] as int,
-      createdAt: map['createdAt'] as Timestamp,
+      createdAt: Timestamp.fromMillisecondsSinceEpoch(
+        int.parse(map['createdAt'] ?? "0"),
+      ),
       isCommentsOpen: map['isCommentsOpen'] as bool,
       score: map['score'] as int,
       isShowed: map['isShowed'] as bool,
       gif: map['gif'] ?? "",
-      youtubeVideoID: map['youtubeVideoID'] ??
-          "", // Include the new field in the factory constructor
+      youtubeVideoID: map['youtubeVideoID'] ?? "", // Include the new field in the factory constructor
     );
   }
 

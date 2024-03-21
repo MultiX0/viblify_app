@@ -72,8 +72,7 @@ class _SearchScreenState extends ConsumerState<TagFeedsScreen> {
                 decoration: InputDecoration(
                   border: InputBorder.none,
                   filled: true,
-                  contentPadding:
-                      const EdgeInsets.symmetric(vertical: 5, horizontal: 20.0),
+                  contentPadding: const EdgeInsets.symmetric(vertical: 5, horizontal: 20.0),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(20),
                   ),
@@ -86,8 +85,7 @@ class _SearchScreenState extends ConsumerState<TagFeedsScreen> {
                   ),
                   prefixIconColor: Colors.white,
                   hintText: 'Search Viblify',
-                  hintStyle: const TextStyle(
-                      color: Colors.white, fontFamily: "LobsterTwo"),
+                  hintStyle: const TextStyle(color: Colors.white, fontFamily: "LobsterTwo"),
                 ),
               ),
             ),
@@ -106,16 +104,13 @@ class _SearchScreenState extends ConsumerState<TagFeedsScreen> {
                 return ref.watch(getUserDataProvider(post.userID)).when(
                     data: (user) {
                       void viewDocument() {
-                        ref
-                            .watch(postControllerProvider.notifier)
-                            .viewDocument(post.feedID, myID);
+                        ref.watch(postControllerProvider.notifier).viewDocument(post.feedID, myID);
                       }
 
                       bool postLiked = post.likes.contains(myID);
 
                       bool isArabic = Bidi.hasAnyRtl(post.content);
-                      final postTime = timeago.format(post.createdAt.toDate(),
-                          locale: 'en_short');
+                      final postTime = timeago.format(post.createdAt.toDate(), locale: 'en_short');
                       return Focus(
                         focusNode: focusNode,
                         child: Listener(
@@ -135,8 +130,7 @@ class _SearchScreenState extends ConsumerState<TagFeedsScreen> {
                                   backgroundColor: Colors.black,
                                   child: CircleAvatar(
                                     radius: 20,
-                                    backgroundImage:
-                                        NetworkImage(user.profilePic),
+                                    backgroundImage: NetworkImage(user.profilePic),
                                     backgroundColor: Colors.white,
                                   ),
                                 ),
@@ -147,14 +141,12 @@ class _SearchScreenState extends ConsumerState<TagFeedsScreen> {
                                   child: Column(
                                     children: [
                                       Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceEvenly,
+                                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                         children: [
                                           Expanded(
                                             flex: 4,
                                             child: Container(
-                                              padding: const EdgeInsets.only(
-                                                  left: 5),
+                                              padding: const EdgeInsets.only(left: 5),
                                               height: 20,
                                               child: Row(
                                                 children: [
@@ -171,20 +163,16 @@ class _SearchScreenState extends ConsumerState<TagFeedsScreen> {
                                                   Text(
                                                     user.name,
                                                     style: const TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.bold,
+                                                      fontWeight: FontWeight.bold,
                                                       fontSize: 14,
                                                     ),
                                                   ),
                                                   Padding(
-                                                    padding:
-                                                        const EdgeInsets.only(
-                                                            left: 5.0),
+                                                    padding: const EdgeInsets.only(left: 5.0),
                                                     child: Text(
                                                       "@${user.userName}",
                                                       style: const TextStyle(
-                                                          fontWeight:
-                                                              FontWeight.bold,
+                                                          fontWeight: FontWeight.bold,
                                                           fontSize: 14,
                                                           color: Colors.grey),
                                                     ),
@@ -192,18 +180,12 @@ class _SearchScreenState extends ConsumerState<TagFeedsScreen> {
                                                   const Text(
                                                     " · ",
                                                     style: TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                        fontSize: 13,
-                                                        color: Colors.grey),
+                                                        fontWeight: FontWeight.bold, fontSize: 13, color: Colors.grey),
                                                   ),
                                                   Text(
                                                     postTime.toString(),
                                                     style: const TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                        fontSize: 13,
-                                                        color: Colors.grey),
+                                                        fontWeight: FontWeight.bold, fontSize: 13, color: Colors.grey),
                                                   ),
                                                   const Spacer(),
                                                   IconButton(
@@ -220,24 +202,15 @@ class _SearchScreenState extends ConsumerState<TagFeedsScreen> {
                                         ],
                                       ),
                                       Padding(
-                                        padding: EdgeInsets.only(
-                                            right: 8.0,
-                                            left: 5.0,
-                                            bottom: 8.0,
-                                            top: isArabic ? 5 : 0),
+                                        padding:
+                                            EdgeInsets.only(right: 8.0, left: 5.0, bottom: 8.0, top: isArabic ? 5 : 0),
                                         child: Align(
-                                          alignment: isArabic
-                                              ? Alignment.centerRight
-                                              : Alignment.centerLeft,
+                                          alignment: isArabic ? Alignment.centerRight : Alignment.centerLeft,
                                           child: Linkable(
                                             text: post.content,
                                             textColor: Colors.white,
-                                            textAlign: isArabic
-                                                ? TextAlign.right
-                                                : TextAlign.left,
-                                            textDirection: isArabic
-                                                ? ui.TextDirection.rtl
-                                                : ui.TextDirection.ltr,
+                                            textAlign: isArabic ? TextAlign.right : TextAlign.left,
+                                            textDirection: isArabic ? ui.TextDirection.rtl : ui.TextDirection.ltr,
                                           ),
                                         ),
                                       ),
@@ -253,8 +226,7 @@ class _SearchScreenState extends ConsumerState<TagFeedsScreen> {
                                                       onTap: () {
                                                         if (query != item) {
                                                           print(item);
-                                                          navigationToTagScreen(
-                                                              item, context);
+                                                          navigationToTagScreen(item, context);
                                                         }
                                                       },
                                                       child: Text(
@@ -262,9 +234,7 @@ class _SearchScreenState extends ConsumerState<TagFeedsScreen> {
                                                         style: const TextStyle(
                                                             color: Colors.blue,
                                                             fontSize: 15,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .w600),
+                                                            fontWeight: FontWeight.w600),
                                                       ),
                                                     ))
                                                 .toList(),
@@ -278,34 +248,24 @@ class _SearchScreenState extends ConsumerState<TagFeedsScreen> {
                                       ],
                                       if (post.photoUrl.isNotEmpty) ...[
                                         Hero(
-                                          tag: post
-                                              .photoUrl, // Ensure this tag is unique and consistent
+                                          tag: post.photoUrl, // Ensure this tag is unique and consistent
                                           child: ClipRRect(
-                                            borderRadius:
-                                                const BorderRadius.all(
+                                            borderRadius: const BorderRadius.all(
                                               Radius.circular(10.0),
                                             ),
-                                            child: ExtendedImage.network(
-                                                post.photoUrl, loadStateChanged:
-                                                    (ExtendedImageState state) {
-                                              switch (state
-                                                  .extendedImageLoadState) {
+                                            child: ExtendedImage.network(post.photoUrl,
+                                                loadStateChanged: (ExtendedImageState state) {
+                                              switch (state.extendedImageLoadState) {
                                                 case LoadState.loading:
                                                   return AspectRatio(
                                                     aspectRatio: 16 / 9,
                                                     child: Shimmer.fromColors(
-                                                      baseColor:
-                                                          Colors.grey.shade900,
-                                                      highlightColor:
-                                                          Colors.grey.shade800,
+                                                      baseColor: Colors.grey.shade900,
+                                                      highlightColor: Colors.grey.shade800,
                                                       child: Container(
-                                                        decoration:
-                                                            BoxDecoration(
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(10),
-                                                          color: Colors
-                                                              .grey.shade900,
+                                                        decoration: BoxDecoration(
+                                                          borderRadius: BorderRadius.circular(10),
+                                                          color: Colors.grey.shade900,
                                                         ),
                                                       ),
                                                     ),
@@ -317,76 +277,50 @@ class _SearchScreenState extends ConsumerState<TagFeedsScreen> {
                                                       "/img/slide/${base64UrlEncode(utf8.encode(post.photoUrl))}",
                                                     ),
                                                     child: ExtendedRawImage(
-                                                      image: state
-                                                          .extendedImageInfo
-                                                          ?.image,
+                                                      image: state.extendedImageInfo?.image,
                                                     ),
                                                   );
 
                                                 default:
                                                   return null;
                                               }
-                                            },
-                                                cache: true,
-                                                borderRadius:
-                                                    BorderRadius.circular(0)),
+                                            }, cache: true, borderRadius: BorderRadius.circular(0)),
                                           ),
                                         ),
                                         Padding(
                                           padding: EdgeInsets.only(
                                               right: 15,
-                                              bottom: post.photoUrl.isEmpty
-                                                  ? 5
-                                                  : 10,
-                                              top: post.photoUrl.isEmpty
-                                                  ? 10
-                                                  : 15),
+                                              bottom: post.photoUrl.isEmpty ? 5 : 10,
+                                              top: post.photoUrl.isEmpty ? 10 : 15),
                                           child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
+                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                             children: [
                                               Row(
                                                 children: [
                                                   LikeButton(
                                                     size: 19,
-                                                    onTap: (isLiked) =>
-                                                        onLikeButtonTapped(
-                                                            isLiked,
-                                                            post.feedID),
-                                                    likeBuilder:
-                                                        (bool isLiked) {
+                                                    onTap: (isLiked) => onLikeButtonTapped(isLiked, post.feedID),
+                                                    likeBuilder: (bool isLiked) {
                                                       return Icon(
-                                                        postLiked
-                                                            ? Icons.favorite
-                                                            : Icons
-                                                                .favorite_border,
-                                                        color: postLiked
-                                                            ? Colors.pinkAccent
-                                                            : Colors
-                                                                .grey.shade800,
+                                                        postLiked ? Icons.favorite : Icons.favorite_border,
+                                                        color: postLiked ? Colors.pinkAccent : Colors.grey.shade800,
                                                         size: 19,
                                                       );
                                                     },
                                                   ),
                                                   const SizedBox(width: 6.0),
                                                   AnimatedSwitcher(
-                                                    duration: const Duration(
-                                                        milliseconds: 300),
-                                                    transitionBuilder:
-                                                        (child, animation) {
+                                                    duration: const Duration(milliseconds: 300),
+                                                    transitionBuilder: (child, animation) {
                                                       return FadeTransition(
                                                         opacity: animation,
                                                         child: child,
                                                       );
                                                     },
                                                     child: Text(
-                                                      post.likes.length
-                                                          .toString(),
-                                                      key: ValueKey<int>(
-                                                          post.likes.length),
-                                                      style: TextStyle(
-                                                          fontSize: 12.0,
-                                                          color: Colors.grey),
+                                                      post.likes.length.toString(),
+                                                      key: ValueKey<int>(post.likes.length),
+                                                      style: TextStyle(fontSize: 12.0, color: Colors.grey),
                                                     ),
                                                   ),
                                                 ],
@@ -399,12 +333,8 @@ class _SearchScreenState extends ConsumerState<TagFeedsScreen> {
                                                     size: 18.0,
                                                   ),
                                                   SizedBox(width: 6.0),
-                                                  Text(
-                                                      post.commentCount
-                                                          .toString(),
-                                                      style: TextStyle(
-                                                          fontSize: 12.0,
-                                                          color: Colors.grey)),
+                                                  Text(post.commentCount.toString(),
+                                                      style: TextStyle(fontSize: 12.0, color: Colors.grey)),
                                                 ],
                                               ),
                                               Row(
@@ -417,27 +347,20 @@ class _SearchScreenState extends ConsumerState<TagFeedsScreen> {
                                                   const SizedBox(width: 6.0),
                                                   const Text(
                                                     '0',
-                                                    style: TextStyle(
-                                                        fontSize: 12.0,
-                                                        color: Colors.grey),
+                                                    style: TextStyle(fontSize: 12.0, color: Colors.grey),
                                                   ),
                                                 ],
                                               ),
                                               Row(
                                                 children: [
                                                   Icon(
-                                                    Icons
-                                                        .stacked_bar_chart_rounded,
+                                                    Icons.stacked_bar_chart_rounded,
                                                     color: Colors.grey.shade800,
                                                     size: 18.0,
                                                   ),
                                                   SizedBox(width: 6.0),
-                                                  Text(
-                                                      post.views.length
-                                                          .toString(),
-                                                      style: TextStyle(
-                                                          fontSize: 12.0,
-                                                          color: Colors.grey)),
+                                                  Text(post.views.length.toString(),
+                                                      style: TextStyle(fontSize: 12.0, color: Colors.grey)),
                                                 ],
                                               ),
                                             ],

@@ -19,9 +19,11 @@ class PostRepository {
 
   FutureVoid addPost(Feeds feeds) async {
     try {
-      return right(_posts.doc(feeds.feedID).set(feeds.toMap()));
-    } on FirebaseException catch (e) {
-      throw e.message!;
+      return right(
+        await supabase.from(FirebaseConstant.postsCollection).insert(
+              feeds.toMap(),
+            ),
+      );
     } catch (e) {
       return left(Failure(e.toString()));
     }
