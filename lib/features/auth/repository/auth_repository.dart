@@ -116,8 +116,9 @@ class AuthRepository {
           ),
           points: 0,
         );
-        await SupabaseUser.newUser(userModel);
+
         await _users.doc(userModel.userID).set(userModel.toMap());
+        await SupabaseUser().newUser(userModel);
       } else {
         userModel = await getUserData(userCredential.user!.uid).first;
       }
