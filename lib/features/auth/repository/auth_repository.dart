@@ -118,7 +118,7 @@ class AuthRepository {
         );
 
         await _users.doc(userModel.userID).set(userModel.toMap());
-        await SupabaseUser().newUser(userModel);
+        SupabaseUser().newUser(userModel.toMap());
       } else {
         userModel = await getUserData(userCredential.user!.uid).first;
       }
