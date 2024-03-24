@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -118,7 +119,10 @@ class _CommentScreenState extends ConsumerState<CommentScreen> {
                                     data: (user) {
                                       bool isArabic = Bidi.hasAnyRtl(feed.content);
                                       bool feedLiked = feed.likes.contains(uid);
-                                      final feedTime = timeago.format(feed.createdAt.toDate(), locale: 'en_short');
+                                      final feedTime = timeago.format(
+                                          Timestamp.fromMillisecondsSinceEpoch(int.parse(feed.createdAt)).toDate(),
+                                          locale: 'en_short');
+
                                       void more() {
                                         showModalBottomSheet(
                                             context: context,

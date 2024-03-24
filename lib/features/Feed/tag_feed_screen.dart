@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 
@@ -110,7 +111,9 @@ class _SearchScreenState extends ConsumerState<TagFeedsScreen> {
                       bool postLiked = post.likes.contains(myID);
 
                       bool isArabic = Bidi.hasAnyRtl(post.content);
-                      final postTime = timeago.format(post.createdAt.toDate(), locale: 'en_short');
+                      final postTime = timeago.format(
+                          Timestamp.fromMillisecondsSinceEpoch(int.parse(post.createdAt)).toDate(),
+                          locale: 'en_short');
                       return Focus(
                         focusNode: focusNode,
                         child: Listener(

@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 
 class Feeds {
@@ -12,7 +11,7 @@ class Feeds {
   final List<dynamic> views;
   final int commentCount;
   final int likeCount;
-  final Timestamp createdAt;
+  final String createdAt; // Change the type of createdAt to String
   final bool isCommentsOpen;
   int score;
   final bool isShowed;
@@ -33,7 +32,7 @@ class Feeds {
     required this.views,
     required this.commentCount,
     required this.likeCount,
-    required this.createdAt,
+    required this.createdAt, // Change the type of createdAt to String
     required this.isCommentsOpen,
     required this.score,
     required this.isShowed,
@@ -53,7 +52,7 @@ class Feeds {
     String? sttID,
     int? commentCount,
     int? likeCount,
-    Timestamp? createdAt,
+    String? createdAt, // Change the type of createdAt to String
     bool? isCommentsOpen,
     int? score,
     bool? isShowed,
@@ -93,7 +92,7 @@ class Feeds {
       'views': views,
       'commentCount': commentCount,
       'likeCount': likeCount,
-      'createdAt': createdAt.millisecondsSinceEpoch.toString(),
+      'createdAt': createdAt, // Change the type of createdAt to String
       'isCommentsOpen': isCommentsOpen,
       'score': score,
       'isShowed': isShowed,
@@ -116,9 +115,7 @@ class Feeds {
       views: List<dynamic>.from(map['views'] as List),
       commentCount: map['commentCount'] as int,
       likeCount: map['likeCount'] as int,
-      createdAt: Timestamp.fromMillisecondsSinceEpoch(
-        int.parse(map['createdAt'] ?? "0"),
-      ),
+      createdAt: map['createdAt'] as String, // Change the type of createdAt to String
       isCommentsOpen: map['isCommentsOpen'] as bool,
       score: map['score'] as int,
       isShowed: map['isShowed'] as bool,

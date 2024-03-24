@@ -85,7 +85,7 @@ class PostController extends StateNotifier<bool> {
       feedID: "",
       sttID: sttID,
       gif: gif,
-      createdAt: Timestamp.now(),
+      createdAt: Timestamp.now().millisecondsSinceEpoch.toString(),
       content: content,
       userID: uid,
       photoUrl: "",

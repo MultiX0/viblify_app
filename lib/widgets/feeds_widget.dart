@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -100,7 +101,9 @@ class FeedsWidget extends ConsumerWidget {
 
                           bool isArabic = Bidi.hasAnyRtl(post.content);
                           bool feedLiked = post.likes.contains(myID);
-                          final postTime = timeago.format(post.createdAt.toDate(), locale: 'en_short');
+                          final postTime = timeago.format(
+                              Timestamp.fromMillisecondsSinceEpoch(int.parse(post.createdAt)).toDate(),
+                              locale: 'en_short');
                           void more() {
                             showModalBottomSheet(
                                 context: context,
