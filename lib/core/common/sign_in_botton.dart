@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:viblify_app/features/auth/controller/auth_controller.dart';
-import 'package:viblify_app/theme/Pallete.dart';
+import 'package:viblify_app/theme/pallete.dart';
 
 import '../Constant/constant.dart';
 

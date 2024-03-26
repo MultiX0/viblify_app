@@ -680,10 +680,11 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen> {
                   child: ElevatedButton(
                     onPressed: () => navigationToEditScreen(context),
                     style: ElevatedButton.styleFrom(
+                      foregroundColor: Colors.white,
+                      backgroundColor:
+                          user.isThemeDark ? Colors.blue : Colors.black,
                       minimumSize:
                           Size(MediaQuery.of(context).size.width * 0.2, 30),
-                      primary: user.isThemeDark ? Colors.blue : Colors.black,
-                      onPrimary: Colors.white,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(
                             15.0), // Adjust the border radius as needed
