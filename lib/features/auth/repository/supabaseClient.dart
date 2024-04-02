@@ -2,6 +2,7 @@
 
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:viblify_app/core/Constant/firebase_constant.dart';
+import 'package:viblify_app/models/user_model.dart';
 
 class SupabaseUser {
   final supabase = Supabase.instance.client;
@@ -11,5 +12,15 @@ class SupabaseUser {
     } catch (e) {
       rethrow;
     }
+  }
+
+  static Stream<UserModel> getUserData(String uid) {
+    final supabase = Supabase.instance.client;
+    return supabase
+        .from(FirebaseConstant.usersCollection)
+        .stream(primaryKey: ['userID'])
+        .eq('userID', uid)
+        .limit(1)
+        .map((data) => UserModel.fromMap(data.first));
   }
 }

@@ -1,3 +1,5 @@
+// ignore_for_file: unused_local_variable
+
 import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -57,12 +59,12 @@ class AuthRepository {
       Future<String> generateUniqueUsername() async {
         String randomUsername;
 
-        Future<bool> isUsernameTaken(String username) {
-          return _users
+        Future<bool> isUsernameTaken(String username) async {
+          var querySnapshot = await _users
               .where('userName', isEqualTo: username)
               .limit(1)
-              .get()
-              .then((QuerySnapshot querySnapshot) => querySnapshot.size > 0);
+              .get();
+          return querySnapshot.docs.isNotEmpty;
         }
 
         bool taken;
@@ -79,7 +81,7 @@ class AuthRepository {
         return randomUsername;
       }
 
-      String randomUsername = await generateUniqueUsername();
+      String randomUsername = generateRandomUsername();
 
       // Proceed with creating the new user
       String notificationsToken =
@@ -91,7 +93,7 @@ class AuthRepository {
         bannerPic: Constant.bannerDefault,
         notificationsToken: notificationsToken,
         userID: userCredential.user!.uid,
-        dividerColor: getTheHex(ColorToHex(Colors.grey.shade900).toString()),
+        dividerColor: "#212121",
         isThemeDark: true,
         isAccountPrivate: false,
         isUserMod: false,
@@ -106,16 +108,14 @@ class AuthRepository {
         stt: false,
         isUserBlocked: false,
         joinedAt: DateTime.now(),
-        userName: randomUsername,
+        userName: generateRandomUsername(),
         following: [],
         followers: [],
         notifications: [],
         postLikes: [],
         usersBlock: [],
         password: encrypt(password, encryptKey),
-        profileTheme: getTheHex(
-          ColorToHex(DenscordColors.scaffoldBackground).toString(),
-        ),
+        profileTheme: "#0d0d0d",
         points: 0,
       );
 
@@ -123,8 +123,18 @@ class AuthRepository {
       SupabaseUser().newUser(userModel.toMap());
 
       return right(userModel);
+    } on FirebaseAuthException catch (e) {
+      return left(
+        Failure(
+          e.toString(),
+        ),
+      );
     } on FirebaseException catch (e) {
-      throw e.message!;
+      return left(
+        Failure(
+          e.toString(),
+        ),
+      );
     } catch (e) {
       return left(
         Failure(
@@ -144,8 +154,12 @@ class AuthRepository {
       );
       userModel = await getUserData(userCredential.user!.uid).first;
       return right(userModel);
-    } on FirebaseException catch (e) {
-      throw e.message!;
+    } on FirebaseAuthException catch (e) {
+      return left(
+        Failure(
+          e.toString(),
+        ),
+      );
     } catch (e) {
       return left(
         Failure(
@@ -193,8 +207,13 @@ class AuthRepository {
     const allowedChars = 'abcdefghijklmnopqrstuvwxyz0123456789_';
 
     Random random = Random();
-    int length =
-        random.nextInt(6) + 5; // Generates a random length between 5 and 10
+    int minLength = 10;
+    int maxLength = 15;
+    int length = minLength +
+        random.nextInt(maxLength -
+            minLength +
+            1); // Generates a random length between 10 and 15
+
     StringBuffer usernameBuffer = StringBuffer();
 
     for (int i = 0; i < length; i++) {

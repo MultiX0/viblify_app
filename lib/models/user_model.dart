@@ -190,10 +190,12 @@ class UserModel {
         isAccountPrivate: map['isAccountPrivate'] == null
             ? false
             : map['isAccountPrivate'] as bool,
-        isUserMod: map['isUserMod'] == null ? false : map['isUserMod'] as bool,
-        stt: map['stt'] == null ? false : map['stt'] as bool,
-        isUserBlocked:
-            map['isUserBlocked'] == null ? false : map['isUserBlocked'] as bool,
+        isUserMod:
+            map['isUserMod'] == null ? false : map['isUserMod'] == 'true',
+        stt: map['stt'] == null ? false : map['stt'] == 'true',
+        isUserBlocked: map['isUserBlocked'] == null
+            ? false
+            : map['isUserBlocked'] == 'true',
         postLikes: List.from(map['post_likes'] ?? []),
         usersBlock: List.from(map['users_block'] ?? []),
         profileTheme: map['profile_theme'] ?? "#0d1013",

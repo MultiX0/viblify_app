@@ -1,14 +1,12 @@
-// ignore_for_file: void_checks
-
 import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fpdart/fpdart.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:viblify_app/core/Constant/firebase_constant.dart';
 import 'package:viblify_app/core/failure.dart';
 import 'package:viblify_app/core/providers/firebase_providers.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:viblify_app/core/type_defs.dart';
 import 'package:viblify_app/models/feeds_model.dart';
 
@@ -17,59 +15,70 @@ final postRepositoryProvider = Provider((ref) {
 });
 
 class PostRepository {
-  final supabase = Supabase.instance.client;
-  PostRepository({required FirebaseFirestore firebaseFirestore});
+  final FirebaseFirestore _firebaseFirestore;
+  PostRepository({required FirebaseFirestore firebaseFirestore})
+      : _firebaseFirestore = firebaseFirestore;
 
   FutureVoid addPost(Feeds feeds) async {
     try {
-      return right(
-        await _posts.insert(
-          feeds.toMap(),
-        ),
-      );
+      return right(_posts.doc(feeds.feedID).set(feeds.toMap()));
+    } on FirebaseException catch (e) {
+      throw e.message!;
     } catch (e) {
       return left(Failure(e.toString()));
     }
   }
 
-  Future<void> likeHandling(String docID, String uid) async {
-    try {
-      // Fetch the post's current likes
-      final response = await _posts.select('likes').eq('feedID', docID).single();
+  void likeHandling(String docID, String uid) async {
+    final likingRef = _posts.doc(docID);
 
-      final List<dynamic>? currentLikes = response['likes'] as List<dynamic>?;
-      List<dynamic> updatedLikes;
+    // Fetch the current data
+    final currentData = await likingRef.get();
+    final isLiked = currentData['likes']?.contains(uid) ?? false;
 
-      if (currentLikes != null && currentLikes.contains(uid)) {
-        // If the user's UID is already in the likes, remove it (unlike)
-        updatedLikes = currentLikes.where((id) => id != uid).toList();
-      } else {
-        // Add the user's UID to the likes (like)
-        updatedLikes = [...currentLikes ?? [], uid];
-      }
-
-      // Update the post with new likes and like count
-      final updateResponse =
-          await _posts.update({'likes': updatedLikes, 'likeCount': updatedLikes.length}).eq('feedID', docID);
-
-      if (updateResponse.error != null) {
-        throw updateResponse.error!;
-      }
-    } catch (error) {
-      log('Error handling like: ${error.toString()}');
+    // Update the likes and likeCount fields
+    if (isLiked) {
+      await likingRef.update({
+        'likes': FieldValue.arrayRemove([uid]),
+        'likeCount': FieldValue.increment(-1),
+      });
+    } else {
+      await likingRef.update({
+        'likes': FieldValue.arrayUnion([uid]),
+        'likeCount': FieldValue.increment(1),
+      });
+      await FirebaseAnalytics.instance.logEvent(
+        name: "select_content",
+        parameters: {
+          "content_type": "post",
+          "item_id": docID,
+        },
+      ).then((value) => log("done"));
     }
+
+    // Fetch the updated data after the like handling
+    final updatedData = await likingRef.get();
+
+    // Calculate the new score using your custom scoring function
+    int newScore =
+        customScoringFunction(updatedData.data() as Map<String, dynamic>);
+
+    // Update the score field in Firestore
+    await likingRef.update({
+      'score': newScore,
+    });
   }
 
   Future<void> viewDocument(String docID, String uid) async {
     try {
-      final doc = await _posts.select().eq("feedID", docID).single();
-      final document = _posts;
+      DocumentSnapshot doc = await _posts.doc(docID).get();
+      final document = _posts.doc(docID);
 
-      if (doc.isNotEmpty) {
+      if (doc.exists) {
         List<String> views = List.from(doc['views'] ?? []);
         if (!views.contains(uid)) {
           views.add(uid);
-          await document.update({'views': views}).eq("feedID", docID);
+          await document.update({'views': views});
         } else {}
       } else {}
     } catch (e) {
@@ -77,27 +86,33 @@ class PostRepository {
     }
   }
 
-  //dont forget to ignore the userID here from the feeds
   Future<List<Feeds>> getAllFeeds(String uid) async {
     try {
-      // Query the posts table from Supabase
-      final response = await _posts.select().neq("userID", uid);
+      final QuerySnapshot<Map<String, dynamic>> snapshot = await _posts
+          .where('userID', isNotEqualTo: uid)
+          .get() as QuerySnapshot<Map<String, dynamic>>;
 
-      // Extract data from the response
-      List<Feeds> feeds = (response).map((data) => Feeds.fromMap(data)).toList();
+      List<Feeds> feeds = snapshot.docs
+          .map(
+            (doc) => Feeds.fromMap(
+              doc.data(),
+            ),
+          )
+          .toList();
 
       // Calculate scores for each feed using the custom scoring function
+      feeds.forEach((feed) {
+        feed.score = customScoringFunction(feed.toMap());
+      });
 
       // Sort feeds based on the custom score in descending order
       feeds.sort((a, b) => b.score.compareTo(a.score));
-      // Shuffle the feeds
       feeds.shuffle();
-
       return feeds;
     } catch (error) {
       // Handle error appropriately
-      log("Error getting feeds: $error");
-      rethrow;
+      print("Error getting feeds: $error");
+      throw error;
     }
   }
 
@@ -116,7 +131,8 @@ class PostRepository {
     // Calculate the score based on the weighted factors
     int score = (likes.length * likesWeight).toInt() +
         (comments * commentsWeight).toInt() +
-        ((DateTime.now().millisecondsSinceEpoch - timestamp.millisecondsSinceEpoch) ~/
+        ((DateTime.now().millisecondsSinceEpoch -
+                    timestamp.millisecondsSinceEpoch) ~/
                 (1000 * 60 * 60 * 24) *
                 recencyWeight)
             .toInt();
@@ -125,54 +141,45 @@ class PostRepository {
   }
 
   Stream<List<Feeds>> getUserFeeds(String uid) {
-    return _posts.stream(primaryKey: ['feedID']).eq("userID", uid).map((event) {
-          List<Feeds> feeds = [];
-          for (var doc in event) {
-            feeds.add(Feeds.fromMap(doc));
-          }
-
-          feeds.sort(
-            (a, b) => Timestamp.fromMillisecondsSinceEpoch(int.parse(b.createdAt)).compareTo(
-              Timestamp.fromMillisecondsSinceEpoch(
-                int.parse(a.createdAt),
-              ),
-            ),
-          );
-          return feeds;
-        });
+    return _posts
+        .where("userID", isEqualTo: uid)
+        .orderBy('createdAt', descending: true)
+        .snapshots()
+        .map((event) {
+      List<Feeds> feeds = [];
+      for (var doc in event.docs) {
+        feeds.add(Feeds.fromMap(doc.data() as Map<String, dynamic>));
+      }
+      return feeds;
+    });
   }
 
   Stream<List<Feeds>> getFollowingFeeds(List<dynamic> uids) {
-    return _posts.stream(primaryKey: ['feedID']).order('createdAt', ascending: false).map((response) {
-          final List<Map<String, dynamic>> data = response;
-          List<Map<String, dynamic>> matchedFeeds = [];
-          for (var item in data) {
-            if (uids.contains(item['userID'])) {
-              matchedFeeds.add(item);
-            }
-          }
-
-          // If there are documents, map them to Feeds objects
-          if (data.isNotEmpty) {
-            return matchedFeeds.map((map) => Feeds.fromMap(map)).toList();
-          } else {
-            // If no documents match the criteria, return an empty list
-            return [];
-          }
-        });
+    return _posts
+        .orderBy('createdAt', descending: true)
+        .where("userID", whereIn: uids)
+        .snapshots()
+        .map((event) {
+      List<Feeds> feeds = [];
+      for (var doc in event.docs) {
+        feeds.add(Feeds.fromMap(doc.data() as Map<String, dynamic>));
+      }
+      return feeds;
+    });
   }
 
   void sharePost(String feedID, String uid) async {
     try {
-      final currentData = await _posts.select().eq("feedID", feedID).single();
+      final postRef = _posts.doc(feedID);
+      final currentData = await postRef.get();
       final isShared = currentData['shares']?.contains(uid) ?? false;
       if (!isShared) {
-        List sharesList = currentData['shares'];
-        sharesList.add(uid);
-        final share = await _posts.update({"shares": sharesList}).eq("feedID", feedID);
+        final share = await _posts.doc(feedID).update({
+          'shares': FieldValue.arrayUnion([uid]),
+        });
         share;
       } else {
-        log('is already shared with this user');
+        print('is already shared with this user');
       }
     } catch (e) {
       rethrow;
@@ -180,41 +187,32 @@ class PostRepository {
   }
 
   Stream<List<Feeds>> getFeedByID(String feedId) {
-    return _posts.stream(primaryKey: ['feedID']).eq('feedID', feedId).limit(1).map((response) {
-          final List<Map<String, dynamic>> data = response;
-
-          if (data.isNotEmpty) {
-            return data.map((map) => Feeds.fromMap(map)).toList();
-          } else {
-            return [];
-          }
-        });
-  }
-
-  Stream<List<Feeds>> getFeedsByTags(String tag) {
-    return _posts.stream(primaryKey: ['feedID']).map((response) {
-      final List<Map<String, dynamic>> data = response;
-      final List<Map<String, dynamic>> tagsFeedList = [];
-
-      for (var feed in data) {
-        if (feed['tags'].contains(tag)) {
-          tagsFeedList.add(feed);
-        }
-      }
-
-      if (data.isNotEmpty) {
-        return tagsFeedList.map((map) => Feeds.fromMap(map)).toList();
+    return _posts.where("feedID", isEqualTo: feedId).snapshots().map((event) {
+      if (event.docs.isNotEmpty) {
+        // If there are documents, directly return the single feed
+        return [Feeds.fromMap(event.docs.first.data() as Map<String, dynamic>)];
       } else {
+        // If no documents match the criteria, return an empty list
         return [];
       }
     });
   }
 
+  Stream<List<Feeds>> getFeedsByTags(String tag) {
+    return _posts.where("tags", arrayContains: tag).snapshots().map((event) {
+      List<Feeds> feeds = [];
+      for (var doc in event.docs) {
+        feeds.add(Feeds.fromMap(doc.data() as Map<String, dynamic>));
+      }
+      return feeds;
+    });
+  }
+
   Future<void> deletePost(String feedID) async {
     try {
-      final deleted = _posts.update({
+      final deleted = _posts.doc(feedID).update({
         'isShowed': false,
-      }).eq("feedID", feedID);
+      });
 
       await deleted;
     } catch (e) {
@@ -222,7 +220,8 @@ class PostRepository {
     }
   }
 
-  SupabaseQueryBuilder get _posts => supabase.from(FirebaseConstant.postsCollection);
+  CollectionReference get _posts =>
+      _firebaseFirestore.collection(FirebaseConstant.postsCollection);
 }
 
 // void main() async {

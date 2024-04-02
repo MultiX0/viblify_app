@@ -1,3 +1,5 @@
+// ignore_for_file: unused_result
+
 import 'dart:io';
 
 import 'package:dotted_border/dotted_border.dart';
@@ -247,7 +249,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                         height: 10,
                       ),
                       TextField(
-                        maxLength: 16,
+                        maxLength: 25,
                         controller: userNameController,
                         inputFormatters: [
                           FilteringTextInputFormatter.allow(
@@ -258,6 +260,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                           setState(() {
                             userName = value;
                           });
+                          ref.refresh(usernameTakenProvider(value));
                         },
                         decoration: InputDecoration(
                           label: const Text("user name"),
