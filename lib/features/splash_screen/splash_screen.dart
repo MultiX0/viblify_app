@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -17,7 +18,11 @@ class _SplashScreenState extends State<SplashScreen> {
 
     Timer(const Duration(seconds: 1), () {
       if (mounted) {
-        context.go("/");
+        if (FirebaseAuth.instance.currentUser != null) {
+          context.go("/");
+        } else {
+          context.go("/login");
+        }
       }
     });
   }

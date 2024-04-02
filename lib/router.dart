@@ -7,7 +7,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:viblify_app/features/Feed/feed_screen.dart';
 import 'package:viblify_app/features/Feed/tag_feed_screen.dart';
-import 'package:viblify_app/features/auth/screens/login_screen.dart';
+import 'package:viblify_app/features/auth/screens/auth_screen.dart';
+import 'package:viblify_app/features/auth/screens/signin_screen.dart';
 import 'package:viblify_app/features/chats/screens/chat_screen.dart';
 import 'package:viblify_app/features/chats/screens/inbox_screen.dart';
 import 'package:viblify_app/features/comments/screens/comment_screen.dart';
@@ -27,6 +28,7 @@ import 'package:viblify_app/features/user_profile/screens/user_profile_screen.da
 import 'package:viblify_app/features/user_profile/screens/video_screen.dart';
 import 'package:viblify_app/widgets/image_slide.dart';
 import 'features/auth/controller/auth_controller.dart';
+import 'features/auth/screens/registeration_screen.dart';
 import 'features/dash/screens/view_dash_screen.dart';
 import 'widgets/profile_pic_widget.dart';
 
@@ -39,7 +41,7 @@ class Navigation {
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 final routerProvider = Provider<GoRouter>((ref) {
-  final authState = ref.watch(authChangeState);
+  //final authState = ref.watch(authChangeState);
 
   return GoRouter(
     observers: [
@@ -117,6 +119,18 @@ final routerProvider = Provider<GoRouter>((ref) {
         },
       ),
       GoRoute(
+        path: "/register",
+        pageBuilder: (context, state) {
+          return NoTransitionPage(child: RegistrationScreen());
+        },
+      ),
+      GoRoute(
+        path: "/sigin",
+        pageBuilder: (context, state) {
+          return NoTransitionPage(child: SignInScreen());
+        },
+      ),
+      GoRoute(
         path: "/u/:uid",
         pageBuilder: (context, state) {
           String uid = state.pathParameters['uid']!;
@@ -141,7 +155,8 @@ final routerProvider = Provider<GoRouter>((ref) {
         pageBuilder: (context, state) {
           String id = state.pathParameters['id']!;
           String title = state.pathParameters['title']!;
-          return NoTransitionPage(child: VideoScreen(id: id, nameOfVideo: title));
+          return NoTransitionPage(
+              child: VideoScreen(id: id, nameOfVideo: title));
         },
       ),
       GoRoute(
@@ -156,7 +171,8 @@ final routerProvider = Provider<GoRouter>((ref) {
         pageBuilder: (context, state) {
           String uid = state.pathParameters['uid']!;
           String name = state.pathParameters['name']!;
-          return NoTransitionPage(child: SayTheTruth(userID: uid, useraName: name));
+          return NoTransitionPage(
+              child: SayTheTruth(userID: uid, useraName: name));
         },
       ),
       GoRoute(
@@ -220,7 +236,8 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/dash/view/:extra',
         builder: (context, state) {
-          final extraData = jsonDecode(Uri.decodeComponent(state.pathParameters['extra']!));
+          final extraData =
+              jsonDecode(Uri.decodeComponent(state.pathParameters['extra']!));
           return DashViewScreen(data: extraData);
         },
       ),
@@ -258,7 +275,8 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: "/edit/profile/:uid",
         pageBuilder: (context, state) {
-          return NoTransitionPage(child: EditProfileScreen(uid: state.pathParameters['uid']!));
+          return NoTransitionPage(
+              child: EditProfileScreen(uid: state.pathParameters['uid']!));
         },
       ),
       GoRoute(
@@ -266,7 +284,8 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, GoRouterState state) {
           final url = state.pathParameters['url']!;
           final link = Uri.decodeComponent(url);
-          return ProfileImageScreen(tag: state.pathParameters['tag']!, url: link);
+          return ProfileImageScreen(
+              tag: state.pathParameters['tag']!, url: link);
         },
       ),
       GoRoute(
@@ -282,22 +301,22 @@ final routerProvider = Provider<GoRouter>((ref) {
         },
       ),
     ],
-    redirect: (context, state) {
-      // If our async state is loading, don't perform redirects, yet
-      if (authState.isLoading || authState.hasError) return null;
+    // redirect: (context, state) {
+    //   // If our async state is loading, don't perform redirects, yet
+    //   if (authState.isLoading || authState.hasError) return null;
 
-      // Here we guarantee that hasData == true, i.e. we have a readable value
+    //   // Here we guarantee that hasData == true, i.e. we have a readable value
 
-      // This has to do with how the FirebaseAuth SDK handles the "log-in" state
-      // Returning `null` means "we are not authorized"
-      final isAuth = authState.valueOrNull != null;
+    //   // This has to do with how the FirebaseAuth SDK handles the "log-in" state
+    //   // Returning `null` means "we are not authorized"
+    //   final isAuth = authState.valueOrNull != null;
 
-      final isLoggingIn = state.matchedLocation == "/login";
-      // final isSplash = state.matchedLocation == "/splash";
-      // if (isSplash) return isAuth ? "/" : "/login";
-      if (isLoggingIn) return isAuth ? "/" : null;
+    //   final isLoggingIn = state.matchedLocation == "/login";
+    //   // final isSplash = state.matchedLocation == "/splash";
+    //   // if (isSplash) return isAuth ? "/" : "/login";
+    //   if (isLoggingIn) return isAuth ? "/" : null;
 
-      return isAuth ? null : "/login";
-    },
+    //   return isAuth ? null : "/login";
+    // },
   );
 });

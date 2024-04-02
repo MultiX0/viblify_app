@@ -71,7 +71,7 @@ Future<void> main() async {
 
   await dotenv.load(fileName: ".env");
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-    systemNavigationBarColor: Pallete.blackColor,
+    systemNavigationBarColor: Color(0xff0d0d0d),
     systemNavigationBarIconBrightness: Brightness.light,
   ));
 

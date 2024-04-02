@@ -145,6 +145,22 @@ flutter:
         - asset: assets/fonts/LobsterTwo-Bold.ttf
         - asset: assets/fonts/LobsterTwo-Italic.ttf
           style: italic
+    - family: FixelDisplay
+      fonts:
+        - asset: assets/fonts/FixelDisplay-ExtraBold.ttf
+          weight: 800
+    - family: FixelText
+      fonts:
+        - asset: assets/fonts/FixelText-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/FixelText-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/FixelText-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/FixelText-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/FixelText-ExtraBold.ttf
+          weight: 800
 
   #   - family: Schyler
   #     fonts:

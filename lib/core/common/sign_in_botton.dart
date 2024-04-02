@@ -1,36 +1,42 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:viblify_app/features/auth/controller/auth_controller.dart';
-import 'package:viblify_app/theme/pallete.dart';
-
-import '../Constant/constant.dart';
+import 'package:go_router/go_router.dart';
 
 class SignInButton extends ConsumerWidget {
-  const SignInButton({super.key});
+  final String text;
+  final bool isLogin;
+  final Color color;
+  const SignInButton(
+      {super.key,
+      required this.text,
+      required this.isLogin,
+      required this.color});
 
-  void signInWithGoogle(BuildContext context, WidgetRef ref) {
-    ref.read(authControllerProvider.notifier).signInWithGoogle(context);
+  void authMethod(BuildContext context, WidgetRef ref) {
+    if (isLogin) {
+      // ref.read(authControllerProvider.notifier).signInWithGoogle(context);
+      context.push("/sigin");
+    } else {
+      context.push("/register");
+    }
   }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
       child: ElevatedButton.icon(
-        onPressed: () => signInWithGoogle(context, ref),
-        icon: Image.asset(
-          Constant.googlePath,
-          width: 25,
-        ),
+        onPressed: () => authMethod(context, ref),
         label: Text(
-          "Continue with Google",
+          text,
           style: TextStyle(
-            fontSize: 16,
-            color: Colors.grey[300]!,
-          ),
+              fontSize: 16,
+              color: Colors.grey[300]!,
+              fontFamily: "FixelText",
+              fontWeight: FontWeight.w600),
         ),
         style: ElevatedButton.styleFrom(
-            backgroundColor: Pallete.greyColor,
+            backgroundColor: color,
             minimumSize: const Size(double.infinity, 40),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),

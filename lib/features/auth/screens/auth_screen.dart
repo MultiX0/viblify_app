@@ -43,20 +43,15 @@ class LoginScreen extends ConsumerWidget {
                   ),
                 ),
                 const SizedBox(height: 10),
-                const SignInButton(),
-                Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 30, vertical: 5),
-                  child: Text(
-                    'By continuing, you agree to Viblify’s Terms of Use(opens in a new tab or window). Read our Privacy Policy',
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.grey.shade600,
-                      letterSpacing: 0.2,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
+                const SignInButton(
+                  text: "Register",
+                  isLogin: false,
+                  color: Color.fromARGB(202, 135, 88, 255),
+                ),
+                const SignInButton(
+                  text: "Login",
+                  isLogin: true,
+                  color: Color(0xff242424),
                 ),
                 const SizedBox(height: 40),
               ],
