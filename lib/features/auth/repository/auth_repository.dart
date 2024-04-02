@@ -4,11 +4,9 @@ import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:hexcolor/hexcolor.dart';
 import 'package:viblify_app/core/Constant/constant.dart';
 import 'package:viblify_app/core/Constant/firebase_constant.dart';
 import 'package:viblify_app/core/failure.dart';
@@ -18,9 +16,6 @@ import 'package:viblify_app/encrypt/encrypt.dart';
 import 'package:viblify_app/features/auth/repository/supabaseClient.dart';
 import 'package:viblify_app/messaging/notifications.dart';
 import 'package:viblify_app/models/user_model.dart';
-import 'package:viblify_app/theme/pallete.dart';
-
-import '../../../utils/colors.dart';
 
 final authRepositoryProvider = Provider(
   (ref) => AuthRepository(
