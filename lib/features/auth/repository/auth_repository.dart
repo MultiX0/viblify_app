@@ -12,6 +12,7 @@ import 'package:viblify_app/core/Constant/firebase_constant.dart';
 import 'package:viblify_app/core/failure.dart';
 import 'package:viblify_app/core/providers/firebase_providers.dart';
 import 'package:viblify_app/core/type_defs.dart';
+import 'package:viblify_app/encrypt/encrypt.dart';
 import 'package:viblify_app/features/auth/repository/supabaseClient.dart';
 import 'package:viblify_app/messaging/notifications.dart';
 import 'package:viblify_app/models/user_model.dart';
@@ -30,104 +31,118 @@ final authRepositoryProvider = Provider(
 class AuthRepository {
   final FirebaseFirestore _firestore;
   final FirebaseAuth _auth;
-  final GoogleSignIn _googleSignIn;
 
   AuthRepository(
       {required FirebaseFirestore firestore,
       required FirebaseAuth auth,
       required GoogleSignIn googleSignIn})
       : _auth = auth,
-        _firestore = firestore,
-        _googleSignIn = googleSignIn;
+        _firestore = firestore;
 
   CollectionReference get _users =>
       _firestore.collection(FirebaseConstant.usersCollection);
 
   Stream<User?> get authStateChanged => _auth.authStateChanges();
 
-  FutureEither<UserModel> signInWithGoogle() async {
+  FutureEither<UserModel> registerWithEmail(
+      String email, String password, String username) async {
     try {
-      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
-
-      final googleAuth = await googleUser?.authentication;
-
-      final credential = GoogleAuthProvider.credential(
-          accessToken: googleAuth?.accessToken, idToken: googleAuth?.idToken);
-
-      UserCredential userCredential =
-          await _auth.signInWithCredential(credential);
-
       UserModel userModel;
-      String randomUsername = generateRandomUsername();
+      UserCredential userCredential =
+          await _auth.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
 
-      if (userCredential.additionalUserInfo!.isNewUser) {
-        Future<String> generateUniqueUsername() async {
-          String randomUsername;
+      Future<String> generateUniqueUsername() async {
+        String randomUsername;
 
-          Future<bool> isUsernameTaken(String username) {
-            return _users
-                .where('userName', isEqualTo: username)
-                .limit(1)
-                .get()
-                .then((QuerySnapshot querySnapshot) => querySnapshot.size > 0);
-          }
-
-          bool taken;
-          do {
-            // Generate a new random username
-            randomUsername = generateRandomUsername();
-
-            // Check if the username is already taken
-            taken = await isUsernameTaken(randomUsername);
-
-            // If taken, generate a new one and repeat the loop
-          } while (taken);
-
-          return randomUsername;
+        Future<bool> isUsernameTaken(String username) {
+          return _users
+              .where('userName', isEqualTo: username)
+              .limit(1)
+              .get()
+              .then((QuerySnapshot querySnapshot) => querySnapshot.size > 0);
         }
 
-        // Proceed with creating the new user
-        String notificationsToken =
-            await ViblifyNotifications().initNotifications();
+        bool taken;
+        do {
+          // Generate a new random username
+          randomUsername = generateRandomUsername();
 
-        userModel = UserModel(
-          name: userCredential.user!.displayName ?? "Unknown",
-          profilePic: userCredential.user!.photoURL ?? Constant.avatarDefault,
-          bannerPic: Constant.bannerDefault,
-          notificationsToken: notificationsToken,
-          userID: userCredential.user!.uid,
-          dividerColor: getTheHex(ColorToHex(Colors.grey.shade900).toString()),
-          isThemeDark: true,
-          isAccountPrivate: false,
-          isUserMod: false,
-          mbti: "",
-          link: '',
-          lastTimeActive: '',
-          isUserOnline: false,
-          email: userCredential.user!.email!,
-          verified: false,
-          bio: "",
-          location: "",
-          stt: false,
-          isUserBlocked: false,
-          joinedAt: DateTime.now(),
-          userName: randomUsername,
-          following: [],
-          followers: [],
-          notifications: [],
-          postLikes: [],
-          usersBlock: [],
-          profileTheme: getTheHex(
-            ColorToHex(Pallete.blackColor).toString(),
-          ),
-          points: 0,
-        );
+          // Check if the username is already taken
+          taken = await isUsernameTaken(randomUsername);
 
-        await _users.doc(userModel.userID).set(userModel.toMap());
-        SupabaseUser().newUser(userModel.toMap());
-      } else {
-        userModel = await getUserData(userCredential.user!.uid).first;
+          // If taken, generate a new one and repeat the loop
+        } while (taken);
+
+        return randomUsername;
       }
+
+      String randomUsername = await generateUniqueUsername();
+
+      // Proceed with creating the new user
+      String notificationsToken =
+          await ViblifyNotifications().initNotifications();
+
+      userModel = UserModel(
+        name: username,
+        profilePic: Constant.avatarDefault,
+        bannerPic: Constant.bannerDefault,
+        notificationsToken: notificationsToken,
+        userID: userCredential.user!.uid,
+        dividerColor: getTheHex(ColorToHex(Colors.grey.shade900).toString()),
+        isThemeDark: true,
+        isAccountPrivate: false,
+        isUserMod: false,
+        mbti: "",
+        link: '',
+        lastTimeActive: '',
+        isUserOnline: false,
+        email: userCredential.user!.email!,
+        verified: false,
+        bio: "",
+        location: "",
+        stt: false,
+        isUserBlocked: false,
+        joinedAt: DateTime.now(),
+        userName: randomUsername,
+        following: [],
+        followers: [],
+        notifications: [],
+        postLikes: [],
+        usersBlock: [],
+        password: encrypt(password, encryptKey),
+        profileTheme: getTheHex(
+          ColorToHex(Pallete.blackColor).toString(),
+        ),
+        points: 0,
+      );
+
+      await _users.doc(userModel.userID).set(userModel.toMap());
+      SupabaseUser().newUser(userModel.toMap());
+
+      return right(userModel);
+    } on FirebaseException catch (e) {
+      throw e.message!;
+    } catch (e) {
+      return left(
+        Failure(
+          e.toString(),
+        ),
+      );
+    }
+  }
+
+  FutureEither<UserModel> signInWithEmail(String email, String password) async {
+    try {
+      UserModel userModel;
+
+      UserCredential userCredential = await _auth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      userModel = await getUserData(userCredential.user!.uid).first;
       return right(userModel);
     } on FirebaseException catch (e) {
       throw e.message!;

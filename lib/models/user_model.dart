@@ -1,6 +1,8 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 
 import 'package:flutter/foundation.dart';
+import 'package:viblify_app/core/Constant/constant.dart';
+import 'package:viblify_app/encrypt/encrypt.dart';
 
 class UserModel {
   final String name;
@@ -22,6 +24,7 @@ class UserModel {
   final bool isAccountPrivate;
   final bool isUserOnline;
   final String lastTimeActive;
+  final String password;
   final String notificationsToken;
 
   final bool isUserMod; // New field: isUserMod
@@ -40,6 +43,7 @@ class UserModel {
     required this.notifications,
     required this.userID,
     required this.email,
+    required this.password,
     required this.notificationsToken,
     required this.lastTimeActive,
     required this.isUserOnline,
@@ -93,6 +97,7 @@ class UserModel {
     bool? isUserMod, // New field: isUserMod
     List? postLikes,
     List? usersBlock,
+    String? password,
   }) {
     return UserModel(
       name: name ?? this.name,
@@ -123,6 +128,7 @@ class UserModel {
       isUserMod: isUserMod ?? this.isUserMod,
       postLikes: postLikes ?? this.postLikes,
       usersBlock: usersBlock ?? this.usersBlock,
+      password: password ?? this.password,
     );
   }
 
@@ -154,6 +160,7 @@ class UserModel {
       'post_likes': postLikes,
       'users_block': usersBlock,
       'profile_theme': profileTheme,
+      'user_password': encrypt(password, encryptKey),
     };
   }
 
@@ -189,6 +196,7 @@ class UserModel {
         usersBlock: List.from(map['users_block'] ?? []),
         profileTheme: map['profile_theme'] ?? "#0d1013",
         isThemeDark: map['is_theme_dark'] ?? true,
+        password: decrypt(map['user_password'] ?? "", encryptKey),
         dividerColor: map['divider_color'] ?? "#FFFF");
   }
 

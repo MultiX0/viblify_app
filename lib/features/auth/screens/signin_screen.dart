@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:viblify_app/core/common/leading_back_button.dart';
+import 'package:viblify_app/features/auth/controller/auth_controller.dart';
 
 import '../../../core/common/big_button_widget.dart';
 import '../../../core/common/input_form_widget.dart';
@@ -17,11 +18,14 @@ class SignInScreen extends ConsumerWidget {
   RegExp get emailRegex => RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
-  void validateAndSave() {
+  void validateAndSave(WidgetRef ref, BuildContext context) {
     final FormState form = formKey.currentState!;
 
     if (form.validate()) {
       // login(emailController.text, passwordController.text);
+      ref
+          .read(authControllerProvider.notifier)
+          .signInWithEmail(context, email.text.trim(), password.text.trim());
     }
   }
 
@@ -164,7 +168,7 @@ class SignInScreen extends ConsumerWidget {
                             BigButtonWidget(
                               text: "Log In",
                               height: size.height / 19,
-                              onPressed: validateAndSave,
+                              onPressed: () => validateAndSave(ref, context),
                               backgroundColor: DenscordColors.buttonPrimary,
                             ),
                           ],

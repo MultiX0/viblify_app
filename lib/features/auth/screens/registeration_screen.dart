@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:viblify_app/features/auth/controller/auth_controller.dart';
 
 import '../../../core/common/big_button_widget.dart';
 import '../../../core/common/input_form_widget.dart';
@@ -19,11 +20,13 @@ class RegistrationScreen extends ConsumerWidget {
 
   RegExp get emailRegex => RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
 
-  void validateAndSave() {
+  void validateAndSave(WidgetRef ref, BuildContext context) {
     final FormState form = formKey.currentState!;
 
     if (form.validate()) {
       // login(emailController.text, passwordController.text);
+      ref.read(authControllerProvider.notifier).registerWithEmail(context,
+          email.text.trim(), password.text.trim(), username.text.trim());
     }
   }
 
@@ -204,7 +207,7 @@ class RegistrationScreen extends ConsumerWidget {
                         BigButtonWidget(
                           text: "Register",
                           height: size.height / 19,
-                          onPressed: validateAndSave,
+                          onPressed: () => validateAndSave(ref, context),
                           backgroundColor: DenscordColors.buttonPrimary,
                         ),
                         Padding(

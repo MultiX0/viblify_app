@@ -49,9 +49,22 @@ class AuthController extends StateNotifier<bool> {
     return _authRepository.getUserIdByName(name);
   }
 
-  void signInWithGoogle(BuildContext context) async {
+  void signInWithEmail(
+      BuildContext context, String email, String password) async {
     state = true;
-    final user = await _authRepository.signInWithGoogle();
+    final user = await _authRepository.signInWithEmail(email, password);
+    state = false;
+    user.fold(
+        (l) => showSnackBar(context, l.message),
+        (userModel) =>
+            _ref.read(userProvider.notifier).update((state) => userModel));
+  }
+
+  void registerWithEmail(BuildContext context, String email, String password,
+      String username) async {
+    state = true;
+    final user =
+        await _authRepository.registerWithEmail(email, password, username);
     state = false;
     user.fold(
         (l) => showSnackBar(context, l.message),
