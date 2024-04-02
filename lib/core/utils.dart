@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:clipboard/clipboard.dart';
@@ -89,7 +90,7 @@ String extractWebsiteName(String url) {
     return host;
   } catch (e) {
     // Handle invalid URL or parsing errors
-    print('Error extracting website name: $e');
+    log('Error extracting website name: $e');
     return '';
   }
 }
@@ -113,7 +114,8 @@ void copyProfileUrl(String uid, BuildContext context) {
 void copyDashUrl(Map<String, dynamic> data, BuildContext context) {
   final encodedExtraData = Uri.encodeComponent(jsonEncode(data));
 
-  FlutterClipboard.copy('https://viblify.com/dash/view/$encodedExtraData').then((value) {
+  FlutterClipboard.copy('https://viblify.com/dash/view/$encodedExtraData')
+      .then((value) {
     Navigator.of(context).pop();
     Fluttertoast.showToast(msg: "تم نسخ الرابط");
   });

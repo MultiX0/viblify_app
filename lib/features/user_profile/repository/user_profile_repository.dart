@@ -6,6 +6,7 @@ import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fpdart/fpdart.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:viblify_app/core/failure.dart';
 import 'package:viblify_app/core/providers/firebase_providers.dart';
 import 'package:viblify_app/core/type_defs.dart';
@@ -21,15 +22,14 @@ final userProfileRepositoryProvider = Provider((ref) {
 });
 
 class UserRepository {
-  final FirebaseFirestore _firebaseFirestore;
-  UserRepository({required FirebaseFirestore firebaseFirestore}) : _firebaseFirestore = firebaseFirestore;
-  CollectionReference get _users => _firebaseFirestore.collection(FirebaseConstant.usersCollection);
+  final supabase = Supabase.instance.client;
+  UserRepository({required FirebaseFirestore firebaseFirestore});
+  SupabaseQueryBuilder get _users =>
+      supabase.from(FirebaseConstant.usersCollection);
 
   FutureVoid editProfile(UserModel user) async {
     try {
-      return right(_users.doc(user.userID).update(user.toMap()));
-    } on FirebaseException catch (e) {
-      throw e.message!;
+      return right(await _users.update(user.toMap()).eq("userID", user.userID));
     } catch (e) {
       return left(Failure(e.toString()));
     }
@@ -37,31 +37,33 @@ class UserRepository {
 
   Future<void> toggleFollow(String userID, followerID) async {
     // Update the current user's following list
-    final followingRef = _users.doc(userID);
-    final isFollowing = await followingRef.get().then((doc) => doc['following']?.contains(followerID) ?? false);
+    // final followingRef = _users.doc(userID);
+    var ref = await _users.select().eq("userID", userID).single();
 
+    final isFollowing = await ref['following']?.contains(followerID) ?? false;
+    List<String> list = ref['following'];
     if (isFollowing) {
-      await followingRef.update({
-        'following': FieldValue.arrayRemove([followerID])
-      });
+      list.remove(followerID);
+      await _users.update({"following": list}).eq("userID", userID);
     } else {
-      await followingRef.update({
-        'following': FieldValue.arrayUnion([followerID])
-      });
+      list.add(followerID);
+      await _users.update({"following": list}).eq("userID", userID);
     }
 
     // Update the other user's followers list
-    final otherUserRef = _users.doc(followerID);
-    final isFollowedByOtherUser = await otherUserRef.get().then((doc) => doc['followers']?.contains(userID) ?? false);
+    // final otherUserRef = _users.doc(followerID);
+    var otherRef = await _users.select().eq("userID", followerID).single();
+    final isFollowedByOtherUser =
+        await otherRef['followers']?.contains(userID) ?? false;
+
+    List<String> otherList = await otherRef['followers'];
 
     if (isFollowedByOtherUser) {
-      await otherUserRef.update({
-        'followers': FieldValue.arrayRemove([userID])
-      });
+      otherList.remove(userID);
+      await _users.update({"followers": otherList}).eq("userID", followerID);
     } else {
-      await otherUserRef.update({
-        'followers': FieldValue.arrayUnion([userID])
-      });
+      otherList.add(userID);
+      await _users.update({"followers": otherList}).eq("userID", followerID);
     }
   }
 
@@ -85,13 +87,17 @@ class UserRepository {
           print("not exist");
           directory.create();
         }
-        const chars = '1234567890qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM';
+        const chars =
+            '1234567890qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM';
         final random = Random();
-        final id = List.generate(20, (index) => chars[random.nextInt(chars.length)]).join();
+        final id =
+            List.generate(20, (index) => chars[random.nextInt(chars.length)])
+                .join();
 
         final file = File('${directory.path}/$id.jpg');
         // Save the image to the gallery
-        await ImageGallerySaver.saveImage(Uint8List.fromList(bytes), name: file.path);
+        await ImageGallerySaver.saveImage(Uint8List.fromList(bytes),
+            name: file.path);
 
         return right(await file.writeAsBytes(bytes));
       } else {
@@ -105,110 +111,115 @@ class UserRepository {
   }
 
   Stream<List<UserModel>> searchUsers(String query) {
-    return _users
-        .where(
-          'userName',
-          isGreaterThanOrEqualTo: query.isEmpty ? 0 : query,
-          isLessThan: query.isEmpty
-              ? null
-              : query.substring(0, query.length - 1) +
-                  String.fromCharCode(
-                    query.codeUnitAt(query.length - 1) + 1,
-                  ),
-        )
-        .snapshots()
-        .map((event) {
+    final value = query.isEmpty
+        ? null
+        : query.substring(0, query.length - 1) +
+            String.fromCharCode(
+              query.codeUnitAt(query.length - 1) + 1,
+            );
+    final db = _users
+        .select()
+        .gte('userName', query.isEmpty ? 0 : query)
+        .lt('userName', value!)
+        .asStream();
+    return db.map((event) {
       List<UserModel> users = [];
-      for (var community in event.docs) {
-        users.add(UserModel.fromMap(community.data() as Map<String, dynamic>));
+      for (var user in event) {
+        users.add(UserModel.fromMap(user));
       }
       return users;
     });
   }
 
   Stream<bool> isFollowingTheUserStream(String userID, String followerID) {
-    final followingRef = _users.doc(userID);
+    // final followingRef = _users.doc(userID);
 
-    return followingRef.snapshots().map((doc) {
-      return doc['followers']?.contains(followerID) ?? false;
-    });
+    return _users
+        .stream(primaryKey: ['userID'])
+        .eq("userID", userID)
+        .map((doc) {
+          if (doc.isNotEmpty) {
+            return doc.first['followers']?.contains(followerID) ?? false;
+          } else {
+            return false;
+          }
+        });
   }
 
   Stream<List<dynamic>> getFollowersStream(String userID) {
-    return _firebaseFirestore
-        .collection(FirebaseConstant.usersCollection)
-        .doc(userID)
-        .snapshots()
-        .map((DocumentSnapshot snapshot) {
-      if (!snapshot.exists) {
-        // Document doesn't exist, return an empty list
-        return [];
-      }
+    return _users
+        .stream(primaryKey: ['userID'])
+        .eq('userID', userID)
+        .map((response) {
+          if (response.isEmpty) {
+            // Error occurred or no data found, return an empty list
+            return [];
+          }
 
-      final List<dynamic>? documentData = snapshot.get('followers');
-      if (documentData == null) {
-        // 'followers' field is missing or null, return an empty list
-        return [];
-      }
+          final List<dynamic>? documentData = response[0]['followers'];
+          if (documentData == null) {
+            // 'followers' field is missing or null, return an empty list
+            return [];
+          }
 
-      return documentData;
-    });
+          return documentData;
+        });
   }
 
   Stream<List<dynamic>> getFollowingStream(String userID) {
-    return _firebaseFirestore
-        .collection(FirebaseConstant.usersCollection)
-        .doc(userID)
-        .snapshots()
-        .map((DocumentSnapshot snapshot) {
-      if (!snapshot.exists) {
-        // Document doesn't exist, return an empty list
-        return [];
-      }
+    return _users
+        .stream(primaryKey: ['userID'])
+        .eq('userID', userID)
+        .map((response) {
+          if (response.isEmpty) {
+            // Error occurred or no data found, return an empty list
+            return [];
+          }
 
-      final List<dynamic>? documentData = snapshot.get('following');
-      if (documentData == null) {
-        // 'followers' field is missing or null, return an empty list
-        return [];
-      }
+          final List<dynamic>? documentData = response[0]['following'];
+          if (documentData == null) {
+            // 'followers' field is missing or null, return an empty list
+            return [];
+          }
 
-      return documentData;
-    });
+          return documentData;
+        });
   }
 
-  Future<bool> isUsernameTaken(String username, String currentUserId) {
-    return _users.where('userName', isEqualTo: username).limit(1).get().then((QuerySnapshot querySnapshot) {
-      if (querySnapshot.size > 0) {
-        // Check if the existing username belongs to the current user
-        final userDoc = querySnapshot.docs.first;
-        final existingUserId = userDoc['userID'] as String;
+  Future<bool> isUsernameTaken(String username, String currentUserId) async {
+    final response = await _users.select().eq('userName', username).single();
 
-        // If the existing username belongs to the current user, return true
-        if (existingUserId == currentUserId) {
-          return true;
-        }
+    if (response.isNotEmpty) {
+      // Handle error here if needed
+      return false;
+    }
 
-        // If the existing username does not belong to the current user, return false
-        return false;
+    final List<dynamic>? data = response as List<dynamic>?;
+
+    if (data != null && data.isNotEmpty) {
+      final existingUserId = data[0]['userID'] as String;
+      if (existingUserId == currentUserId) {
+        return true;
       }
+      return false;
+    }
 
-      // If the username is not taken, return true
-      return true;
-    });
+    return true;
   }
 
-  Future<void> updateProfileTheme(String uid, String color, String dividerColor, bool isThemeDark) async {
-    _users.doc(uid).update({
+  Future<void> updateProfileTheme(
+      String uid, String color, String dividerColor, bool isThemeDark) async {
+    await _users.update({
       'profile_theme': color,
       'divider_color': dividerColor,
       'is_theme_dark': isThemeDark,
-    });
+    }).eq("userID", uid);
   }
 
   Future<void> updateActiveStatus(bool isOnline, String uid) async {
-    await _users.doc(uid).update({
+    await _users.update({
       'isUserOnline': isOnline,
       'lastTimeActive': DateTime.now().millisecondsSinceEpoch.toString(),
-    });
+    }).eq("userID", uid);
   }
 }

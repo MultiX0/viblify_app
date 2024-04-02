@@ -32,12 +32,16 @@ class AuthRepository {
   final FirebaseAuth _auth;
   final GoogleSignIn _googleSignIn;
 
-  AuthRepository({required FirebaseFirestore firestore, required FirebaseAuth auth, required GoogleSignIn googleSignIn})
+  AuthRepository(
+      {required FirebaseFirestore firestore,
+      required FirebaseAuth auth,
+      required GoogleSignIn googleSignIn})
       : _auth = auth,
         _firestore = firestore,
         _googleSignIn = googleSignIn;
 
-  CollectionReference get _users => _firestore.collection(FirebaseConstant.usersCollection);
+  CollectionReference get _users =>
+      _firestore.collection(FirebaseConstant.usersCollection);
 
   Stream<User?> get authStateChanged => _auth.authStateChanges();
 
@@ -47,10 +51,11 @@ class AuthRepository {
 
       final googleAuth = await googleUser?.authentication;
 
-      final credential =
-          GoogleAuthProvider.credential(accessToken: googleAuth?.accessToken, idToken: googleAuth?.idToken);
+      final credential = GoogleAuthProvider.credential(
+          accessToken: googleAuth?.accessToken, idToken: googleAuth?.idToken);
 
-      UserCredential userCredential = await _auth.signInWithCredential(credential);
+      UserCredential userCredential =
+          await _auth.signInWithCredential(credential);
 
       UserModel userModel;
       String randomUsername = generateRandomUsername();
@@ -82,7 +87,8 @@ class AuthRepository {
         }
 
         // Proceed with creating the new user
-        String notificationsToken = await ViblifyNotifications().initNotifications();
+        String notificationsToken =
+            await ViblifyNotifications().initNotifications();
 
         userModel = UserModel(
           name: userCredential.user!.displayName ?? "Unknown",
@@ -135,7 +141,8 @@ class AuthRepository {
   }
 
   Stream<UserModel> getUserData(String uid) {
-    return _users.doc(uid).snapshots().map((event) => UserModel.fromMap(event.data() as Map<String, dynamic>));
+    return _users.doc(uid).snapshots().map(
+        (event) => UserModel.fromMap(event.data() as Map<String, dynamic>));
   }
 
   Future<String> getUserIdByName(String name) async {
@@ -156,7 +163,8 @@ class AuthRepository {
     return _users.where("userName", isEqualTo: name).snapshots().map(
       (QuerySnapshot event) {
         if (event.docs.isNotEmpty) {
-          return UserModel.fromMap(event.docs.first.data() as Map<String, dynamic>);
+          return UserModel.fromMap(
+              event.docs.first.data() as Map<String, dynamic>);
         } else {
           // Handle the case when no user with the specified name is found
           // ignore: null_check_always_fails
@@ -170,7 +178,8 @@ class AuthRepository {
     const allowedChars = 'abcdefghijklmnopqrstuvwxyz0123456789_';
 
     Random random = Random();
-    int length = random.nextInt(6) + 5; // Generates a random length between 5 and 10
+    int length =
+        random.nextInt(6) + 5; // Generates a random length between 5 and 10
     StringBuffer usernameBuffer = StringBuffer();
 
     for (int i = 0; i < length; i++) {

@@ -19,11 +19,10 @@ final dashRepositoryProvider = Provider((ref) {
 
 class DashRepository {
   final supabase = Supabase.instance.client;
-  final FirebaseFirestore _firebaseFirestore;
-  DashRepository({required FirebaseFirestore firebaseFirestore}) : _firebaseFirestore = firebaseFirestore;
+  DashRepository({required FirebaseFirestore firebaseFirestore});
 
-  CollectionReference get _dash => _firebaseFirestore.collection(FirebaseConstant.dashCollection);
-
+  SupabaseQueryBuilder get _dash =>
+      supabase.from(FirebaseConstant.dashCollection);
   FutureVoid addPost(Dash dash) async {
     try {
       return right(await supabase.from('dashs').insert(dash.toMap()));
@@ -36,13 +35,12 @@ class DashRepository {
 
   Future<List<Dash>> getAllDashes(String uid) async {
     try {
-      final supabase = Supabase.instance.client;
-
-      final data = await supabase.from('dashs').select();
+      final data = await _dash.select();
 
       // .neq('userID', uid); // does
 
-      final List<Dash> dashes = data.map<Dash>((data) => Dash.fromMap(data)).toList();
+      final List<Dash> dashes =
+          data.map<Dash>((data) => Dash.fromMap(data)).toList();
       dashes.shuffle();
 
       return dashes;
@@ -52,9 +50,10 @@ class DashRepository {
     }
   }
 
-  Future<List<Dash>> getRecommendedDash(String id, List<dynamic> labels, List<dynamic> tags) async {
+  Future<List<Dash>> getRecommendedDash(
+      String id, List<dynamic> labels, List<dynamic> tags) async {
     try {
-      final result = await supabase.from(FirebaseConstant.dashCollection).select();
+      final result = await _dash.select();
       final filteredData = result.where((dash) {
         final dashLabels = dash['labels'] as List<dynamic>;
         return labels.any((label) => dashLabels.contains(label));

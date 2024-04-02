@@ -94,8 +94,8 @@ class _EditCommunityScreenState extends ConsumerState<EditCommunityScreen> {
                               radius: const Radius.circular(10),
                               dashPattern: const [10, 4],
                               strokeCap: StrokeCap.round,
-                              color: Pallete
-                                  .darkModeAppTheme.textTheme.bodyText2!.color!,
+                              color: Pallete.darkModeAppTheme.textTheme
+                                  .bodyMedium!.color!,
                               child: Container(
                                 width: double.infinity,
                                 height: 150,

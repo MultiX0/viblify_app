@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:html/parser.dart' as htmlParser;
 import 'package:http/http.dart' as http;
 
@@ -69,7 +71,7 @@ class VideoURLValidator {
         }
       }
     } catch (e) {
-      print('Error fetching video title: $e');
+      log('Error fetching video title: $e');
     }
 
     return null;
