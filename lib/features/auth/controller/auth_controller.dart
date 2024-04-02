@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:viblify_app/core/utils.dart';
 import 'package:viblify_app/features/auth/repository/auth_repository.dart';
 import 'package:viblify_app/models/user_model.dart';
@@ -54,10 +55,10 @@ class AuthController extends StateNotifier<bool> {
     state = true;
     final user = await _authRepository.signInWithEmail(email, password);
     state = false;
-    user.fold(
-        (l) => showSnackBar(context, l.message),
-        (userModel) =>
-            _ref.read(userProvider.notifier).update((state) => userModel));
+    user.fold((l) => showSnackBar(context, l.message), (userModel) {
+      _ref.read(userProvider.notifier).update((state) => userModel);
+      context.go('/splash');
+    });
   }
 
   void registerWithEmail(BuildContext context, String email, String password,
@@ -66,9 +67,9 @@ class AuthController extends StateNotifier<bool> {
     final user =
         await _authRepository.registerWithEmail(email, password, username);
     state = false;
-    user.fold(
-        (l) => showSnackBar(context, l.message),
-        (userModel) =>
-            _ref.read(userProvider.notifier).update((state) => userModel));
+    user.fold((l) => showSnackBar(context, l.message), (userModel) {
+      _ref.read(userProvider.notifier).update((state) => userModel);
+      context.go('/splash');
+    });
   }
 }

@@ -114,7 +114,7 @@ class AuthRepository {
         usersBlock: [],
         password: encrypt(password, encryptKey),
         profileTheme: getTheHex(
-          ColorToHex(Pallete.blackColor).toString(),
+          ColorToHex(DenscordColors.scaffoldBackground).toString(),
         ),
         points: 0,
       );

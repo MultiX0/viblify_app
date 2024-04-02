@@ -31,6 +31,8 @@ class SignInScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    bool isLoading = ref.watch(authControllerProvider);
+
     final size = MediaQuery.of(context).size;
 
     return WillPopScope(
@@ -167,6 +169,7 @@ class SignInScreen extends ConsumerWidget {
                             ),
                             BigButtonWidget(
                               text: "Log In",
+                              isLoading: isLoading,
                               height: size.height / 19,
                               onPressed: () => validateAndSave(ref, context),
                               backgroundColor: DenscordColors.buttonPrimary,

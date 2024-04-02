@@ -138,7 +138,7 @@ class UserModel {
       'profilePic': profilePic,
       'bannerPic': bannerPic,
       'userID': userID,
-      'email': email,
+      'user_email': email,
       'userName': userName,
       'location': location,
       'bio': bio,
@@ -160,6 +160,8 @@ class UserModel {
       'post_likes': postLikes,
       'users_block': usersBlock,
       'profile_theme': profileTheme,
+      'divider_color': dividerColor,
+      'is_theme_dark': isThemeDark,
       'user_password': encrypt(password, encryptKey),
     };
   }
@@ -174,7 +176,7 @@ class UserModel {
         isUserOnline: map['isUserOnline'] ?? false,
         lastTimeActive: map['lastTimeActive'] ?? '',
         userID: map['userID'] as String,
-        email: map['email'] as String,
+        email: map['user_email'] as String,
         userName: map['userName'] as String,
         location: map['location'] as String,
         bio: map['bio'] as String,

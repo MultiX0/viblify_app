@@ -14,9 +14,8 @@ TextEditingController email = TextEditingController();
 TextEditingController password = TextEditingController();
 
 class RegistrationScreen extends ConsumerWidget {
-  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
-
   RegistrationScreen({super.key});
+  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
   RegExp get emailRegex => RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
 
@@ -32,6 +31,8 @@ class RegistrationScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    bool isLoading = ref.watch(authControllerProvider);
+
     final size = MediaQuery.of(context).size;
     return WillPopScope(
       onWillPop: () async {
@@ -93,105 +94,38 @@ class RegistrationScreen extends ConsumerWidget {
                   children: [
                     Form(
                         // autovalidateMode: AutovalidateMode.onUserInteraction,
-                        // key: controller.formKey,
+                        key: formKey,
                         child: Column(
-                      children: [
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            "PICK A USERNAME",
-                            style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                                color: DenscordColors.textSecondary),
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        InputFormWidget(
-                          text: "What should everyone call you?",
-                          controller: username,
-                          isPassword: false,
-                          validator: (value) {
-                            if (value!.isEmpty) {
-                              return 'Username can\'t be empty!';
-                            }
-                            return null;
-                          },
-                          inputFormatters: [
-                            FilteringTextInputFormatter.deny(RegExp(r"\s"))
-                          ],
-                        ),
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            "You can always change this later!",
-                            style: TextStyle(
-                              color: DenscordColors.textSecondary,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 15,
-                        ),
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            "ACCOUNT INFORMATION",
-                            style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                                color: DenscordColors.textSecondary),
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        Column(
                           children: [
-                            InputFormWidget(
-                              text: "Email",
-                              controller: email,
-                              isPassword: false,
-                              validator: (value) {
-                                if (value!.isEmpty) {
-                                  return 'Email can\'t be empty!';
-                                } else if (!emailRegex.hasMatch(value)) {
-                                  return 'Email are invalid!';
-                                }
-                                return null;
-                              },
-                              inputFormatters: [
-                                FilteringTextInputFormatter.deny(RegExp(r"\s"))
-                              ],
+                            Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                "PICK A USERNAME",
+                                style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                    color: DenscordColors.textSecondary),
+                              ),
                             ),
                             const SizedBox(
                               height: 10,
                             ),
                             InputFormWidget(
-                              text: "Password",
-                              controller: password,
-                              isPassword: true,
-                              maxLenght: 72,
+                              text: "What should everyone call you?",
+                              controller: username,
+                              isPassword: false,
                               validator: (value) {
                                 if (value!.isEmpty) {
-                                  return 'Password can\'t be empty!';
-                                } else if (value.length < 6) {
-                                  return 'Password must be at least 6 characters long!';
+                                  return 'Username can\'t be empty!';
                                 }
                                 return null;
                               },
-                              inputFormatters: [
-                                FilteringTextInputFormatter.deny(RegExp(r"\s"))
-                              ],
+                              inputFormatters: const [],
                             ),
                             Align(
                               alignment: Alignment.centerLeft,
                               child: Text(
-                                "Password must be 6-72 characters",
+                                "You can always change this later!",
                                 style: TextStyle(
                                   color: DenscordColors.textSecondary,
                                   fontSize: 14,
@@ -199,33 +133,101 @@ class RegistrationScreen extends ConsumerWidget {
                                 ),
                               ),
                             ),
-                          ],
-                        ),
-                        const SizedBox(
-                          height: 25,
-                        ),
-                        BigButtonWidget(
-                          text: "Register",
-                          height: size.height / 19,
-                          onPressed: () => validateAndSave(ref, context),
-                          backgroundColor: DenscordColors.buttonPrimary,
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 30, vertical: 10),
-                          child: Text(
-                            'By continuing, you agree to Viblify’s Terms of Use and Read our Privacy Policy',
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.grey.shade600,
-                              letterSpacing: 0.2,
+                            const SizedBox(
+                              height: 15,
                             ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                      ],
-                    ))
+                            Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                "ACCOUNT INFORMATION",
+                                style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                    color: DenscordColors.textSecondary),
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            Column(
+                              children: [
+                                InputFormWidget(
+                                  text: "Email",
+                                  controller: email,
+                                  isPassword: false,
+                                  validator: (value) {
+                                    if (value!.isEmpty) {
+                                      return 'Email can\'t be empty!';
+                                    } else if (!emailRegex.hasMatch(value)) {
+                                      return 'Email are invalid!';
+                                    }
+                                    return null;
+                                  },
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter.deny(
+                                        RegExp(r"\s"))
+                                  ],
+                                ),
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                                InputFormWidget(
+                                  text: "Password",
+                                  controller: password,
+                                  isPassword: true,
+                                  maxLenght: 72,
+                                  validator: (value) {
+                                    if (value!.isEmpty) {
+                                      return 'Password can\'t be empty!';
+                                    } else if (value.length < 6) {
+                                      return 'Password must be at least 6 characters long!';
+                                    }
+                                    return null;
+                                  },
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter.deny(
+                                        RegExp(r"\s"))
+                                  ],
+                                ),
+                                Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Text(
+                                    "Password must be 6-72 characters",
+                                    style: TextStyle(
+                                      color: DenscordColors.textSecondary,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(
+                              height: 25,
+                            ),
+                            BigButtonWidget(
+                              text: "Register",
+                              isLoading: isLoading,
+                              height: size.height / 19,
+                              onPressed: () => validateAndSave(ref, context),
+                              backgroundColor: DenscordColors.buttonPrimary,
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 30, vertical: 10),
+                              child: Text(
+                                'By continuing, you agree to Viblify’s Terms of Use and Read our Privacy Policy',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.grey.shade600,
+                                  letterSpacing: 0.2,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                          ],
+                        ))
                   ],
                 )
               ],

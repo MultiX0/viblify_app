@@ -5,7 +5,6 @@ import 'package:go_router/go_router.dart';
 import 'package:viblify_app/core/common/error_text.dart';
 import 'package:viblify_app/core/common/loader.dart';
 import 'package:viblify_app/features/community/controller/community_controller.dart';
-import 'package:viblify_app/theme/pallete.dart';
 import 'package:viblify_app/widgets/empty_widget.dart';
 
 class SearchScreen extends ConsumerStatefulWidget {
@@ -22,7 +21,6 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          backgroundColor: Pallete.blackColor,
           elevation: 0,
           title: Row(
             children: [
@@ -41,7 +39,8 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                   decoration: InputDecoration(
                     border: InputBorder.none,
                     filled: true,
-                    contentPadding: const EdgeInsets.symmetric(vertical: 5, horizontal: 20.0),
+                    contentPadding: const EdgeInsets.symmetric(
+                        vertical: 5, horizontal: 20.0),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(20),
                     ),
@@ -54,7 +53,8 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                     ),
                     prefixIconColor: Colors.white,
                     hintText: 'Search Viblify',
-                    hintStyle: const TextStyle(color: Colors.white, fontFamily: "LobsterTwo"),
+                    hintStyle: const TextStyle(
+                        color: Colors.white, fontFamily: "LobsterTwo"),
                   ),
                 ),
               ),
@@ -69,7 +69,8 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                       final user = users[index];
                       return ListTile(
                         leading: CircleAvatar(
-                          backgroundImage: CachedNetworkImageProvider(user.avatar),
+                          backgroundImage:
+                              CachedNetworkImageProvider(user.avatar),
                         ),
                         title: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -77,7 +78,10 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                             Text(user.name),
                             Text(
                               "@${user.name}",
-                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 10, color: Colors.grey.shade400),
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 10,
+                                  color: Colors.grey.shade400),
                             ),
                           ],
                         ),

@@ -43,7 +43,11 @@ class _FeedScreenState extends ConsumerState<FeedScreen> {
         },
         child: ref.read(getAllFeedsProvider(uid)).when(
               data: (posts) => posts.isNotEmpty
-                  ? FeedsWidget(isUserProfile: false, posts: posts, isThemeDark: true, dividerColor: "")
+                  ? FeedsWidget(
+                      isUserProfile: false,
+                      posts: posts,
+                      isThemeDark: true,
+                      dividerColor: "")
                   : const Center(
                       child: MyEmptyShowen(text: "ليست هنالك أي مناشير بعد"),
                     ),

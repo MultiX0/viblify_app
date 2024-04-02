@@ -15,12 +15,12 @@ class Pallete {
     scaffoldBackgroundColor: DenscordColors.scaffoldBackground,
     cardColor: greyColor,
     iconTheme: IconThemeData(color: Colors.blueGrey[300]),
-    appBarTheme: const AppBarTheme(
+    appBarTheme: AppBarTheme(
       scrolledUnderElevation: 0,
       elevation: 0,
-      titleTextStyle: TextStyle(fontFamily: "LobsterTwo", fontSize: 24),
-      backgroundColor: blackColor,
-      iconTheme: IconThemeData(
+      titleTextStyle: const TextStyle(fontFamily: "LobsterTwo", fontSize: 24),
+      backgroundColor: DenscordColors.scaffoldBackground,
+      iconTheme: const IconThemeData(
         color: whiteColor,
       ),
     ),

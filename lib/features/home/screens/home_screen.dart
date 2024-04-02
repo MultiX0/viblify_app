@@ -160,7 +160,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
           top: BorderSide(color: Colors.grey.shade900),
         ),
         activeColor: Colors.white,
-        backgroundColor: Pallete.blackColor,
+        backgroundColor: DenscordColors.scaffoldBackground,
         items: [
           const BottomNavigationBarItem(
               icon: Icon(

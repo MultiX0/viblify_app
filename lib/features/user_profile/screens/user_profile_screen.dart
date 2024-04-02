@@ -88,7 +88,7 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen> {
           data: (user) => Scaffold(
             backgroundColor: (user.verified && user.profileTheme.isNotEmpty)
                 ? HexColor(user.profileTheme)
-                : Pallete.blackColor,
+                : DenscordColors.scaffoldBackground,
             body: SafeArea(
               child: NestedScrollView(
                 headerSliverBuilder: ((context, innerBoxIsScrolled) {
@@ -708,7 +708,10 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen> {
 
   void pickColor(UserModel user, WidgetRef ref, String uid) {
     List<Map<String, Color>> colorMapList = [
-      {'dark': Pallete.blackColor, "divider": Colors.grey.shade900},
+      {
+        'dark': DenscordColors.scaffoldBackground,
+        "divider": Colors.grey.shade900
+      },
       {'dark': const Color(0xff222831), "divider": Colors.grey.shade800},
       {'dark': const Color(0xff191919), "divider": Colors.grey.shade700},
       {'dark': const Color(0xff0F0F0F), "divider": Colors.grey.shade800},
