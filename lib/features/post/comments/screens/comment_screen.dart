@@ -23,10 +23,10 @@ import 'package:timeago/timeago.dart' as timeago;
 import 'package:viblify_app/features/user_profile/screens/user_profile_screen.dart';
 import 'package:viblify_app/theme/pallete.dart';
 
-import '../../../core/methods/youtube_video_validator.dart';
-import '../../../widgets/feeds_widget.dart';
-import '../../stt/controller/stt_controller.dart';
-import '../../user_profile/screens/video_screen.dart';
+import '../../../../core/methods/youtube_video_validator.dart';
+import '../../../../widgets/feeds_widget.dart';
+import '../../../stt/controller/stt_controller.dart';
+import '../../../user_profile/screens/video_screen.dart';
 import '../widgets/comments_card.dart';
 
 class CommentScreen extends ConsumerStatefulWidget {
@@ -93,7 +93,7 @@ class _CommentScreenState extends ConsumerState<CommentScreen> {
               data: (feeds) {
                 final feed = feeds.first;
                 return NestedScrollView(
-                  physics: NeverScrollableScrollPhysics(),
+                  physics: const NeverScrollableScrollPhysics(),
                   headerSliverBuilder: ((context, innerBoxIsScrolled) {
                     return [
                       SliverAppBar(
@@ -105,9 +105,9 @@ class _CommentScreenState extends ConsumerState<CommentScreen> {
                           title: const Text("Comments"),
                           scrolledUnderElevation: 0,
                           elevation: 0,
-                          backgroundColor: Pallete.blackColor,
+                          backgroundColor: DenscordColors.scaffoldBackground,
                         ),
-                        backgroundColor: Pallete.blackColor,
+                        backgroundColor: DenscordColors.scaffoldBackground,
                         elevation: 0,
                       ),
                       SliverPadding(
@@ -120,7 +120,9 @@ class _CommentScreenState extends ConsumerState<CommentScreen> {
                                       bool isArabic = Bidi.hasAnyRtl(feed.content);
                                       bool feedLiked = feed.likes.contains(uid);
                                       final feedTime = timeago.format(
-                                          Timestamp.fromMillisecondsSinceEpoch(int.parse(feed.createdAt)).toDate(),
+                                          Timestamp.fromMillisecondsSinceEpoch(
+                                                  int.parse(feed.createdAt))
+                                              .toDate(),
                                           locale: 'en_short');
 
                                       void more() {
@@ -188,7 +190,8 @@ class _CommentScreenState extends ConsumerState<CommentScreen> {
                                               child: Column(
                                                 children: [
                                                   Row(
-                                                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment.spaceEvenly,
                                                     children: [
                                                       Expanded(
                                                         flex: 4,
@@ -209,7 +212,8 @@ class _CommentScreenState extends ConsumerState<CommentScreen> {
                                                               ],
                                                               GestureDetector(
                                                                 onTap: () => user.userID != uid
-                                                                    ? navigationToUserScreen(user.userID, context)
+                                                                    ? navigationToUserScreen(
+                                                                        user.userID, context)
                                                                     : null,
                                                                 child: Text(
                                                                   user.name,
@@ -220,10 +224,12 @@ class _CommentScreenState extends ConsumerState<CommentScreen> {
                                                                 ),
                                                               ),
                                                               Padding(
-                                                                padding: const EdgeInsets.only(left: 5.0),
+                                                                padding: const EdgeInsets.only(
+                                                                    left: 5.0),
                                                                 child: GestureDetector(
                                                                   onTap: () => user.userID != uid
-                                                                      ? navigationToUserScreen(user.userID, context)
+                                                                      ? navigationToUserScreen(
+                                                                          user.userID, context)
                                                                       : null,
                                                                   child: Text(
                                                                     "@${user.userName}",
@@ -264,16 +270,23 @@ class _CommentScreenState extends ConsumerState<CommentScreen> {
                                                   ),
                                                   Padding(
                                                     padding: EdgeInsets.only(
-                                                        right: 8.0, left: 5.0, bottom: 8.0, top: isArabic ? 5 : 0),
+                                                        right: 8.0,
+                                                        left: 5.0,
+                                                        bottom: 8.0,
+                                                        top: isArabic ? 5 : 0),
                                                     child: Align(
-                                                      alignment:
-                                                          isArabic ? Alignment.centerRight : Alignment.centerLeft,
+                                                      alignment: isArabic
+                                                          ? Alignment.centerRight
+                                                          : Alignment.centerLeft,
                                                       child: Linkable(
                                                         textColor: Colors.white,
                                                         text: feed.content,
-                                                        textAlign: isArabic ? TextAlign.right : TextAlign.left,
-                                                        textDirection:
-                                                            isArabic ? ui.TextDirection.rtl : ui.TextDirection.ltr,
+                                                        textAlign: isArabic
+                                                            ? TextAlign.right
+                                                            : TextAlign.left,
+                                                        textDirection: isArabic
+                                                            ? ui.TextDirection.rtl
+                                                            : ui.TextDirection.ltr,
                                                       ),
                                                     ),
                                                   ),
@@ -287,7 +300,8 @@ class _CommentScreenState extends ConsumerState<CommentScreen> {
                                                         children: feed.tags
                                                             .map(
                                                               (item) => GestureDetector(
-                                                                onTap: () => navigationToTagScreen(item, context),
+                                                                onTap: () => navigationToTagScreen(
+                                                                    item, context),
                                                                 child: Text(
                                                                   "#$item",
                                                                   style: const TextStyle(
@@ -337,28 +351,39 @@ class _CommentScreenState extends ConsumerState<CommentScreen> {
                                                             ),
                                                           ),
                                                           Container(
-                                                            width: MediaQuery.of(context).size.width,
+                                                            width:
+                                                                MediaQuery.of(context).size.width,
                                                             padding: const EdgeInsets.only(
-                                                                left: 16, right: 16, bottom: 16, top: 8),
+                                                                left: 16,
+                                                                right: 16,
+                                                                bottom: 16,
+                                                                top: 8),
                                                             child: Column(
                                                               children: [
                                                                 ref
                                                                     .watch(
                                                                       getSttByIdProvider(
-                                                                        Tuple2(feed.sttID, feed.userID),
+                                                                        Tuple2(feed.sttID,
+                                                                            feed.userID),
                                                                       ),
                                                                     )
                                                                     .when(
                                                                       data: (stt) => Text(
                                                                         stt.first.message,
-                                                                        textDirection: Bidi.hasAnyRtl(stt.first.message)
+                                                                        textDirection: Bidi
+                                                                                .hasAnyRtl(stt
+                                                                                    .first.message)
                                                                             ? ui.TextDirection.rtl
                                                                             : ui.TextDirection.ltr,
-                                                                        style: const TextStyle(color: Colors.white),
+                                                                        style: const TextStyle(
+                                                                            color: Colors.white),
                                                                       ),
                                                                       error: (error, trace) =>
-                                                                          ErrorText(error: error.toString()),
-                                                                      loading: () => const SttLoadingWidget(),
+                                                                          ErrorText(
+                                                                              error:
+                                                                                  error.toString()),
+                                                                      loading: () =>
+                                                                          const SttLoadingWidget(),
                                                                     ),
                                                               ],
                                                             ),
@@ -376,8 +401,8 @@ class _CommentScreenState extends ConsumerState<CommentScreen> {
                                                     GestureDetector(
                                                       onDoubleTap: () => likeHunlidng(feed.feedID),
                                                       child: Padding(
-                                                        padding:
-                                                            const EdgeInsets.only(top: 5, bottom: 5, right: 5, left: 3),
+                                                        padding: const EdgeInsets.only(
+                                                            top: 5, bottom: 5, right: 5, left: 3),
                                                         child: ClipRRect(
                                                           borderRadius: const BorderRadius.all(
                                                             Radius.circular(15.0),
@@ -385,18 +410,25 @@ class _CommentScreenState extends ConsumerState<CommentScreen> {
                                                           child: ExtendedImage.network(
                                                             feed.gif,
                                                             fit: BoxFit.cover,
-                                                            loadStateChanged: (ExtendedImageState state) {
-                                                              switch (state.extendedImageLoadState) {
+                                                            loadStateChanged:
+                                                                (ExtendedImageState state) {
+                                                              switch (
+                                                                  state.extendedImageLoadState) {
                                                                 case LoadState.loading:
                                                                   return AspectRatio(
                                                                     aspectRatio: 16 / 9,
                                                                     child: Shimmer.fromColors(
-                                                                      baseColor: Colors.grey.shade900,
-                                                                      highlightColor: Colors.grey.shade800,
+                                                                      baseColor:
+                                                                          Colors.grey.shade900,
+                                                                      highlightColor:
+                                                                          Colors.grey.shade800,
                                                                       child: Container(
                                                                         decoration: BoxDecoration(
-                                                                          borderRadius: BorderRadius.circular(10),
-                                                                          color: Colors.grey.shade900,
+                                                                          borderRadius:
+                                                                              BorderRadius.circular(
+                                                                                  10),
+                                                                          color:
+                                                                              Colors.grey.shade900,
                                                                         ),
                                                                       ),
                                                                     ),
@@ -406,7 +438,8 @@ class _CommentScreenState extends ConsumerState<CommentScreen> {
                                                                   return ExtendedRawImage(
                                                                     width: double.infinity,
                                                                     fit: BoxFit.cover,
-                                                                    image: state.extendedImageInfo?.image,
+                                                                    image: state
+                                                                        .extendedImageInfo?.image,
                                                                   );
 
                                                                 default:
@@ -428,21 +461,24 @@ class _CommentScreenState extends ConsumerState<CommentScreen> {
                                                           borderRadius: BorderRadius.circular(15),
                                                           image: DecorationImage(
                                                               image: NetworkImage(
-                                                                VideoURLValidator.getYouTubeThumbnail(
-                                                                    feed.youtubeVideoID),
+                                                                VideoURLValidator
+                                                                    .getYouTubeThumbnail(
+                                                                        feed.youtubeVideoID),
                                                               ),
                                                               fit: BoxFit.cover),
                                                         ),
                                                         child: Align(
                                                           alignment: Alignment.center,
                                                           child: GestureDetector(
-                                                            onTap: () =>
-                                                                navigationToVideScreen(feed.youtubeVideoID, context),
+                                                            onTap: () => navigationToVideScreen(
+                                                                feed.youtubeVideoID, context),
                                                             child: Container(
                                                               padding: const EdgeInsets.all(1),
                                                               decoration: BoxDecoration(
                                                                 shape: BoxShape.circle,
-                                                                border: Border.all(color: Colors.white, width: 2.5),
+                                                                border: Border.all(
+                                                                    color: Colors.white,
+                                                                    width: 2.5),
                                                               ),
                                                               child: const Icon(
                                                                 Icons.play_circle,
@@ -460,27 +496,36 @@ class _CommentScreenState extends ConsumerState<CommentScreen> {
                                                   ],
                                                   if (feed.photoUrl.isNotEmpty) ...[
                                                     Hero(
-                                                      tag: feed.photoUrl, // Ensure this tag is unique and consistent
+                                                      tag: feed
+                                                          .photoUrl, // Ensure this tag is unique and consistent
                                                       child: ClipRRect(
                                                         borderRadius: const BorderRadius.all(
                                                           Radius.circular(10.0),
                                                         ),
                                                         child: GestureDetector(
-                                                          onDoubleTap: () => likeHunlidng(feed.feedID),
+                                                          onDoubleTap: () =>
+                                                              likeHunlidng(feed.feedID),
                                                           child: ExtendedImage.network(
                                                             feed.photoUrl,
-                                                            loadStateChanged: (ExtendedImageState state) {
-                                                              switch (state.extendedImageLoadState) {
+                                                            loadStateChanged:
+                                                                (ExtendedImageState state) {
+                                                              switch (
+                                                                  state.extendedImageLoadState) {
                                                                 case LoadState.loading:
                                                                   return AspectRatio(
                                                                     aspectRatio: 16 / 9,
                                                                     child: Shimmer.fromColors(
-                                                                      baseColor: Colors.grey.shade900,
-                                                                      highlightColor: Colors.grey.shade800,
+                                                                      baseColor:
+                                                                          Colors.grey.shade900,
+                                                                      highlightColor:
+                                                                          Colors.grey.shade800,
                                                                       child: Container(
                                                                         decoration: BoxDecoration(
-                                                                          borderRadius: BorderRadius.circular(10),
-                                                                          color: Colors.grey.shade900,
+                                                                          borderRadius:
+                                                                              BorderRadius.circular(
+                                                                                  10),
+                                                                          color:
+                                                                              Colors.grey.shade900,
                                                                         ),
                                                                       ),
                                                                     ),
@@ -492,7 +537,8 @@ class _CommentScreenState extends ConsumerState<CommentScreen> {
                                                                       "/img/slide/${base64UrlEncode(utf8.encode(feed.photoUrl))}",
                                                                     ),
                                                                     child: ExtendedRawImage(
-                                                                      image: state.extendedImageInfo?.image,
+                                                                      image: state
+                                                                          .extendedImageInfo?.image,
                                                                     ),
                                                                   );
 
@@ -515,43 +561,55 @@ class _CommentScreenState extends ConsumerState<CommentScreen> {
                                                           return Padding(
                                                             padding: EdgeInsets.only(
                                                                 right: 15,
-                                                                bottom: feed.photoUrl.isEmpty ? 5 : 10,
-                                                                top: feed.photoUrl.isEmpty ? 10 : 15),
+                                                                bottom:
+                                                                    feed.photoUrl.isEmpty ? 5 : 10,
+                                                                top: feed.photoUrl.isEmpty
+                                                                    ? 10
+                                                                    : 15),
                                                             child: Row(
-                                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                              mainAxisAlignment:
+                                                                  MainAxisAlignment.spaceBetween,
                                                               children: [
                                                                 Row(
                                                                   children: [
                                                                     LikeButton(
                                                                       size: 19,
                                                                       onTap: (isLiked) =>
-                                                                          onLikeButtonTapped(isLiked, feed.feedID),
+                                                                          onLikeButtonTapped(
+                                                                              isLiked, feed.feedID),
                                                                       likeBuilder: (bool isLiked) {
                                                                         return Icon(
                                                                           feedLiked
                                                                               ? Icons.favorite
-                                                                              : Icons.favorite_border,
+                                                                              : Icons
+                                                                                  .favorite_border,
                                                                           color: feedLiked
                                                                               ? Colors.pinkAccent
-                                                                              : Colors.grey.shade800,
+                                                                              : Colors
+                                                                                  .grey.shade800,
                                                                           size: 19,
                                                                         );
                                                                       },
                                                                     ),
                                                                     const SizedBox(width: 6.0),
                                                                     AnimatedSwitcher(
-                                                                      duration: const Duration(milliseconds: 300),
-                                                                      transitionBuilder: (child, animation) {
+                                                                      duration: const Duration(
+                                                                          milliseconds: 300),
+                                                                      transitionBuilder:
+                                                                          (child, animation) {
                                                                         return FadeTransition(
                                                                           opacity: animation,
                                                                           child: child,
                                                                         );
                                                                       },
                                                                       child: Text(
-                                                                        feed.likes.length.toString(),
-                                                                        key: ValueKey<int>(feed.likes.length),
+                                                                        feed.likes.length
+                                                                            .toString(),
+                                                                        key: ValueKey<int>(
+                                                                            feed.likes.length),
                                                                         style: const TextStyle(
-                                                                            fontSize: 12.0, color: Colors.grey),
+                                                                            fontSize: 12.0,
+                                                                            color: Colors.grey),
                                                                       ),
                                                                     ),
                                                                   ],
@@ -562,14 +620,16 @@ class _CommentScreenState extends ConsumerState<CommentScreen> {
                                                                       Icons.chat_bubble_outline,
                                                                       color: feed.isCommentsOpen
                                                                           ? Colors.grey.shade700
-                                                                          : Colors.grey.shade800.withOpacity(0.6),
+                                                                          : Colors.grey.shade800
+                                                                              .withOpacity(0.6),
                                                                       size: 18.0,
                                                                     ),
                                                                     const SizedBox(width: 6.0),
                                                                     Text(
                                                                       feed.commentCount.toString(),
                                                                       style: const TextStyle(
-                                                                          fontSize: 12.0, color: Colors.grey),
+                                                                          fontSize: 12.0,
+                                                                          color: Colors.grey),
                                                                     ),
                                                                   ],
                                                                 ),
@@ -587,9 +647,11 @@ class _CommentScreenState extends ConsumerState<CommentScreen> {
                                                                       ),
                                                                       const SizedBox(width: 6.0),
                                                                       Text(
-                                                                        feed.shares.length.toString(),
+                                                                        feed.shares.length
+                                                                            .toString(),
                                                                         style: const TextStyle(
-                                                                            fontSize: 12.0, color: Colors.grey),
+                                                                            fontSize: 12.0,
+                                                                            color: Colors.grey),
                                                                       ),
                                                                     ],
                                                                   ),
@@ -597,7 +659,8 @@ class _CommentScreenState extends ConsumerState<CommentScreen> {
                                                                 Row(
                                                                   children: [
                                                                     Icon(
-                                                                      Icons.stacked_bar_chart_rounded,
+                                                                      Icons
+                                                                          .stacked_bar_chart_rounded,
                                                                       color: Colors.grey.shade700,
                                                                       size: 18.0,
                                                                     ),
@@ -605,7 +668,8 @@ class _CommentScreenState extends ConsumerState<CommentScreen> {
                                                                     Text(
                                                                       feed.views.length.toString(),
                                                                       style: const TextStyle(
-                                                                          fontSize: 12.0, color: Colors.grey),
+                                                                          fontSize: 12.0,
+                                                                          color: Colors.grey),
                                                                     ),
                                                                   ],
                                                                 ),
@@ -619,17 +683,20 @@ class _CommentScreenState extends ConsumerState<CommentScreen> {
                                                         loading: () => Padding(
                                                           padding: EdgeInsets.only(
                                                               right: 15,
-                                                              bottom: feed.photoUrl.isEmpty ? 5 : 10,
+                                                              bottom:
+                                                                  feed.photoUrl.isEmpty ? 5 : 10,
                                                               top: feed.photoUrl.isEmpty ? 10 : 15),
                                                           child: Row(
-                                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                            mainAxisAlignment:
+                                                                MainAxisAlignment.spaceBetween,
                                                             children: [
                                                               Row(
                                                                 children: [
                                                                   LikeButton(
                                                                     size: 19,
                                                                     onTap: (isLiked) =>
-                                                                        onLikeButtonTapped(isLiked, feed.feedID),
+                                                                        onLikeButtonTapped(
+                                                                            isLiked, feed.feedID),
                                                                     likeBuilder: (bool isLiked) {
                                                                       return Icon(
                                                                         feedLiked
@@ -644,8 +711,10 @@ class _CommentScreenState extends ConsumerState<CommentScreen> {
                                                                   ),
                                                                   const SizedBox(width: 6.0),
                                                                   AnimatedSwitcher(
-                                                                    duration: const Duration(milliseconds: 300),
-                                                                    transitionBuilder: (child, animation) {
+                                                                    duration: const Duration(
+                                                                        milliseconds: 300),
+                                                                    transitionBuilder:
+                                                                        (child, animation) {
                                                                       return FadeTransition(
                                                                         opacity: animation,
                                                                         child: child,
@@ -653,9 +722,11 @@ class _CommentScreenState extends ConsumerState<CommentScreen> {
                                                                     },
                                                                     child: Text(
                                                                       feed.likes.length.toString(),
-                                                                      key: ValueKey<int>(feed.likes.length),
+                                                                      key: ValueKey<int>(
+                                                                          feed.likes.length),
                                                                       style: const TextStyle(
-                                                                          fontSize: 12.0, color: Colors.grey),
+                                                                          fontSize: 12.0,
+                                                                          color: Colors.grey),
                                                                     ),
                                                                   ),
                                                                 ],
@@ -666,13 +737,15 @@ class _CommentScreenState extends ConsumerState<CommentScreen> {
                                                                     Icons.chat_bubble_outline,
                                                                     color: feed.isCommentsOpen
                                                                         ? Colors.grey.shade700
-                                                                        : Colors.grey.shade800.withOpacity(0.6),
+                                                                        : Colors.grey.shade800
+                                                                            .withOpacity(0.6),
                                                                     size: 18.0,
                                                                   ),
                                                                   const SizedBox(width: 6.0),
                                                                   Text(feed.commentCount.toString(),
                                                                       style: const TextStyle(
-                                                                          fontSize: 12.0, color: Colors.grey)),
+                                                                          fontSize: 12.0,
+                                                                          color: Colors.grey)),
                                                                 ],
                                                               ),
                                                               Row(
@@ -686,7 +759,8 @@ class _CommentScreenState extends ConsumerState<CommentScreen> {
                                                                   Text(
                                                                     feed.shares.length.toString(),
                                                                     style: const TextStyle(
-                                                                        fontSize: 12.0, color: Colors.grey),
+                                                                        fontSize: 12.0,
+                                                                        color: Colors.grey),
                                                                   ),
                                                                 ],
                                                               ),
@@ -700,7 +774,8 @@ class _CommentScreenState extends ConsumerState<CommentScreen> {
                                                                   const SizedBox(width: 6.0),
                                                                   Text(feed.views.length.toString(),
                                                                       style: const TextStyle(
-                                                                          fontSize: 12.0, color: Colors.grey)),
+                                                                          fontSize: 12.0,
+                                                                          color: Colors.grey)),
                                                                 ],
                                                               ),
                                                             ],

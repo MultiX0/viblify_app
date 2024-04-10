@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:developer';
 import 'dart:io';
 
@@ -74,13 +76,14 @@ class _AddNewDashState extends ConsumerState<AddNewDash> {
     } else {
       setState(() {
         tags.add(newTag);
-        hashTags.clear();
       });
+      hashTags.clear();
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    bool isLoading = ref.watch(dashControllerProvider);
     final data = widget.path['path'] ?? "";
 
     Future<List<dynamic>> getLabels() async {
@@ -91,14 +94,14 @@ class _AddNewDashState extends ConsumerState<AddNewDash> {
 
     void addDash() async {
       if (_formKey.currentState?.validate() ?? false) {
+        var newList = await getLabels() + tags;
         ref.watch(dashControllerProvider.notifier).addDash(
               file: File(data),
               title: titleController.text.trim(),
               description: descriptionController.text.trim(),
               context: context,
-              tags: tags,
               isCommentsOpen: true,
-              labels: await getLabels(),
+              labels: newList,
             );
         titleController.clear();
         descriptionController.clear();
@@ -119,7 +122,15 @@ class _AddNewDashState extends ConsumerState<AddNewDash> {
       ),
       floatingActionButton: FloatingActionButton.small(
         onPressed: addDash,
-        child: const Icon(Icons.done),
+        child: isLoading
+            ? const SizedBox(
+                width: 15,
+                height: 15,
+                child: CircularProgressIndicator(
+                  color: Colors.white,
+                ),
+              )
+            : const Icon(Icons.done),
       ),
       body: Form(
         key: _formKey,

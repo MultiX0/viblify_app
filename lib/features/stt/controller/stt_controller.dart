@@ -19,11 +19,8 @@ final getAllSttsProvider = StreamProvider.family((ref, String uid) {
 
   return sttController.getAllStts(uid);
 });
-final getSttByIdProvider =
-    StreamProvider.family<List<STT>, Tuple2<String, dynamic>>((ref, tuple) {
-  return ref
-      .watch(sttControllerProvider.notifier)
-      .getSttByID(tuple.item1, tuple.item2);
+final getSttByIdProvider = StreamProvider.family<List<STT>, Tuple2<String, dynamic>>((ref, tuple) {
+  return ref.watch(sttControllerProvider.notifier).getSttByID(tuple.item1, tuple.item2);
 });
 
 final sttControllerProvider = StateNotifierProvider<SttController, bool>((ref) {
@@ -45,9 +42,7 @@ class SttController extends StateNotifier<bool> {
         super(false);
 
   void addStt(
-      {required String message,
-      required String userID,
-      required BuildContext context}) async {
+      {required String message, required String userID, required BuildContext context}) async {
     state = true;
     final uid = _ref.read(userProvider)?.userID ?? "";
 
@@ -64,10 +59,15 @@ class SttController extends StateNotifier<bool> {
     }
     final result = await _repository.addStt(stt, userID);
     NotificationsModel notificationsModel = NotificationsModel(
+      to_userID: userID,
+      userID: uid,
+      feedID: '',
+      notification_type: '',
       notification: "لقد وصلت رسالة جديدة من مجهول",
+      sttID: stt.sttID,
       createdAt: Timestamp.now(),
     );
-    _repository.addNotification(userID, notificationsModel);
+    _repository.addNotification(notificationsModel);
 
     state = false;
     result.fold((l) => showSnackBar(context, l.message), (r) async {
@@ -82,8 +82,7 @@ class SttController extends StateNotifier<bool> {
     String generateNewSttID() {
       const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
       final random = Random.secure();
-      return List.generate(28, (index) => chars[random.nextInt(chars.length)])
-          .join();
+      return List.generate(28, (index) => chars[random.nextInt(chars.length)]).join();
     }
 
     String newFeedID = "";

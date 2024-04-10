@@ -3,10 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:viblify_app/core/failure.dart';
 
-import '../../../core/Constant/firebase_constant.dart';
-import '../../../core/providers/firebase_providers.dart';
-import '../../../core/type_defs.dart';
-import '../../../models/comments.dart';
+import '../../../../core/Constant/firebase_constant.dart';
+import '../../../../core/providers/firebase_providers.dart';
+import '../../../../core/type_defs.dart';
+import '../../../../models/comments.dart';
 
 final commentsRepositoryProvider = Provider((ref) {
   return CommentsRepository(firebaseFirestore: ref.watch(firestoreProvider));
@@ -75,9 +75,7 @@ class CommentsRepository {
         .map((event) {
       if (event.docs.isNotEmpty) {
         // If there are documents, directly return the single feed
-        return [
-          Comments.fromMap(event.docs.first.data() as Map<String, dynamic>)
-        ];
+        return [Comments.fromMap(event.docs.first.data() as Map<String, dynamic>)];
       } else {
         // If no documents match the criteria, return an empty list
         return [];
@@ -90,10 +88,8 @@ class CommentsRepository {
     String commentID,
     String uid,
   ) async {
-    final likingRef = _comments
-        .doc(feedID)
-        .collection(FirebaseConstant.commentsCollection)
-        .doc(commentID);
+    final likingRef =
+        _comments.doc(feedID).collection(FirebaseConstant.commentsCollection).doc(commentID);
 
     // Fetch the current data
     final currentData = await likingRef.get();
@@ -114,8 +110,7 @@ class CommentsRepository {
     final updatedData = await likingRef.get();
 
     // Calculate the new score using your custom scoring function
-    int newScore =
-        customScoringFunction(updatedData.data() as Map<String, dynamic>);
+    int newScore = customScoringFunction(updatedData.data() as Map<String, dynamic>);
 
     // Update the score field in Firestore
     await likingRef.update({
@@ -137,8 +132,7 @@ class CommentsRepository {
     // Calculate the score based on the weighted factors
     int score = (likes.length * likesWeight).toInt() +
         (comments * commentsWeight).toInt() +
-        ((DateTime.now().millisecondsSinceEpoch -
-                    timestamp.millisecondsSinceEpoch) ~/
+        ((DateTime.now().millisecondsSinceEpoch - timestamp.millisecondsSinceEpoch) ~/
                 (1000 * 60 * 60 * 24) *
                 recencyWeight)
             .toInt();

@@ -22,10 +22,16 @@ final getAllDashesProvider = FutureProvider((ref) {
   return dashController.getAllDashes(myID);
 });
 
-final getRecommendedDashProvider = FutureProvider.family((ref, Tuple3 tuple3) {
+final getRecommendedDashProvider = FutureProvider.family((ref, Tuple2 tuple2) {
   final dashController = ref.watch(dashControllerProvider.notifier);
 
-  return dashController.getRecommendedDash(tuple3.item1, tuple3.item2, tuple3.item3);
+  return dashController.getRecommendedDash(tuple2.item1, tuple2.item2);
+});
+
+final getDashByIDProvider = StreamProvider.family((ref, String dashID) {
+  final dashController = ref.watch(dashControllerProvider.notifier);
+
+  return dashController.getDashByID(dashID);
 });
 
 final dashControllerProvider = StateNotifierProvider<DashController, bool>((ref) {
@@ -38,7 +44,10 @@ class DashController extends StateNotifier<bool> {
   DashRepository _repository;
   final Ref _ref;
   final StorageRepository _storageRepository;
-  DashController({required DashRepository repository, required Ref ref, required StorageRepository storageRepository})
+  DashController(
+      {required DashRepository repository,
+      required Ref ref,
+      required StorageRepository storageRepository})
       : _repository = repository,
         _ref = ref,
         _storageRepository = storageRepository,
@@ -49,7 +58,6 @@ class DashController extends StateNotifier<bool> {
     required String description,
     required String title,
     required BuildContext context,
-    required List<dynamic> tags,
     required bool isCommentsOpen,
     required List<dynamic> labels,
   }) async {
@@ -60,9 +68,8 @@ class DashController extends StateNotifier<bool> {
       userID: uid,
       dashID: "",
       likes: [],
-      views: 0,
+      views: [],
       shares: [],
-      tags: tags,
       contentUrl: "",
       description: description,
       commentCount: 0,
@@ -71,7 +78,7 @@ class DashController extends StateNotifier<bool> {
     );
 
     if (dash.dashID.isEmpty) {
-      dash = dash.copyWith(dashID: await generateUniqueFeedID());
+      dash = dash.copyWith(dashID: await generateUniqueDashID());
     }
 
     if (file != null) {
@@ -95,11 +102,11 @@ class DashController extends StateNotifier<bool> {
     });
   }
 
-  Future<String> generateUniqueFeedID() async {
-    String generateNewFeedID() {
+  Future<String> generateUniqueDashID() async {
+    String generateNewDashID() {
       const chars = '0123456789qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM';
       final random = Random.secure();
-      return List.generate(10, (index) => chars[random.nextInt(chars.length)]).join();
+      return List.generate(20, (index) => chars[random.nextInt(chars.length)]).join();
     }
 
     String newDashID = "";
@@ -107,10 +114,13 @@ class DashController extends StateNotifier<bool> {
     final supabase = Supabase.instance.client;
 
     while (!isUnique) {
-      newDashID = generateNewFeedID();
+      newDashID = generateNewDashID();
 
-      final querySnapshot =
-          await supabase.from(FirebaseConstant.dashCollection).select().eq("dashID", newDashID).limit(1);
+      final querySnapshot = await supabase
+          .from(FirebaseConstant.dashCollection)
+          .select()
+          .eq("dashID", newDashID)
+          .limit(1);
 
       isUnique = querySnapshot.isEmpty;
     }
@@ -122,17 +132,29 @@ class DashController extends StateNotifier<bool> {
     return _repository.getAllDashes(uid);
   }
 
-  Future<List<Dash>> getRecommendedDash(String id, List<dynamic> labels, List<dynamic> tags) async {
-    return _repository.getRecommendedDash(id, labels, tags);
+  Future<List<Dash>> getRecommendedDash(String id, List<dynamic> labels) async {
+    return _repository.getRecommendedDash(id, labels);
+  }
+
+  Future<void> addUserToViews(String dashID, String userID) async {
+    _repository.addUserToViews(dashID, userID);
+  }
+
+  Future<void> likeHundling(String dashID, String userID) async {
+    _repository.likeHundling(dashID, userID);
+  }
+
+  Stream<Dash> getDashByID(String dashID) {
+    return _repository.getDashByID(dashID);
   }
 }
 
-Future<void> addToSupabase(Dash dash) async {
-  final supabase = Supabase.instance.client;
+// Future<void> addToSupabase(Dash dash) async {
+//   final supabase = Supabase.instance.client;
 
-  try {
-    await supabase.from('dashs').insert(dash.toMap());
-  } catch (e) {
-    rethrow;
-  }
-}
+//   try {
+//     await supabase.from('dashs').insert(dash.toMap());
+//   } catch (e) {
+//     rethrow;
+//   }
+// }

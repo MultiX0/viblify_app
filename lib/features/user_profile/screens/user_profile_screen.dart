@@ -8,14 +8,15 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:panara_dialogs/panara_dialogs.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:viblify_app/core/common/loader.dart';
+import 'package:viblify_app/core/failure.dart';
 import 'package:viblify_app/core/utils.dart';
 import 'package:viblify_app/features/auth/controller/auth_controller.dart';
 import 'package:viblify_app/features/chats/controller/chats_controller.dart';
@@ -31,8 +32,7 @@ class UserProfileScreen extends ConsumerStatefulWidget {
   const UserProfileScreen({super.key, required this.uid});
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() =>
-      _UserProfileScreenState();
+  ConsumerState<ConsumerStatefulWidget> createState() => _UserProfileScreenState();
 }
 
 class _UserProfileScreenState extends ConsumerState<UserProfileScreen> {
@@ -73,9 +73,7 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen> {
 
     final visitorsID = ref.watch(userProvider)!.userID;
     void toggleFollow() {
-      ref
-          .watch(userProfileControllerProvider.notifier)
-          .toggleFollow(visitorsID, widget.uid);
+      ref.watch(userProfileControllerProvider.notifier).toggleFollow(visitorsID, widget.uid);
     }
 
     final isUserFollowed = ref.watch(isUserFollowingProvider(widget.uid));
@@ -100,26 +98,13 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen> {
                   }
 
                   void chats() {
-                    ref
-                        .read(chatsControllerProvider.notifier)
-                        .getChatRoom(myData, user, context);
+                    ref.read(chatsControllerProvider.notifier).getChatRoom(myData, user, context);
                   }
 
                   return [
-                    ProfileHeader(
-                        visitorsID,
-                        user,
-                        context,
-                        more,
-                        createRoute,
-                        isFollowingUser,
-                        chats,
-                        isLoading,
-                        toggleFollow,
-                        myData,
-                        navigationToEditScreen),
-                    ProfileBody(user, date, myID, websiteName, navigationToSTT,
-                        context),
+                    ProfileHeader(visitorsID, user, context, more, createRoute, isFollowingUser,
+                        chats, isLoading, toggleFollow, myData, navigationToEditScreen),
+                    ProfileBody(user, date, myID, websiteName, navigationToSTT, context),
                   ];
                 }),
                 body: UserFeedsScreen(
@@ -142,13 +127,8 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen> {
         );
   }
 
-  SliverPadding ProfileBody(
-      UserModel user,
-      String date,
-      String myID,
-      String websiteName,
-      void Function(BuildContext context) navigationToSTT,
-      BuildContext context) {
+  SliverPadding ProfileBody(UserModel user, String date, String myID, String websiteName,
+      void Function(BuildContext context) navigationToSTT, BuildContext context) {
     return SliverPadding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       sliver: SliverList(
@@ -173,17 +153,14 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen> {
                               style: TextStyle(
                                   fontSize: 19,
                                   fontWeight: FontWeight.bold,
-                                  color: user.isThemeDark
-                                      ? Colors.white
-                                      : Colors.black),
+                                  color: user.isThemeDark ? Colors.white : Colors.black),
                             ),
                             const SizedBox(
                               width: 5,
                             ),
                             Icon(
                               Icons.verified,
-                              color:
-                                  user.isThemeDark ? Colors.blue : Colors.black,
+                              color: user.isThemeDark ? Colors.blue : Colors.black,
                               size: 14,
                             ),
                           ],
@@ -194,18 +171,14 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen> {
                           style: TextStyle(
                               fontSize: 19,
                               fontWeight: FontWeight.bold,
-                              color: user.isThemeDark
-                                  ? Colors.white
-                                  : Colors.black),
+                              color: user.isThemeDark ? Colors.white : Colors.black),
                         ),
                       ],
                       Text(
                         "@${user.userName}",
                         style: TextStyle(
                             fontSize: 14,
-                            color: user.isThemeDark
-                                ? Colors.grey.shade600
-                                : Colors.black,
+                            color: user.isThemeDark ? Colors.grey.shade600 : Colors.black,
                             fontWeight: FontWeight.bold),
                       ),
                     ],
@@ -228,8 +201,7 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen> {
             Row(
               children: [
                 Padding(
-                  padding:
-                      EdgeInsets.only(right: user.location.isEmpty ? 0 : 5),
+                  padding: EdgeInsets.only(right: user.location.isEmpty ? 0 : 5),
                   child: Icon(
                     Icons.location_on,
                     color: Colors.grey.shade700,
@@ -259,9 +231,7 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen> {
                 Text(
                   "Joined $date",
                   style: TextStyle(
-                      color: Colors.grey.shade700,
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold),
+                      color: Colors.grey.shade700, fontSize: 15, fontWeight: FontWeight.bold),
                 ),
               ],
             ),
@@ -288,9 +258,7 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen> {
                     child: Text(
                       websiteName,
                       style: const TextStyle(
-                          color: Colors.blue,
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold),
+                          color: Colors.blue, fontSize: 15, fontWeight: FontWeight.bold),
                     ),
                   ),
                 ],
@@ -321,10 +289,8 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen> {
                     onTap: () => navigationToSTT(context),
                     child: const Text(
                       'viblify/stt',
-                      style: TextStyle(
-                          color: Colors.blue,
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold),
+                      style:
+                          TextStyle(color: Colors.blue, fontSize: 15, fontWeight: FontWeight.bold),
                     ),
                   ),
                 ],
@@ -348,9 +314,7 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen> {
                   Text(
                     user.mbti,
                     style: const TextStyle(
-                        color: Colors.blue,
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold),
+                        color: Colors.blue, fontSize: 15, fontWeight: FontWeight.bold),
                   ),
                 ],
               ),
@@ -407,8 +371,7 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen> {
             Divider(
               color: (user.verified &&
                       user.dividerColor.isNotEmpty &&
-                      user.profileTheme !=
-                          getTheHex(Pallete.blackColor.toString()))
+                      user.profileTheme != getTheHex(Pallete.blackColor.toString()))
                   ? HexColor(user.dividerColor)
                   : Colors.grey[900],
             ),
@@ -517,8 +480,7 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen> {
               child: Hero(
                 tag: "banner_${user.userID}",
                 child: GestureDetector(
-                  onTap: () =>
-                      createRoute("banner_${user.userID}", user.bannerPic),
+                  onTap: () => createRoute("banner_${user.userID}", user.bannerPic),
                   child: ExtendedImage.network(
                     user.bannerPic,
                     enableLoadState: false,
@@ -546,11 +508,9 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen> {
                     ),
                   ),
                   child: GestureDetector(
-                    onTap: () =>
-                        createRoute("pic_${user.userID}", user.profilePic),
+                    onTap: () => createRoute("pic_${user.userID}", user.profilePic),
                     child: CircleAvatar(
-                      backgroundImage:
-                          CachedNetworkImageProvider(user.profilePic),
+                      backgroundImage: CachedNetworkImageProvider(user.profilePic),
                       radius: 35,
                     ),
                   ),
@@ -600,14 +560,10 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen> {
                             decoration: BoxDecoration(
                                 shape: BoxShape.circle,
                                 border: Border.all(
-                                    color: user.isThemeDark
-                                        ? Colors.white
-                                        : Colors.black)),
+                                    color: user.isThemeDark ? Colors.white : Colors.black)),
                             child: Icon(
                               LineIcons.facebookMessenger,
-                              color: user.isThemeDark
-                                  ? Colors.white
-                                  : Colors.black,
+                              color: user.isThemeDark ? Colors.white : Colors.black,
                               size: 19,
                             ),
                           ),
@@ -616,8 +572,7 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen> {
                       OutlinedButton(
                         onPressed: isLoading ? null : toggleFollow,
                         style: OutlinedButton.styleFrom(
-                          minimumSize:
-                              Size(MediaQuery.of(context).size.width * 0.2, 30),
+                          minimumSize: Size(MediaQuery.of(context).size.width * 0.2, 30),
 
                           side: BorderSide(
                             color: isFollowingUser
@@ -629,12 +584,11 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen> {
                                     : Colors.black, // Set the border color
                           ),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(
-                                15.0), // Adjust the border radius as needed
+                            borderRadius:
+                                BorderRadius.circular(15.0), // Adjust the border radius as needed
                           ),
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 20,
-                              vertical: 0), // Adjust the padding as needed
+                              horizontal: 20, vertical: 0), // Adjust the padding as needed
                         ),
                         child: isLoading
                             ? SizedBox(
@@ -681,17 +635,14 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen> {
                     onPressed: () => navigationToEditScreen(context),
                     style: ElevatedButton.styleFrom(
                       foregroundColor: Colors.white,
-                      backgroundColor:
-                          user.isThemeDark ? Colors.blue : Colors.black,
-                      minimumSize:
-                          Size(MediaQuery.of(context).size.width * 0.2, 30),
+                      backgroundColor: user.isThemeDark ? Colors.blue : Colors.black,
+                      minimumSize: Size(MediaQuery.of(context).size.width * 0.2, 30),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(
-                            15.0), // Adjust the border radius as needed
+                        borderRadius:
+                            BorderRadius.circular(15.0), // Adjust the border radius as needed
                       ),
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 20,
-                          vertical: 0), // Adjust the padding as needed
+                          horizontal: 20, vertical: 0), // Adjust the padding as needed
                     ),
                     child: const Text(
                       "Edit Profile",
@@ -708,10 +659,7 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen> {
 
   void pickColor(UserModel user, WidgetRef ref, String uid) {
     List<Map<String, Color>> colorMapList = [
-      {
-        'dark': DenscordColors.scaffoldBackground,
-        "divider": Colors.grey.shade900
-      },
+      {'dark': DenscordColors.scaffoldBackground, "divider": Colors.grey.shade900},
       {'dark': const Color(0xff222831), "divider": Colors.grey.shade800},
       {'dark': const Color(0xff191919), "divider": Colors.grey.shade700},
       {'dark': const Color(0xff0F0F0F), "divider": Colors.grey.shade800},
@@ -734,8 +682,7 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen> {
               style: TextStyle(fontSize: 16),
             ),
           ),
-          contentPadding:
-              const EdgeInsets.symmetric(vertical: 25, horizontal: 15),
+          contentPadding: const EdgeInsets.symmetric(vertical: 25, horizontal: 15),
           children: [
             Wrap(
               spacing: 10,
@@ -751,13 +698,11 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen> {
                           ),
                         );
                         log(color);
-                        ref
-                            .read(userProfileControllerProvider.notifier)
-                            .updateProfileTheme(
-                                uid,
-                                color,
-                                getTheHex(colorMap.values.last.toString()),
-                                colorMap.keys.first == "dark" ? true : false);
+                        ref.read(userProfileControllerProvider.notifier).updateProfileTheme(
+                            uid,
+                            color,
+                            getTheHex(colorMap.values.last.toString()),
+                            colorMap.keys.first == "dark" ? true : false);
                         // Navigator.pop(context);
                       },
                       child: CircleAvatar(
@@ -797,7 +742,7 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen> {
         context.pop();
       },
       onTapConfirm: () {
-        _signOutWithGoogle();
+        _signOut();
         context.pushReplacement('/login');
         log("logout");
         ref.watch(userProvider.notifier).update((user) => null);
@@ -809,14 +754,16 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen> {
     );
   }
 
-  Future<void> _signOutWithGoogle() async {
-    final GoogleSignIn googleSignIn = GoogleSignIn();
+  Future<void> _signOut() async {
     try {
-      await googleSignIn.signOut();
+      //update the user model data to null;
+      ref.watch(userProvider.notifier).update((user) => null);
       await FirebaseAuth.instance.signOut();
-      print('Google Sign Out Successful');
+      SystemNavigator.pop(animated: true);
+      log('Sign Out Successful');
     } catch (error) {
-      print('Error signing out with Google: $error');
+      log('Error signing out : $error');
+      throw Failure(error.toString());
     }
   }
 }

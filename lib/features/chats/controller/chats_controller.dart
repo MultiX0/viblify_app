@@ -1,4 +1,4 @@
-// ignore_for_file: unused_field, prefer_final_fields, no_leading_underscores_for_local_identifiers
+// ignore_for_file: unused_field, prefer_final_fields, no_leading_underscores_for_local_identifiers, use_build_context_synchronously
 
 import 'dart:developer';
 import 'dart:io';
@@ -64,7 +64,10 @@ class ChatsController extends StateNotifier<bool> {
   ChatsRepository _repository;
   final Ref _ref;
   final StorageRepository _storageRepository;
-  ChatsController({required ChatsRepository repository, required Ref ref, required StorageRepository storageRepository})
+  ChatsController(
+      {required ChatsRepository repository,
+      required Ref ref,
+      required StorageRepository storageRepository})
       : _repository = repository,
         _ref = ref,
         _storageRepository = storageRepository,
@@ -72,11 +75,15 @@ class ChatsController extends StateNotifier<bool> {
   FirebaseFirestore get _firestore => FirebaseFirestore.instance;
 
   var uuid = const Uuid();
-  Future<ChatModel?> getChatRoom(UserModel userModel, UserModel targetUser, BuildContext context) async {
+  Future<ChatModel?> getChatRoom(
+      UserModel userModel, UserModel targetUser, BuildContext context) async {
     ChatModel chatModel = ChatModel();
 
-    QuerySnapshot snapshot =
-        await _firestore.collection("users").doc(userModel.userID).collection(FirebaseConstant.chatsCollection).get();
+    QuerySnapshot snapshot = await _firestore
+        .collection("users")
+        .doc(userModel.userID)
+        .collection(FirebaseConstant.chatsCollection)
+        .get();
     if (snapshot.docs.isNotEmpty) {
       chatModel = ChatModel.fromMap(snapshot.docs.first.data() as Map<String, dynamic>);
       log("isAvailable");

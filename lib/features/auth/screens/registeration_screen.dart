@@ -120,8 +120,8 @@ class RegistrationScreen extends ConsumerWidget {
                                 }
                                 return null;
                               },
-                              inputFormatters: [
-                                FilteringTextInputFormatter.deny(RegExp(r"\s"))
+                              inputFormatters: const [
+                                // FilteringTextInputFormatter.deny(RegExp(r"\s"))
                               ],
                             ),
                             Align(

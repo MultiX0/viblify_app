@@ -42,7 +42,8 @@ class DashViewScreen extends ConsumerWidget {
             tag: dash.dashID,
             child: Container(
               constraints: BoxConstraints(
-                  maxHeight: MediaQuery.of(context).size.height * 0.8, maxWidth: MediaQuery.of(context).size.width),
+                  maxHeight: MediaQuery.of(context).size.height * 0.8,
+                  maxWidth: MediaQuery.of(context).size.width),
               child: CachedNetworkImage(
                 imageUrl: dash.contentUrl,
                 fit: BoxFit.cover,
@@ -51,7 +52,7 @@ class DashViewScreen extends ConsumerWidget {
           ),
           UserCard(uid: dash.userID),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 15),
             child: Text(
               dash.description,
               style: TextStyle(
@@ -63,7 +64,6 @@ class DashViewScreen extends ConsumerWidget {
           MyCommentCard(dash: dash, myData: myData),
           DashRecommandations(
             id: dash.dashID,
-            tags: dash.tags,
             labels: dash.labels.isEmpty ? [] : dash.labels,
           ),
         ],

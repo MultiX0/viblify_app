@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
@@ -112,11 +113,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
       appBar: widget.navigationShell.currentIndex == 0
           ? AppBar(
               title: const Text(
-                "Viblify",
+                "viblify",
               ),
               centerTitle: false,
               forceMaterialTransparency: true,
               actions: [
+                IconButton(
+                  onPressed: () {},
+                  icon: const Icon(
+                    LineIcons.bell,
+                    size: 22,
+                  ),
+                ),
                 IconButton(
                   onPressed: () => context.push("/stt"),
                   icon: const Icon(
@@ -183,12 +191,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
           const BottomNavigationBarItem(
               icon: Icon(
                 size: 24,
-                Ionicons.notifications,
-              ),
-              label: ''),
-          const BottomNavigationBarItem(
-              icon: Icon(
-                size: 24,
                 Ionicons.albums,
               ),
               label: ''),
@@ -200,12 +202,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                 ),
                 child: CircleAvatar(
                   radius: 14,
-                  backgroundImage: NetworkImage(user.profilePic),
+                  backgroundImage: CachedNetworkImageProvider(user.profilePic),
                 ),
               ),
               icon: CircleAvatar(
                 radius: 14,
-                backgroundImage: NetworkImage(user.profilePic),
+                backgroundImage: CachedNetworkImageProvider(user.profilePic),
               ),
               label: ''),
         ],

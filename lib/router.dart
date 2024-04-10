@@ -11,19 +11,19 @@ import 'package:viblify_app/features/auth/screens/auth_screen.dart';
 import 'package:viblify_app/features/auth/screens/signin_screen.dart';
 import 'package:viblify_app/features/chats/screens/chat_screen.dart';
 import 'package:viblify_app/features/chats/screens/inbox_screen.dart';
-import 'package:viblify_app/features/comments/screens/comment_screen.dart';
+import 'package:viblify_app/features/post/comments/screens/comment_screen.dart';
 import 'package:viblify_app/features/community/screens/community_screen.dart';
 import 'package:viblify_app/features/community/screens/create_community.dart';
 import 'package:viblify_app/features/dash/screens/dash_add_screen.dart';
 import 'package:viblify_app/features/dash/screens/dash_screen.dart';
 import 'package:viblify_app/features/home/screens/home_screen.dart';
+import 'package:viblify_app/features/search/controller/controller.dart';
 import 'package:viblify_app/features/splash_screen/splash_screen.dart';
 import 'package:viblify_app/features/stt/screens/stt_profile_screen.dart';
 import 'package:viblify_app/features/stt/screens/stt_screen.dart';
-import 'package:viblify_app/features/user_profile/screens/add_post.dart';
+import 'package:viblify_app/features/post/screens/add_post.dart';
 import 'package:viblify_app/features/user_profile/screens/edit_profile_screen.dart';
 import 'package:viblify_app/features/user_profile/screens/following_screen.dart';
-import 'package:viblify_app/features/user_profile/screens/search_screen.dart';
 import 'package:viblify_app/features/user_profile/screens/user_profile_screen.dart';
 import 'package:viblify_app/features/user_profile/screens/video_screen.dart';
 import 'package:viblify_app/widgets/image_slide.dart';
@@ -68,7 +68,7 @@ final routerProvider = Provider<GoRouter>((ref) {
             routes: <RouteBase>[
               GoRoute(
                 path: "/search",
-                builder: (context, state) => const SearchScreen(),
+                builder: (context, state) => const SearchTab(),
               ),
             ],
           ),
@@ -76,14 +76,6 @@ final routerProvider = Provider<GoRouter>((ref) {
             routes: <RouteBase>[
               GoRoute(
                 path: "/askdjajkjafhaksjdf",
-                builder: (context, state) => const SizedBox(),
-              ),
-            ],
-          ),
-          StatefulShellBranch(
-            routes: <RouteBase>[
-              GoRoute(
-                path: "/notifications",
                 builder: (context, state) => const SizedBox(),
               ),
             ],
@@ -155,8 +147,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         pageBuilder: (context, state) {
           String id = state.pathParameters['id']!;
           String title = state.pathParameters['title']!;
-          return NoTransitionPage(
-              child: VideoScreen(id: id, nameOfVideo: title));
+          return NoTransitionPage(child: VideoScreen(id: id, nameOfVideo: title));
         },
       ),
       GoRoute(
@@ -171,8 +162,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         pageBuilder: (context, state) {
           String uid = state.pathParameters['uid']!;
           String name = state.pathParameters['name']!;
-          return NoTransitionPage(
-              child: SayTheTruth(userID: uid, useraName: name));
+          return NoTransitionPage(child: SayTheTruth(userID: uid, useraName: name));
         },
       ),
       GoRoute(
@@ -236,8 +226,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/dash/view/:extra',
         builder: (context, state) {
-          final extraData =
-              jsonDecode(Uri.decodeComponent(state.pathParameters['extra']!));
+          final extraData = jsonDecode(Uri.decodeComponent(state.pathParameters['extra']!));
           return DashViewScreen(data: extraData);
         },
       ),
@@ -275,8 +264,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: "/edit/profile/:uid",
         pageBuilder: (context, state) {
-          return NoTransitionPage(
-              child: EditProfileScreen(uid: state.pathParameters['uid']!));
+          return NoTransitionPage(child: EditProfileScreen(uid: state.pathParameters['uid']!));
         },
       ),
       GoRoute(
@@ -284,8 +272,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, GoRouterState state) {
           final url = state.pathParameters['url']!;
           final link = Uri.decodeComponent(url);
-          return ProfileImageScreen(
-              tag: state.pathParameters['tag']!, url: link);
+          return ProfileImageScreen(tag: state.pathParameters['tag']!, url: link);
         },
       ),
       GoRoute(

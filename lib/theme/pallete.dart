@@ -3,7 +3,7 @@ import '../utils/hex2color.dart';
 
 class Pallete {
   // Colors
-  static const blackColor = Color.fromARGB(255, 13, 16, 19); // primary color
+  static final blackColor = DenscordColors.scaffoldBackground; // primary color
   static const greyColor = Color.fromRGBO(26, 39, 45, 1); // secondary color
   static const drawerColor = Color.fromRGBO(18, 18, 18, 1);
   static const whiteColor = Colors.white;
@@ -33,7 +33,7 @@ class Pallete {
   static var lightModeAppTheme = ThemeData.light().copyWith(
     scaffoldBackgroundColor: whiteColor,
     cardColor: greyColor,
-    appBarTheme: const AppBarTheme(
+    appBarTheme: AppBarTheme(
       backgroundColor: whiteColor,
       elevation: 0,
       iconTheme: IconThemeData(

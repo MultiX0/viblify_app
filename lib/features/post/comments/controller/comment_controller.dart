@@ -10,8 +10,8 @@ import 'package:viblify_app/core/Constant/firebase_constant.dart';
 import 'package:viblify_app/core/providers/storage_repository_provider.dart';
 import 'package:viblify_app/core/utils.dart';
 
-import '../../../models/comments.dart';
-import '../../auth/controller/auth_controller.dart';
+import '../../../../models/comments.dart';
+import '../../../auth/controller/auth_controller.dart';
 import '../repository/comment_repository.dart';
 
 final getAllCommentsProvider = StreamProvider.family((ref, String feedID) {
@@ -19,20 +19,17 @@ final getAllCommentsProvider = StreamProvider.family((ref, String feedID) {
   return commentsController.getAllComments(feedID);
 });
 final getCommentsByCommentIDAndFeedID =
-    StreamProvider.family<List<Comments>, Tuple2<String, dynamic>>(
-        (ref, tuple) {
+    StreamProvider.family<List<Comments>, Tuple2<String, dynamic>>((ref, tuple) {
   final commentsController = ref.watch(commentsControllerProvider.notifier);
   return commentsController.getCommentByID(tuple.item1, tuple.item2);
 });
 final deleteCommentProvider =
-    FutureProvider.family<List<Comments>, Tuple2<String, dynamic>>(
-        (ref, tuple) async {
+    FutureProvider.family<List<Comments>, Tuple2<String, dynamic>>((ref, tuple) async {
   final commentsController = ref.watch(commentsControllerProvider.notifier);
   return await commentsController.deleteComment(tuple.item1, tuple.item2);
 });
 
-final commentsControllerProvider =
-    StateNotifierProvider<CommentController, bool>((ref) {
+final commentsControllerProvider = StateNotifierProvider<CommentController, bool>((ref) {
   final _repository = ref.watch(commentsRepositoryProvider);
   final _storageRepository = ref.watch(firebaseStorageProvider);
   return CommentController(
@@ -111,8 +108,7 @@ class CommentController extends StateNotifier<bool> {
     String generateNewFeedID() {
       const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
       final random = Random.secure();
-      return List.generate(28, (index) => chars[random.nextInt(chars.length)])
-          .join();
+      return List.generate(28, (index) => chars[random.nextInt(chars.length)]).join();
     }
 
     String newCommentID = "";

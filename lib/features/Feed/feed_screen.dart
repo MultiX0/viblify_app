@@ -44,10 +44,7 @@ class _FeedScreenState extends ConsumerState<FeedScreen> {
         child: ref.read(getAllFeedsProvider(uid)).when(
               data: (posts) => posts.isNotEmpty
                   ? FeedsWidget(
-                      isUserProfile: false,
-                      posts: posts,
-                      isThemeDark: true,
-                      dividerColor: "")
+                      isUserProfile: false, posts: posts, isThemeDark: true, dividerColor: "")
                   : const Center(
                       child: MyEmptyShowen(text: "ليست هنالك أي مناشير بعد"),
                     ),
@@ -85,27 +82,33 @@ class FollowingTimeLine extends ConsumerWidget {
     return ref.watch(getFollowingProvider(uid)).when(
           data: (users) {
             return ref.watch(getFollowingFeedsProvider(users)).when(
-                data: (data) {
-                  return FeedsWidget(
-                    isUserProfile: false,
-                    posts: data,
-                    isThemeDark: true,
-                    dividerColor: "",
-                  );
-                },
-                error: (error, trace) => ErrorText(
-                      error: error.toString(),
+                  data: (data) {
+                    return FeedsWidget(
+                      isUserProfile: false,
+                      posts: data,
+                      isThemeDark: true,
+                      dividerColor: "",
+                    );
+                  },
+                  error: (error, trace) => ErrorText(
+                    error: error.toString(),
+                  ),
+                  loading: () => Skeletonizer(
+                    enabled: true,
+                    child: ListView.builder(
+                      itemCount: 15,
+                      itemBuilder: (context, index) {
+                        return Card(
+                          child: ListTile(
+                            title: Text('Item number $index as title'),
+                            subtitle: const Text('Subtitle here'),
+                            leading: const Icon(Icons.ac_unit),
+                          ),
+                        );
+                      },
                     ),
-                loading: () => const Skeletonizer(
-                      enabled: true,
-                      child: Card(
-                        child: ListTile(
-                          title: Text('Item number  as title'),
-                          subtitle: Text('Subtitle here'),
-                          leading: Icon(Icons.ac_unit),
-                        ),
-                      ),
-                    ));
+                  ),
+                );
           },
           error: (error, trace) => ErrorText(
             error: error.toString(),

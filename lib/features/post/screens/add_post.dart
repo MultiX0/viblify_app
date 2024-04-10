@@ -99,11 +99,9 @@ class _AddPostScreenState extends ConsumerState<AddPostScreen> {
                     const Text('اضف رابط يوتيوب'),
                     IconButton(
                       onPressed: () async {
-                        if (VideoURLValidator.isYouTubeLink(
-                            videoController.text)) {
-                          if (await VideoURLValidator
-                              .checkVideoIsAvailableOnYoutube(
-                                  videoController.text)) {
+                        if (VideoURLValidator.isYouTubeLink(videoController.text)) {
+                          if (await VideoURLValidator.checkVideoIsAvailableOnYoutube(
+                              videoController.text)) {
                             Fluttertoast.showToast(msg: "the link is valid");
                             setState(() {
                               img = null;
@@ -112,19 +110,16 @@ class _AddPostScreenState extends ConsumerState<AddPostScreen> {
                             context.pop();
 
                             setState(() async {
-                              videoID = VideoURLValidator.extractYouTubeVideoId(
-                                  videoController.text);
+                              videoID =
+                                  VideoURLValidator.extractYouTubeVideoId(videoController.text);
 
-                              videoTitle =
-                                  (await VideoURLValidator.getVideoTitle(
-                                      videoID))!;
+                              videoTitle = (await VideoURLValidator.getVideoTitle(videoID))!;
                               videoController.clear();
                             });
                             print(videoController.text);
                             print(videoID);
                           } else {
-                            Fluttertoast.showToast(
-                                msg: "الفيديو الذي قمت بادخاله غير موجود");
+                            Fluttertoast.showToast(msg: "الفيديو الذي قمت بادخاله غير موجود");
                           }
                         } else {
                           Fluttertoast.showToast(msg: "الرجاء ادخال رابط صحيح");
@@ -142,12 +137,10 @@ class _AddPostScreenState extends ConsumerState<AddPostScreen> {
                       videoLink = val;
                     });
                   },
-                  scrollPadding: EdgeInsets.only(
-                      bottom: MediaQuery.of(context).viewInsets.bottom),
+                  scrollPadding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
                   onTap: () {
                     Timer(const Duration(milliseconds: 200), () {
-                      _scrollController
-                          .jumpTo(_scrollController.position.maxScrollExtent);
+                      _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
                     });
                   },
                   decoration: InputDecoration(
@@ -156,8 +149,7 @@ class _AddPostScreenState extends ConsumerState<AddPostScreen> {
                       color: Colors.grey[600]!,
                     ),
                     focusedBorder: UnderlineInputBorder(
-                      borderSide:
-                          BorderSide(color: Colors.blue[800]!, width: 1.5),
+                      borderSide: BorderSide(color: Colors.blue[800]!, width: 1.5),
                     ),
                     enabled: true,
                     enabledBorder: UnderlineInputBorder(
@@ -225,8 +217,7 @@ class _AddPostScreenState extends ConsumerState<AddPostScreen> {
         return Scaffold(
           appBar: AppBar(
             forceMaterialTransparency: true,
-            leading: IconButton(
-                onPressed: () => context.pop(), icon: const Icon(Icons.close)),
+            leading: IconButton(onPressed: () => context.pop(), icon: const Icon(Icons.close)),
             automaticallyImplyLeading: false,
             centerTitle: true,
             title: const Text("Viblify"),
@@ -259,8 +250,7 @@ class _AddPostScreenState extends ConsumerState<AddPostScreen> {
                 flex: 3,
                 child: SingleChildScrollView(
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 25, horizontal: 15),
+                    padding: const EdgeInsets.symmetric(vertical: 25, horizontal: 15),
                     child: Column(
                       children: [
                         Row(
@@ -282,8 +272,7 @@ class _AddPostScreenState extends ConsumerState<AddPostScreen> {
                                 ),
                                 Text(
                                   user.userName,
-                                  style: TextStyle(
-                                      color: Colors.grey[700], fontSize: 13),
+                                  style: TextStyle(color: Colors.grey[700], fontSize: 13),
                                 ),
                               ],
                             ),
@@ -300,15 +289,15 @@ class _AddPostScreenState extends ConsumerState<AddPostScreen> {
                               postContent = val;
                             });
                           },
-                          scrollPadding: EdgeInsets.only(
-                              bottom: MediaQuery.of(context).viewInsets.bottom),
+                          scrollPadding:
+                              EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
                           maxLines: null,
                           keyboardType: TextInputType.multiline,
                           maxLength: 2200,
-                          decoration: const InputDecoration(
+                          decoration: InputDecoration(
                             counterText: "",
                             border: InputBorder.none,
-                            counterStyle: TextStyle(color: Colors.white),
+                            counterStyle: const TextStyle(color: Colors.white),
                             focusedBorder: UnderlineInputBorder(
                               borderSide: BorderSide(color: Pallete.blackColor),
                             ),
@@ -316,14 +305,12 @@ class _AddPostScreenState extends ConsumerState<AddPostScreen> {
                               borderSide: BorderSide(color: Pallete.blackColor),
                             ),
                             hintText: 'بماذا تفكر؟',
-                            hintStyle: TextStyle(
+                            hintStyle: const TextStyle(
                               color: Colors.white,
                             ),
                             hintTextDirection: ui.TextDirection.rtl,
                           ),
-                          textDirection: isArabic
-                              ? ui.TextDirection.rtl
-                              : ui.TextDirection.ltr,
+                          textDirection: isArabic ? ui.TextDirection.rtl : ui.TextDirection.ltr,
                           style: const TextStyle(color: Colors.white),
                         ),
                         const SizedBox(
@@ -392,8 +379,7 @@ class _AddPostScreenState extends ConsumerState<AddPostScreen> {
                                 children: [
                                   Positioned.fill(
                                     child: Image.network(
-                                      VideoURLValidator.getYouTubeThumbnail(
-                                          videoID),
+                                      VideoURLValidator.getYouTubeThumbnail(videoID),
                                       width: double.infinity,
                                     ),
                                   ),
@@ -414,8 +400,7 @@ class _AddPostScreenState extends ConsumerState<AddPostScreen> {
                                         padding: const EdgeInsets.all(1),
                                         decoration: BoxDecoration(
                                           shape: BoxShape.circle,
-                                          border: Border.all(
-                                              color: Colors.white, width: 2.5),
+                                          border: Border.all(color: Colors.white, width: 2.5),
                                         ),
                                         child: const Icon(
                                           Icons.play_circle,
@@ -440,16 +425,14 @@ class _AddPostScreenState extends ConsumerState<AddPostScreen> {
                 child: Container(
                   alignment: Alignment.bottomCenter,
                   child: Container(
-                    decoration: BoxDecoration(
-                        border: Border(
-                            top: BorderSide(color: Colors.grey.shade800))),
+                    decoration:
+                        BoxDecoration(border: Border(top: BorderSide(color: Colors.grey.shade800))),
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 10),
                       child: Row(
                         children: [
                           IconButton(
-                            tooltip:
-                                img == null ? "add image" : "remove the image",
+                            tooltip: img == null ? "add image" : "remove the image",
                             onPressed: videoID.isEmpty ? selectPostImage : null,
                             icon: const Icon(LineIcons.image),
                           ),
@@ -482,9 +465,7 @@ class _AddPostScreenState extends ConsumerState<AddPostScreen> {
                           ),
                           IconButton(
                             onPressed: commentsOpen,
-                            tooltip: isCommentsOpen
-                                ? "disable Comments"
-                                : "enable the comments",
+                            tooltip: isCommentsOpen ? "disable Comments" : "enable the comments",
                             icon: isCommentsOpen
                                 ? const Icon(LineIcons.commentSlash)
                                 : const Icon(LineIcons.comment),

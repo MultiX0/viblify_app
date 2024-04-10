@@ -50,7 +50,10 @@ class PostController extends StateNotifier<bool> {
   PostRepository _repository;
   final Ref _ref;
   final StorageRepository _storageRepository;
-  PostController({required PostRepository repository, required Ref ref, required StorageRepository storageRepository})
+  PostController(
+      {required PostRepository repository,
+      required Ref ref,
+      required StorageRepository storageRepository})
       : _repository = repository,
         _ref = ref,
         _storageRepository = storageRepository,
@@ -131,7 +134,7 @@ class PostController extends StateNotifier<bool> {
     String generateNewFeedID() {
       const chars = '0123456789qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM';
       final random = Random.secure();
-      return List.generate(10, (index) => chars[random.nextInt(chars.length)]).join();
+      return List.generate(20, (index) => chars[random.nextInt(chars.length)]).join();
     }
 
     String newFeedID = "";

@@ -15,6 +15,7 @@ import 'package:viblify_app/widgets/empty_widget.dart';
 
 import '../../../core/utils.dart';
 import '../../../router.dart';
+import '../../auth/controller/auth_controller.dart';
 
 class DashScreen extends ConsumerStatefulWidget {
   const DashScreen({super.key});
@@ -24,7 +25,7 @@ class DashScreen extends ConsumerStatefulWidget {
 }
 
 class _DashScreenState extends ConsumerState<DashScreen> {
-  RefreshController _refreshController = RefreshController(initialRefresh: false);
+  final RefreshController _refreshController = RefreshController(initialRefresh: false);
   String? path;
 
   void imagePicker() async {
@@ -54,7 +55,7 @@ class _DashScreenState extends ConsumerState<DashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // final myData = ref.read(userProvider)!;
+    final myData = ref.read(userProvider)!;
 
     return Scaffold(
       floatingActionButton: FloatingActionButton(
@@ -76,7 +77,8 @@ class _DashScreenState extends ConsumerState<DashScreen> {
                     ? MasonryGridView.builder(
                         padding: const EdgeInsets.symmetric(vertical: 5),
                         itemCount: dashs.length,
-                        gridDelegate: const SliverSimpleGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
+                        gridDelegate: const SliverSimpleGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2),
                         itemBuilder: (context, index) {
                           final dash = dashs[index];
 
@@ -87,6 +89,7 @@ class _DashScreenState extends ConsumerState<DashScreen> {
                               child: GestureDetector(
                                 onTap: () => navigateToDashView(
                                   dash,
+                                  myData.userID,
                                 ),
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(10),
@@ -109,7 +112,8 @@ class _DashScreenState extends ConsumerState<DashScreen> {
     );
   }
 
-  void navigateToDashView(Dash dash) {
+  void navigateToDashView(Dash dash, String uid) {
+    ref.read(dashControllerProvider.notifier).addUserToViews(dash.dashID, uid);
     context.pushNamed(
       Navigation.dashview,
       extra: dash.toMap(),

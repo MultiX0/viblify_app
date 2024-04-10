@@ -69,14 +69,11 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
 
     if (state == AppLifecycleState.paused) {
       log("pasue");
-      UpdateMessagesStatus().updateChatRoomStatus(
-          myID, widget.targetUserID, widget.chatID, false);
+      UpdateMessagesStatus().updateChatRoomStatus(myID, widget.targetUserID, widget.chatID, false);
     } else if (state == AppLifecycleState.detached) {
-      UpdateMessagesStatus().updateChatRoomStatus(
-          myID, widget.targetUserID, widget.chatID, false);
+      UpdateMessagesStatus().updateChatRoomStatus(myID, widget.targetUserID, widget.chatID, false);
     } else {
-      UpdateMessagesStatus().updateChatRoomStatus(
-          myID, widget.targetUserID, widget.chatID, false);
+      UpdateMessagesStatus().updateChatRoomStatus(myID, widget.targetUserID, widget.chatID, false);
     }
   }
 
@@ -101,8 +98,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
     return WillPopScope(
       onWillPop: () async {
         messageController.clear();
-        UpdateMessagesStatus().updateChatRoomStatus(
-            myData.userID, widget.targetUserID, widget.chatID, false);
+        UpdateMessagesStatus()
+            .updateChatRoomStatus(myData.userID, widget.targetUserID, widget.chatID, false);
 
         // UpdateMessagesStatus().inTheChatStatus(widget.chatID, myData.userID);
         return true;
@@ -111,8 +108,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
             data: (user) {
               return ref.watch(getChatRoomByID(widget.targetUserID)).when(
                   data: (chat) {
-                    bool inTheChat =
-                        chat.inTheChat!.contains(widget.targetUserID);
+                    bool inTheChat = chat.inTheChat!.contains(widget.targetUserID);
                     void send() {
                       String msg = messageController.text.trim();
                       if (msg.isNotEmpty || img != null) {
@@ -130,10 +126,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
                             content: msg,
                             context: context);
                         UpdateMessagesStatus().updateChatRoomStatus(
-                            myData.userID,
-                            widget.targetUserID,
-                            widget.chatID,
-                            false);
+                            myData.userID, widget.targetUserID, widget.chatID, false);
                         scollController.jumpTo(0);
                       }
                       if (repliedMessage != null) {
@@ -159,8 +152,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
                       }
                     }
 
-                    return myChat(context, user, myData, offset, isReplying,
-                        selectImage, send);
+                    return myChat(context, user, myData, offset, isReplying, selectImage, send);
                   },
                   error: (error, trace) => ErrorText(error: error.toString()),
                   loading: () => const SizedBox());
@@ -171,8 +163,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
     );
   }
 
-  Scaffold myChat(BuildContext context, UserModel user, UserModel myData,
-      double offset, bool isReplying, Function() selectImage, Function() send) {
+  Scaffold myChat(BuildContext context, UserModel user, UserModel myData, double offset,
+      bool isReplying, Function() selectImage, Function() send) {
     return Scaffold(
       appBar: AppBar(
         title: ChatHeader(
@@ -201,28 +193,18 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
 
                             bool isMe = message.sender == myData.userID;
 
-                            if (!message.seen! &&
-                                message.sender != myData.userID) {
-                              ref
-                                  .read(chatsControllerProvider.notifier)
-                                  .setChatMessageSeen(
-                                      context,
-                                      user.userID,
-                                      myData.userID,
-                                      message.messageid!,
-                                      widget.chatID);
+                            if (!message.seen! && message.sender != myData.userID) {
+                              ref.read(chatsControllerProvider.notifier).setChatMessageSeen(context,
+                                  user.userID, myData.userID, message.messageid!, widget.chatID);
                             }
 
                             // Fade Animation
-                            if (!fadeAnimationControllers
-                                .containsKey(message.messageid)) {
-                              fadeAnimationControllers[message.messageid!] =
-                                  AnimationController(
+                            if (!fadeAnimationControllers.containsKey(message.messageid)) {
+                              fadeAnimationControllers[message.messageid!] = AnimationController(
                                 duration: const Duration(milliseconds: 600),
                                 vsync: this,
                               );
-                              fadeAnimationControllers[message.messageid]!
-                                  .forward(from: 0.0);
+                              fadeAnimationControllers[message.messageid]!.forward(from: 0.0);
                             }
 
                             return MyReply(
@@ -265,11 +247,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
                     child: typing.typing
                         ? Padding(
                             key: ValueKey<bool>(typing.typing),
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 8.0, vertical: 14),
+                            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 14),
                             child: FadeTransition(
-                              opacity:
-                                  Tween<double>(begin: 0.0, end: 1.0).animate(
+                              opacity: Tween<double>(begin: 0.0, end: 1.0).animate(
                                 CurvedAnimation(
                                   curve: Curves.easeInOut,
                                   parent: _fadeController,
@@ -279,8 +259,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
                                 children: [
                                   CircleAvatar(
                                     radius: 14,
-                                    backgroundImage: CachedNetworkImageProvider(
-                                        user.profilePic),
+                                    backgroundImage: CachedNetworkImageProvider(user.profilePic),
                                   ),
                                   const SizedBox(width: 10),
                                   Text(
@@ -315,8 +294,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
                         padding: const EdgeInsets.symmetric(horizontal: 10),
                         decoration: BoxDecoration(
                           borderRadius: const BorderRadius.only(
-                              topLeft: Radius.circular(20),
-                              bottomLeft: Radius.circular(20)),
+                              topLeft: Radius.circular(20), bottomLeft: Radius.circular(20)),
                           color: Colors.grey[900],
                         ),
                         child: Directionality(
@@ -337,11 +315,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
                                   val.isNotEmpty ? true : false);
                             },
                             controller: messageController,
-                            textDirection: arabic
-                                ? ui.TextDirection.rtl
-                                : ui.TextDirection.ltr,
-                            style: const TextStyle(
-                                color: Colors.white, height: 1.5, fontSize: 13),
+                            textDirection: arabic ? ui.TextDirection.rtl : ui.TextDirection.ltr,
+                            style: const TextStyle(color: Colors.white, height: 1.5, fontSize: 13),
                             keyboardType: TextInputType.multiline,
                             textInputAction: TextInputAction.done,
                             maxLines: 1,
@@ -351,10 +326,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
                               enabledBorder: InputBorder.none,
                               alignLabelWithHint: true,
                               hintTextDirection: ui.TextDirection.rtl,
-                              hintStyle: TextStyle(
-                                  color: Colors.grey.shade700,
-                                  height: 1.6,
-                                  fontSize: 13),
+                              hintStyle:
+                                  TextStyle(color: Colors.grey.shade700, height: 1.6, fontSize: 13),
                               hintText: "كتابة رسالة",
                             ),
                           ),
@@ -381,8 +354,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
                         height: 50,
                         decoration: BoxDecoration(
                           borderRadius: const BorderRadius.only(
-                              topRight: Radius.circular(20),
-                              bottomRight: Radius.circular(20)),
+                              topRight: Radius.circular(20), bottomRight: Radius.circular(20)),
                           color: Colors.grey[900],
                         ),
                         child: IconButton(
@@ -401,8 +373,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
                         height: 50,
                         decoration: BoxDecoration(
                           borderRadius: const BorderRadius.only(
-                              topRight: Radius.circular(20),
-                              bottomRight: Radius.circular(20)),
+                              topRight: Radius.circular(20), bottomRight: Radius.circular(20)),
                           color: Colors.grey[900],
                         ),
                         child: TextButton(
@@ -440,9 +411,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
 
   Widget buildReply(UserModel user) => Container(
         padding: const EdgeInsets.all(8),
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           color: Pallete.blackColor,
-          borderRadius: BorderRadius.only(
+          borderRadius: const BorderRadius.only(
             topLeft: Radius.circular(12),
             topRight: Radius.circular(12),
           ),
@@ -450,9 +421,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
         child: ReplyMessageWidget(
           message: repliedMessage!,
           onCancelReply: cancelReply,
-          userName: repliedMessage!.sender != user.userID
-              ? "yourself"
-              : user.userName,
+          userName: repliedMessage!.sender != user.userID ? "yourself" : user.userName,
         ),
       );
 }

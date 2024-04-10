@@ -23,8 +23,7 @@ class ChatsRepository {
   final FirebaseFirestore _firebaseFirestore;
   ChatsRepository({required FirebaseFirestore firebaseFirestore})
       : _firebaseFirestore = firebaseFirestore;
-  CollectionReference get _chats =>
-      _firebaseFirestore.collection(FirebaseConstant.chatsCollection);
+  CollectionReference get _chats => _firebaseFirestore.collection(FirebaseConstant.chatsCollection);
 
   var uuid = const Uuid();
 
@@ -68,8 +67,7 @@ class ChatsRepository {
     return chatModel;
   }
 
-  Future<void> sendMessage(
-      String reciverID, String senderID, MessageModel message) async {
+  Future<void> sendMessage(String reciverID, String senderID, MessageModel message) async {
     final chatPath = await _firebaseFirestore
         .collection(FirebaseConstant.usersCollection)
         .doc(senderID)
@@ -250,12 +248,10 @@ class ChatsRepository {
           if (messagesSnapshot.docs.isNotEmpty) {
             var unreadMessages = messagesSnapshot.docs
                 .where((messageDoc) =>
-                    messageDoc.get('sender') != myUserId &&
-                    messageDoc.get('seen') == false)
+                    messageDoc.get('sender') != myUserId && messageDoc.get('seen') == false)
                 .toList();
 
-            bool sentByMe =
-                messagesSnapshot.docs.first.get('sender') == myUserId;
+            bool sentByMe = messagesSnapshot.docs.first.get('sender') == myUserId;
             bool isSeen = messagesSnapshot.docs.first.get('seen') ?? false;
 
             int unseenMessagesCount = unreadMessages.length;
@@ -307,8 +303,8 @@ class ChatsRepository {
     return controller.stream;
   }
 
-  void setChatMessageSeen(BuildContext context, String reciverUserID,
-      String senderID, String messageID, String chatID) async {
+  void setChatMessageSeen(BuildContext context, String reciverUserID, String senderID,
+      String messageID, String chatID) async {
     try {
       log("work");
       //edit for the user

@@ -10,10 +10,9 @@ class Dash {
   final String contentUrl;
   final String description;
   final int commentCount;
-  final int views;
   final String createdAt; // Added field
   final List<dynamic> shares; // Added field
-  final List<dynamic> tags; // Added field
+  final List<dynamic> views;
   final List<dynamic> labels;
 
   Dash({
@@ -27,7 +26,6 @@ class Dash {
     required this.views,
     required this.createdAt,
     required this.shares,
-    required this.tags,
   });
 
   Dash copyWith({
@@ -37,7 +35,7 @@ class Dash {
     String? contentUrl,
     String? description,
     int? commentCount,
-    int? views,
+    List? views,
     String? createdAt,
     List? shares,
     List? tags,
@@ -53,7 +51,6 @@ class Dash {
       views: views ?? this.views,
       createdAt: createdAt ?? this.createdAt,
       shares: shares ?? this.shares,
-      tags: tags ?? this.tags,
       labels: labels ?? this.labels,
     );
   }
@@ -69,7 +66,6 @@ class Dash {
       'views': views,
       'createdAt': createdAt,
       'shares': shares,
-      'tags': tags,
       'labels': labels,
     };
   }
@@ -82,17 +78,16 @@ class Dash {
       contentUrl: map['contentUrl'] as String,
       description: map['description'] as String,
       commentCount: map['commentCount'] as int,
-      views: map['views'] as int,
+      views: List<dynamic>.from(map['views'] as List<dynamic>),
       createdAt: map['createdAt'] as String,
       shares: List<dynamic>.from(map['shares'] as List<dynamic>),
-      tags: List<dynamic>.from(map['tags'] as List<dynamic>),
       labels: List<dynamic>.from(map['labels'] as List<dynamic>),
     );
   }
 
   @override
   String toString() {
-    return 'Dash(userID: $userID, dashID: $dashID, likes: $likes, contentUrl: $contentUrl, description: $description, commentCount: $commentCount, views: $views, createdAt: $createdAt, shares: $shares, tags: $tags)';
+    return 'Dash(userID: $userID, dashID: $dashID, likes: $likes, contentUrl: $contentUrl, description: $description, commentCount: $commentCount, views: $views, createdAt: $createdAt, shares: $shares)';
   }
 
   @override
@@ -107,8 +102,7 @@ class Dash {
         other.commentCount == commentCount &&
         other.views == views &&
         other.createdAt == createdAt &&
-        listEquals(other.shares, shares) &&
-        listEquals(other.tags, tags);
+        listEquals(other.shares, shares);
   }
 
   @override
@@ -121,8 +115,7 @@ class Dash {
         commentCount.hashCode ^
         views.hashCode ^
         createdAt.hashCode ^
-        shares.hashCode ^
-        tags.hashCode;
+        shares.hashCode;
   }
 
   String toJson() => json.encode(toMap());

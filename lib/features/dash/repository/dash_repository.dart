@@ -21,11 +21,10 @@ class DashRepository {
   final supabase = Supabase.instance.client;
   DashRepository({required FirebaseFirestore firebaseFirestore});
 
-  SupabaseQueryBuilder get _dash =>
-      supabase.from(FirebaseConstant.dashCollection);
+  SupabaseQueryBuilder get _dash => supabase.from(FirebaseConstant.dashCollection);
   FutureVoid addPost(Dash dash) async {
     try {
-      return right(await supabase.from('dashs').insert(dash.toMap()));
+      return right(await _dash.insert(dash.toMap()));
     } on FirebaseException catch (e) {
       throw e.message!;
     } catch (e) {
@@ -39,8 +38,7 @@ class DashRepository {
 
       // .neq('userID', uid); // does
 
-      final List<Dash> dashes =
-          data.map<Dash>((data) => Dash.fromMap(data)).toList();
+      final List<Dash> dashes = data.map<Dash>((data) => Dash.fromMap(data)).toList();
       dashes.shuffle();
 
       return dashes;
@@ -50,8 +48,14 @@ class DashRepository {
     }
   }
 
-  Future<List<Dash>> getRecommendedDash(
-      String id, List<dynamic> labels, List<dynamic> tags) async {
+  Stream<Dash> getDashByID(String dashID) {
+    return _dash
+        .stream(primaryKey: ['dashID'])
+        .eq("dashID", dashID)
+        .map((dash) => Dash.fromMap(dash.first));
+  }
+
+  Future<List<Dash>> getRecommendedDash(String id, List<dynamic> labels) async {
     try {
       final result = await _dash.select();
       final filteredData = result.where((dash) {
@@ -75,6 +79,46 @@ class DashRepository {
     } catch (error) {
       log("Error getting feeds: $error");
       rethrow;
+    }
+  }
+
+  Future<void> addUserToViews(String dashID, String userID) async {
+    try {
+      var ref = await _dash.select('*').eq("dashID", dashID).single();
+      List<dynamic> views = ref['views'];
+      var isViewd = views.contains(userID);
+      if (isViewd) {
+        log("already 5hara");
+      } else {
+        List<dynamic> newViews = views;
+        newViews.add(userID);
+        await _dash.update({"views": newViews}).eq("dashID", dashID);
+        log("done here");
+        log("added complete");
+      }
+    } catch (e) {
+      log(e.toString());
+      throw Failure(e.toString());
+    }
+  }
+
+  Future<void> likeHundling(String dashID, String userID) async {
+    try {
+      var ref = await _dash.select('*').eq("dashID", dashID).single();
+      List<dynamic> likes = ref['likes'];
+      bool isLiked = likes.contains(userID);
+      if (isLiked) {
+        var newLikes = likes;
+        newLikes.remove(userID);
+        await _dash.update({"likes": newLikes}).eq("dashID", dashID);
+      } else {
+        var newLikes = likes;
+        newLikes.add(userID);
+        await _dash.update({"likes": newLikes}).eq("dashID", dashID);
+      }
+    } catch (e) {
+      log(e.toString());
+      throw Failure(e.toString());
     }
   }
 }

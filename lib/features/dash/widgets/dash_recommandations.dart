@@ -10,40 +10,52 @@ import 'package:viblify_app/widgets/empty_widget.dart';
 
 class DashRecommandations extends ConsumerWidget {
   final String id;
-  final List<dynamic> tags;
+
   final List<dynamic> labels;
-  const DashRecommandations({super.key, required this.id, required this.tags, required this.labels});
+  const DashRecommandations({super.key, required this.id, required this.labels});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return ref.watch(getRecommendedDashProvider(Tuple3(id, labels, tags))).when(
+    return ref.watch(getRecommendedDashProvider(Tuple2(id, labels))).when(
           data: (dashs) {
             if (dashs.isNotEmpty) {
-              return SizedBox(
-                height: MediaQuery.of(context).size.height,
-                child: MasonryGridView.builder(
-                    physics: const NeverScrollableScrollPhysics(),
-                    padding: const EdgeInsets.symmetric(vertical: 5),
-                    itemCount: dashs.length,
-                    gridDelegate: const SliverSimpleGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
-                    itemBuilder: (context, index) {
-                      final dash = dashs[index];
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    child: Text(
+                      "You may also like :",
+                      style: TextStyle(
+                          color: Colors.grey[400], fontFamily: "FixelDisplay", fontSize: 16),
+                    ),
+                  ),
+                  MasonryGridView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      padding: const EdgeInsets.symmetric(vertical: 5),
+                      itemCount: dashs.length,
+                      gridDelegate:
+                          const SliverSimpleGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
+                      itemBuilder: (context, index) {
+                        final dash = dashs[index];
 
-                      return Padding(
-                        padding: const EdgeInsets.all(5.0),
-                        child: Hero(
-                          tag: dash.dashID,
-                          child: GestureDetector(
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(10),
-                              child: CachedNetworkImage(
-                                imageUrl: dash.contentUrl,
+                        return Padding(
+                          padding: const EdgeInsets.all(5.0),
+                          child: Hero(
+                            tag: dash.dashID,
+                            child: GestureDetector(
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(10),
+                                child: CachedNetworkImage(
+                                  imageUrl: dash.contentUrl,
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                      );
-                    }),
+                        );
+                      }),
+                ],
               );
             } else {
               return const MyEmptyShowen(text: "لايوجد محتوى بعد");

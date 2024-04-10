@@ -6,7 +6,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fpdart/fpdart.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:viblify_app/core/Constant/constant.dart';
 import 'package:viblify_app/core/Constant/firebase_constant.dart';
 import 'package:viblify_app/core/failure.dart';
@@ -21,7 +20,6 @@ final authRepositoryProvider = Provider(
   (ref) => AuthRepository(
     firestore: ref.read(firestoreProvider),
     auth: ref.read(authProvider),
-    googleSignIn: ref.read(googleSignInProvider),
   ),
 );
 
@@ -29,24 +27,20 @@ class AuthRepository {
   final FirebaseFirestore _firestore;
   final FirebaseAuth _auth;
 
-  AuthRepository(
-      {required FirebaseFirestore firestore,
-      required FirebaseAuth auth,
-      required GoogleSignIn googleSignIn})
-      : _auth = auth,
+  AuthRepository({
+    required FirebaseFirestore firestore,
+    required FirebaseAuth auth,
+  })  : _auth = auth,
         _firestore = firestore;
 
-  CollectionReference get _users =>
-      _firestore.collection(FirebaseConstant.usersCollection);
+  CollectionReference get _users => _firestore.collection(FirebaseConstant.usersCollection);
 
   Stream<User?> get authStateChanged => _auth.authStateChanges();
 
-  FutureEither<UserModel> registerWithEmail(
-      String email, String password, String username) async {
+  FutureEither<UserModel> registerWithEmail(String email, String password, String username) async {
     try {
       UserModel userModel;
-      UserCredential userCredential =
-          await _auth.createUserWithEmailAndPassword(
+      UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
@@ -55,10 +49,7 @@ class AuthRepository {
         String randomUsername;
 
         Future<bool> isUsernameTaken(String username) async {
-          var querySnapshot = await _users
-              .where('userName', isEqualTo: username)
-              .limit(1)
-              .get();
+          var querySnapshot = await _users.where('userName', isEqualTo: username).limit(1).get();
           return querySnapshot.docs.isNotEmpty;
         }
 
@@ -76,15 +67,14 @@ class AuthRepository {
         return randomUsername;
       }
 
-      String randomUsername = generateRandomUsername();
+      String randomUsername = await generateUniqueUsername();
 
       // Proceed with creating the new user
-      String notificationsToken =
-          await ViblifyNotifications().initNotifications();
+      String notificationsToken = await ViblifyNotifications().initNotifications();
 
       userModel = UserModel(
         name: username,
-        profilePic: Constant.avatarDefault,
+        profilePic: Constant.userIcon,
         bannerPic: Constant.bannerDefault,
         notificationsToken: notificationsToken,
         userID: userCredential.user!.uid,
@@ -103,7 +93,7 @@ class AuthRepository {
         stt: false,
         isUserBlocked: false,
         joinedAt: DateTime.now(),
-        userName: generateRandomUsername(),
+        userName: randomUsername,
         following: [],
         followers: [],
         notifications: [],
@@ -165,8 +155,10 @@ class AuthRepository {
   }
 
   Stream<UserModel> getUserData(String uid) {
-    return _users.doc(uid).snapshots().map(
-        (event) => UserModel.fromMap(event.data() as Map<String, dynamic>));
+    return _users
+        .doc(uid)
+        .snapshots()
+        .map((event) => UserModel.fromMap(event.data() as Map<String, dynamic>));
   }
 
   Future<String> getUserIdByName(String name) async {
@@ -187,8 +179,7 @@ class AuthRepository {
     return _users.where("userName", isEqualTo: name).snapshots().map(
       (QuerySnapshot event) {
         if (event.docs.isNotEmpty) {
-          return UserModel.fromMap(
-              event.docs.first.data() as Map<String, dynamic>);
+          return UserModel.fromMap(event.docs.first.data() as Map<String, dynamic>);
         } else {
           // Handle the case when no user with the specified name is found
           // ignore: null_check_always_fails
@@ -205,9 +196,7 @@ class AuthRepository {
     int minLength = 10;
     int maxLength = 15;
     int length = minLength +
-        random.nextInt(maxLength -
-            minLength +
-            1); // Generates a random length between 10 and 15
+        random.nextInt(maxLength - minLength + 1); // Generates a random length between 10 and 15
 
     StringBuffer usernameBuffer = StringBuffer();
 
