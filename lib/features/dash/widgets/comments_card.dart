@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:like_button/like_button.dart';
 import 'package:viblify_app/core/common/error_text.dart';
 import 'package:viblify_app/features/dash/controller/dash_controller.dart';
@@ -55,7 +56,7 @@ class MyCommentCard extends ConsumerWidget {
                         width: 5,
                       ),
                       Text(
-                        dash.commentCount.toString(),
+                        data.commentCount.toString(),
                         style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey[600]!),
                       ),
                       const Spacer(),
@@ -97,10 +98,13 @@ class MyCommentCard extends ConsumerWidget {
                 const SizedBox(
                   width: 15,
                 ),
-                Text(
-                  "add new comment",
-                  style: TextStyle(
-                    color: Colors.grey[400],
+                GestureDetector(
+                  onTap: () => navigationToDashCommentScreen(context, dash.dashID, dash.userID),
+                  child: Text(
+                    "add new comment",
+                    style: TextStyle(
+                      color: Colors.grey[400],
+                    ),
                   ),
                 ),
               ],
@@ -109,5 +113,9 @@ class MyCommentCard extends ConsumerWidget {
         ],
       ),
     );
+  }
+
+  void navigationToDashCommentScreen(BuildContext context, String dashID, String dashUserID) {
+    context.push("/dash_comments/$dashID/$dashUserID");
   }
 }

@@ -1,3 +1,5 @@
+// ignore_for_file: unused_result
+
 import 'dart:developer';
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -14,6 +16,7 @@ import 'package:viblify_app/features/auth/controller/auth_controller.dart';
 import 'package:viblify_app/features/user_profile/repository/update_user_status.dart';
 import 'package:viblify_app/theme/pallete.dart';
 
+import '../../notifications/controller/controller.dart';
 import '../drawers/community_list_drawer.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
@@ -119,7 +122,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
               forceMaterialTransparency: true,
               actions: [
                 IconButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    ref.refresh(getNotificationsProvider(user.userID));
+                    context.push("/notifications/${user.userID}");
+                  },
                   icon: const Icon(
                     LineIcons.bell,
                     size: 22,

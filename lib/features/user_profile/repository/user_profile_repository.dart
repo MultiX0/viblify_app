@@ -15,6 +15,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'dart:typed_data';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import '../../../core/Constant/firebase_constant.dart';
+import '../../notifications/db_notifications.dart';
 
 final userProfileRepositoryProvider = Provider((ref) {
   return UserRepository(firebaseFirestore: ref.watch(firestoreProvider));
@@ -24,8 +25,7 @@ class UserRepository {
   final FirebaseFirestore _firebaseFirestore;
   UserRepository({required FirebaseFirestore firebaseFirestore})
       : _firebaseFirestore = firebaseFirestore;
-  CollectionReference get _users =>
-      _firebaseFirestore.collection(FirebaseConstant.usersCollection);
+  CollectionReference get _users => _firebaseFirestore.collection(FirebaseConstant.usersCollection);
 
   FutureVoid editProfile(UserModel user) async {
     try {
@@ -40,9 +40,8 @@ class UserRepository {
   Future<void> toggleFollow(String userID, followerID) async {
     // Update the current user's following list
     final followingRef = _users.doc(userID);
-    final isFollowing = await followingRef
-        .get()
-        .then((doc) => doc['following']?.contains(followerID) ?? false);
+    final isFollowing =
+        await followingRef.get().then((doc) => doc['following']?.contains(followerID) ?? false);
 
     if (isFollowing) {
       await followingRef.update({
@@ -52,13 +51,16 @@ class UserRepository {
       await followingRef.update({
         'following': FieldValue.arrayUnion([followerID])
       });
+
+      DbNotifications(
+              userID: userID, to_userID: followerID, notification_type: ActionType.new_follow)
+          .addNotification();
     }
 
     // Update the other user's followers list
     final otherUserRef = _users.doc(followerID);
-    final isFollowedByOtherUser = await otherUserRef
-        .get()
-        .then((doc) => doc['followers']?.contains(userID) ?? false);
+    final isFollowedByOtherUser =
+        await otherUserRef.get().then((doc) => doc['followers']?.contains(userID) ?? false);
 
     if (isFollowedByOtherUser) {
       await otherUserRef.update({
@@ -93,14 +95,11 @@ class UserRepository {
         }
         const chars = '1234567890';
         final random = Random();
-        final id =
-            List.generate(13, (index) => chars[random.nextInt(chars.length)])
-                .join();
+        final id = List.generate(13, (index) => chars[random.nextInt(chars.length)]).join();
 
         final file = File('${directory.path}/$id.jpg');
         // Save the image to the gallery
-        await ImageGallerySaver.saveImage(Uint8List.fromList(bytes),
-            name: file.path);
+        await ImageGallerySaver.saveImage(Uint8List.fromList(bytes), name: file.path);
 
         return right(await file.writeAsBytes(bytes));
       } else {

@@ -10,6 +10,7 @@ import 'package:viblify_app/core/Constant/firebase_constant.dart';
 import 'package:viblify_app/core/failure.dart';
 import 'package:viblify_app/core/providers/firebase_providers.dart';
 import 'package:viblify_app/core/type_defs.dart';
+import 'package:viblify_app/features/notifications/db_notifications.dart';
 import 'package:viblify_app/models/feeds_model.dart';
 
 final postRepositoryProvider = Provider((ref) {
@@ -35,26 +36,33 @@ class PostRepository {
   Future<void> likeHandling(String docID, String uid) async {
     try {
       // Fetch the post's current likes
-      final response = await _posts.select('likes').eq('feedID', docID).single();
+      final response = await _posts.select('*').eq('feedID', docID).single();
+      final postData = await _posts.select('*').eq('feedID', docID).single();
+      String postOwner = postData['userID'];
 
-      final List<dynamic>? currentLikes = response['likes'] as List<dynamic>?;
-      List<dynamic> updatedLikes;
+      final List<dynamic> currentLikes = response['likes'];
 
-      if (currentLikes != null && currentLikes.contains(uid)) {
-        // If the user's UID is already in the likes, remove it (unlike)
-        updatedLikes = currentLikes.where((id) => id != uid).toList();
+      if (currentLikes.contains(uid)) {
+        List<dynamic> updatedLikes = currentLikes;
+        currentLikes.remove(uid);
+        await _posts
+            .update({'likes': updatedLikes, 'likeCount': updatedLikes.length}).eq('feedID', docID);
       } else {
-        // Add the user's UID to the likes (like)
-        updatedLikes = [...currentLikes ?? [], uid];
+        List<dynamic> updatedLikes = currentLikes;
+        updatedLikes.add(uid);
+        await _posts
+            .update({'likes': updatedLikes, 'likeCount': updatedLikes.length}).eq('feedID', docID);
+        if (uid != postOwner) {
+          DbNotifications(
+                  userID: uid,
+                  to_userID: postOwner,
+                  notification_type: ActionType.feed_like,
+                  feedID: docID)
+              .addNotification();
+        }
       }
 
       // Update the post with new likes and like count
-      final updateResponse = await _posts
-          .update({'likes': updatedLikes, 'likeCount': updatedLikes.length}).eq('feedID', docID);
-
-      if (updateResponse.error != null) {
-        throw updateResponse.error!;
-      }
     } catch (error) {
       log('Error handling like: ${error.toString()}');
     }

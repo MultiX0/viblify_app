@@ -61,11 +61,12 @@ class SttController extends StateNotifier<bool> {
     NotificationsModel notificationsModel = NotificationsModel(
       to_userID: userID,
       userID: uid,
+      dashID: '',
       feedID: '',
       notification_type: '',
+      seen: false,
       notification: "لقد وصلت رسالة جديدة من مجهول",
       sttID: stt.sttID,
-      createdAt: Timestamp.now(),
     );
     _repository.addNotification(notificationsModel);
 

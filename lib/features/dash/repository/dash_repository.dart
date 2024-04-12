@@ -12,6 +12,7 @@ import 'package:viblify_app/models/dash_model.dart';
 
 import '../../../core/Constant/firebase_constant.dart';
 import '../../../core/type_defs.dart';
+import '../../notifications/db_notifications.dart';
 
 final dashRepositoryProvider = Provider((ref) {
   return DashRepository(firebaseFirestore: ref.watch(firestoreProvider));
@@ -105,6 +106,7 @@ class DashRepository {
   Future<void> likeHundling(String dashID, String userID) async {
     try {
       var ref = await _dash.select('*').eq("dashID", dashID).single();
+      var dashOwner = ref['userID'];
       List<dynamic> likes = ref['likes'];
       bool isLiked = likes.contains(userID);
       if (isLiked) {
@@ -115,6 +117,14 @@ class DashRepository {
         var newLikes = likes;
         newLikes.add(userID);
         await _dash.update({"likes": newLikes}).eq("dashID", dashID);
+        if (userID != dashOwner) {
+          DbNotifications(
+                  userID: userID,
+                  to_userID: dashOwner,
+                  notification_type: ActionType.dash_like,
+                  dashID: dashID)
+              .addNotification();
+        }
       }
     } catch (e) {
       log(e.toString());

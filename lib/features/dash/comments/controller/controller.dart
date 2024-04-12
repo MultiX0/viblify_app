@@ -1,22 +1,24 @@
-import 'dart:math';
+// ignore_for_file: unused_result
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:uuid/uuid.dart';
 import 'package:viblify_app/core/utils.dart';
 import 'package:viblify_app/features/auth/controller/auth_controller.dart';
 import 'package:viblify_app/features/dash/comments/repository/repository.dart';
 import 'package:viblify_app/models/dash_comments_model.dart';
-import 'package:viblify_app/models/dash_model.dart';
 
-import '../../../../core/Constant/firebase_constant.dart';
 import '../../../../core/providers/storage_repository_provider.dart';
+import '../../../notifications/db_notifications.dart';
 
 final getDashCommentsProvider = FutureProvider.family((ref, String dashID) async {
   final dashCommentsController = ref.watch(dashCommentsControllerProvider.notifier);
   return dashCommentsController.getAllComments(dashID);
+});
+final getDashCommentByID = StreamProvider.family((ref, String commentID) {
+  final dashCommentsController = ref.watch(dashCommentsControllerProvider.notifier);
+
+  return dashCommentsController.getCommentByID(commentID);
 });
 
 final dashCommentsControllerProvider = StateNotifierProvider<DashCommentsController, bool>((ref) {
@@ -27,6 +29,7 @@ final dashCommentsControllerProvider = StateNotifierProvider<DashCommentsControl
 });
 
 class DashCommentsController extends StateNotifier<bool> {
+  final uuid = Uuid();
   DashCommentsRepository _repository;
   final Ref _ref;
   DashCommentsController(
@@ -39,25 +42,24 @@ class DashCommentsController extends StateNotifier<bool> {
 
   void addComment({
     required String content,
-    required String title,
     required BuildContext context,
-    required bool isCommentsOpen,
-    required List<dynamic> labels,
+    required String dashID,
+    required WidgetRef ref,
+    required String dashUserID,
   }) async {
     state = true;
     final uid = _ref.read(userProvider)?.userID ?? "";
 
     DashCommentsModel dashCommentsModel = DashCommentsModel(
       userID: uid,
-      dashID: "",
+      dashID: dashID,
       likes: [],
       content: content,
       commentID: '',
-      createdAt: Timestamp.now().millisecondsSinceEpoch.toString(),
     );
 
-    if (dashCommentsModel.dashID.isEmpty) {
-      dashCommentsModel = dashCommentsModel.copyWith(dashID: await generateUniqueCommentID());
+    if (dashCommentsModel.commentID.isEmpty) {
+      dashCommentsModel = dashCommentsModel.copyWith(commentID: uuid.v4());
     }
 
     final result = await _repository.addComment(dashCommentsModel);
@@ -65,42 +67,29 @@ class DashCommentsController extends StateNotifier<bool> {
     state = false;
     result.fold((l) => showSnackBar(context, l.message), (r) async {
       showSnackBar(context, "Comment Posted Successfully");
-      context.pop();
+      if (uid != dashUserID) {
+        DbNotifications(
+                dashID: dashID,
+                userID: uid,
+                to_userID: dashUserID,
+                notification_content: content,
+                notification_type: ActionType.dash_comment)
+            .addNotification();
+      }
+      ref.refresh(getDashCommentsProvider(dashID));
     });
   }
 
-  Future<String> generateUniqueCommentID() async {
-    String generateNewCommentID() {
-      const chars = '0123456789qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM';
-      final random = Random.secure();
-      return List.generate(20, (index) => chars[random.nextInt(chars.length)]).join();
-    }
-
-    String newDashID = "";
-    bool isUnique = false;
-    final supabase = Supabase.instance.client;
-
-    while (!isUnique) {
-      newDashID = generateNewCommentID();
-
-      final querySnapshot = await supabase
-          .from(FirebaseConstant.dashCommentsCollection)
-          .select()
-          .eq("commentID", newDashID)
-          .limit(1);
-
-      isUnique = querySnapshot.isEmpty;
-    }
-
-    return newDashID;
-  }
-
-  Future<List<Dash>> getAllComments(String dashID) async {
+  Future<List<DashCommentsModel>> getAllComments(String dashID) async {
     return _repository.getAllComments(dashID);
   }
 
-  Stream<Dash> getCommentByID(String dashID) {
-    return _repository.getCommentByID(dashID);
+  Future<void> likeHundling(String commentID, String uid, String dashID) async {
+    _repository.likeHundling(commentID, uid, dashID);
+  }
+
+  Stream<DashCommentsModel> getCommentByID(String commentID) {
+    return _repository.getCommentByID(commentID);
   }
 }
 

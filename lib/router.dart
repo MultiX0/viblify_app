@@ -29,7 +29,9 @@ import 'package:viblify_app/features/user_profile/screens/video_screen.dart';
 import 'package:viblify_app/widgets/image_slide.dart';
 import 'features/auth/controller/auth_controller.dart';
 import 'features/auth/screens/registeration_screen.dart';
+import 'features/dash/comments/screens/dash_comments_screen.dart';
 import 'features/dash/screens/view_dash_screen.dart';
+import 'features/notifications/screens/notification_screen.dart';
 import 'widgets/profile_pic_widget.dart';
 
 class Navigation {
@@ -285,6 +287,25 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: "/update",
         pageBuilder: (context, state) {
           return const NoTransitionPage(child: SizedBox());
+        },
+      ),
+      GoRoute(
+        path: "/notifications/:userID",
+        pageBuilder: (context, state) {
+          return NoTransitionPage(
+              child: NotificationScreen(
+            userID: state.pathParameters['userID']!,
+          ));
+        },
+      ),
+      GoRoute(
+        path: "/dash_comments/:dashID/:dashUserID",
+        pageBuilder: (context, state) {
+          return NoTransitionPage(
+              child: DashCommentsScreen(
+            dashID: state.pathParameters['dashID']!,
+            dashUserID: state.pathParameters['dashUserID']!,
+          ));
         },
       ),
     ],
