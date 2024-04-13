@@ -21,11 +21,15 @@ import 'package:viblify_app/core/utils.dart';
 import 'package:viblify_app/features/auth/controller/auth_controller.dart';
 import 'package:viblify_app/features/chats/controller/chats_controller.dart';
 import 'package:viblify_app/features/user_profile/controller/user_profile_controller.dart';
+import 'package:viblify_app/features/user_profile/screens/user_dashs_screen.dart';
 import 'package:viblify_app/features/user_profile/screens/user_feeds.dart';
 import 'package:viblify_app/models/user_model.dart';
 import 'package:viblify_app/theme/pallete.dart';
 import 'package:intl/intl.dart';
 import 'package:viblify_app/utils/colors.dart';
+
+import '../../../widgets/empty_widget.dart';
+import 'user_liked_feeds.dart';
 
 class UserProfileScreen extends ConsumerStatefulWidget {
   final String uid;
@@ -35,7 +39,21 @@ class UserProfileScreen extends ConsumerStatefulWidget {
   ConsumerState<ConsumerStatefulWidget> createState() => _UserProfileScreenState();
 }
 
-class _UserProfileScreenState extends ConsumerState<UserProfileScreen> {
+class _UserProfileScreenState extends ConsumerState<UserProfileScreen>
+    with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+  @override
+  void initState() {
+    _tabController = TabController(length: 4, vsync: this);
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     String myID = ref.watch(userProvider)!.userID;
@@ -107,10 +125,22 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen> {
                     ProfileBody(user, date, myID, websiteName, navigationToSTT, context),
                   ];
                 }),
-                body: UserFeedsScreen(
-                  uid: widget.uid,
-                  isThemeDark: user.isThemeDark,
-                  dividerColor: user.dividerColor,
+                body: TabBarView(
+                  controller: _tabController,
+                  children: [
+                    UserFeedsScreen(
+                      uid: widget.uid,
+                      isThemeDark: user.isThemeDark,
+                      dividerColor: user.dividerColor,
+                    ),
+                    const MyEmptyShowen(text: "لاتوجد نتائج"),
+                    UserDashScreen(userID: widget.uid),
+                    UserLikedFeeds(
+                      uid: widget.uid,
+                      isThemeDark: user.isThemeDark,
+                      dividerColor: user.dividerColor,
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -367,6 +397,21 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen> {
             ),
             const SizedBox(
               height: 10,
+            ),
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: TabBar(
+                labelColor: Colors.white,
+                dividerColor: Colors.transparent,
+                indicatorColor: Colors.blue,
+                controller: _tabController,
+                tabs: const [
+                  Tab(text: 'Posts'),
+                  Tab(text: 'Media'),
+                  Tab(text: 'Dashs'),
+                  Tab(text: 'Liked'),
+                ],
+              ),
             ),
             Divider(
               color: (user.verified &&

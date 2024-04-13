@@ -6,9 +6,11 @@ import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fpdart/fpdart.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:viblify_app/core/failure.dart';
 import 'package:viblify_app/core/providers/firebase_providers.dart';
 import 'package:viblify_app/core/type_defs.dart';
+import 'package:viblify_app/models/feeds_model.dart';
 import 'package:viblify_app/models/user_model.dart';
 import 'package:http/http.dart' as http;
 import 'package:permission_handler/permission_handler.dart';
@@ -22,6 +24,7 @@ final userProfileRepositoryProvider = Provider((ref) {
 });
 
 class UserRepository {
+  final supabase = Supabase.instance.client;
   final FirebaseFirestore _firebaseFirestore;
   UserRepository({required FirebaseFirestore firebaseFirestore})
       : _firebaseFirestore = firebaseFirestore;
@@ -223,5 +226,19 @@ class UserRepository {
       'isUserOnline': isOnline,
       'lastTimeActive': DateTime.now().millisecondsSinceEpoch.toString(),
     });
+  }
+
+  Future<List<Feeds>> getUserLikedFeeds(String uid) async {
+    try {
+      var ref = await supabase
+          .from(FirebaseConstant.postsCollection)
+          .select('*')
+          .contains("likes", [uid]).neq("userID", uid);
+
+      final List<Feeds> feeds = ref.map<Feeds>((data) => Feeds.fromMap(data)).toList();
+      return feeds;
+    } catch (e) {
+      throw Failure(e.toString());
+    }
   }
 }

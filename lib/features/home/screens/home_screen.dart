@@ -11,11 +11,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:line_icons/line_icons.dart';
+import 'package:viblify_app/core/common/error_text.dart';
 import 'package:viblify_app/features/Feed/feed_screen.dart';
 import 'package:viblify_app/features/auth/controller/auth_controller.dart';
 import 'package:viblify_app/features/user_profile/repository/update_user_status.dart';
 import 'package:viblify_app/theme/pallete.dart';
-
+import 'package:badges/badges.dart' as badges;
 import '../../notifications/controller/controller.dart';
 import '../drawers/community_list_drawer.dart';
 
@@ -121,16 +122,59 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
               centerTitle: false,
               forceMaterialTransparency: true,
               actions: [
-                IconButton(
-                  onPressed: () {
-                    ref.refresh(getNotificationsProvider(user.userID));
-                    context.push("/notifications/${user.userID}");
-                  },
-                  icon: const Icon(
-                    LineIcons.bell,
-                    size: 22,
-                  ),
-                ),
+                ref.watch(getUnSeenNotificationsProvider(user.userID)).when(
+                      data: (data) {
+                        return data != 0
+                            ? badges.Badge(
+                                position: badges.BadgePosition.topEnd(top: 0, end: 5),
+                                badgeContent: Text(
+                                  data.toString(),
+                                  style: const TextStyle(fontFamily: "FixelDisplay"),
+                                ),
+                                badgeAnimation: const badges.BadgeAnimation.rotation(
+                                  animationDuration: Duration(seconds: 1),
+                                  colorChangeAnimationDuration: Duration(seconds: 4),
+                                  loopAnimation: false,
+                                  curve: Curves.fastOutSlowIn,
+                                  colorChangeAnimationCurve: Curves.easeInCubic,
+                                ),
+                                badgeStyle: const badges.BadgeStyle(
+                                  padding: EdgeInsets.all(5),
+                                ),
+                                child: IconButton(
+                                  onPressed: () {
+                                    ref.refresh(getNotificationsProvider(user.userID));
+                                    context.push("/notifications/${user.userID}");
+                                  },
+                                  icon: const Icon(
+                                    LineIcons.bell,
+                                    size: 22,
+                                  ),
+                                ),
+                              )
+                            : IconButton(
+                                onPressed: () {
+                                  ref.refresh(getNotificationsProvider(user.userID));
+                                  context.push("/notifications/${user.userID}");
+                                },
+                                icon: const Icon(
+                                  LineIcons.bell,
+                                  size: 22,
+                                ),
+                              );
+                      },
+                      error: (error, stackTrace) => ErrorText(error: error.toString()),
+                      loading: () => IconButton(
+                        onPressed: () {
+                          ref.refresh(getNotificationsProvider(user.userID));
+                          context.push("/notifications/${user.userID}");
+                        },
+                        icon: const Icon(
+                          LineIcons.bell,
+                          size: 22,
+                        ),
+                      ),
+                    ),
                 IconButton(
                   onPressed: () => context.push("/stt"),
                   icon: const Icon(

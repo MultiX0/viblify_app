@@ -15,6 +15,9 @@ import 'package:viblify_app/features/notifications/controller/controller.dart';
 import 'package:viblify_app/theme/pallete.dart';
 import 'package:viblify_app/widgets/empty_widget.dart';
 import 'package:timeago/timeago.dart' as timeago;
+import '../../../core/common/follow_button.dart';
+import '../../../models/user_model.dart';
+import '../../user_profile/controller/user_profile_controller.dart';
 import '../db_notifications.dart';
 
 class NotificationScreen extends ConsumerStatefulWidget {
@@ -33,6 +36,8 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
 
   @override
   Widget build(BuildContext context) {
+    UserModel myData = ref.watch(userProvider)!;
+
     void updateSeenStatus(int notificationID) async {
       await Supabase.instance.client.rpc("notification_status", params: {"row_id": notificationID});
     }
@@ -64,7 +69,12 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
                         final notification = notifications[index];
                         final action = getActionTypeFromString(notification.notification_type);
                         final notification_content = getNotificationString(action);
-
+                        final isUserFollowed =
+                            ref.watch(isUserFollowingProvider(notification.userID));
+                        final bool isFollowingUser = isUserFollowed.maybeWhen(
+                          data: (boolValue) => boolValue, // Use a default value if null
+                          orElse: () => false, // Handle other cases (loading, error)
+                        );
                         DateTime dateTime = DateTime.parse(notification.createdAt.toString());
 
                         final createdAt = timeago.format(dateTime, locale: 'en');
@@ -115,6 +125,13 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
                                         ),
                                       ),
                                     ),
+                                    if (action == ActionType.new_follow) ...[
+                                      FollowButton(
+                                        isFollowingUser: isFollowingUser,
+                                        myData: myData,
+                                        user: user,
+                                      ),
+                                    ],
                                     if (!notification.seen) ...[
                                       Icon(
                                         Icons.circle,

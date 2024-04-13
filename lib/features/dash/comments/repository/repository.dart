@@ -1,13 +1,15 @@
-// ignore_for_file: void_checks
+// ignore_for_file: void_checks, use_build_context_synchronously
 
 import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:viblify_app/core/failure.dart';
 import 'package:viblify_app/core/providers/firebase_providers.dart';
+import 'package:viblify_app/core/utils.dart';
 import 'package:viblify_app/models/dash_comments_model.dart';
 
 import '../../../../core/Constant/firebase_constant.dart';
@@ -25,7 +27,9 @@ class DashCommentsRepository {
   SupabaseQueryBuilder get _dashComments => supabase.from(FirebaseConstant.dashCommentsCollection);
   FutureVoid addComment(DashCommentsModel comment) async {
     try {
-      return right(await _dashComments.insert(comment.toMap()));
+      return right(await _dashComments.insert(comment.toMap()).then((e) async {
+        await supabase.rpc("comment_increment", params: {"count": 1, "row_id": comment.dashID});
+      }));
     } on FirebaseException catch (e) {
       throw e.message!;
     } catch (e) {
@@ -81,6 +85,21 @@ class DashCommentsRepository {
       }
     } catch (e) {
       log(e.toString());
+      throw Failure(e.toString());
+    }
+  }
+
+  Future<void> deleteComment(
+      String commentID, String dashID, BuildContext context, WidgetRef ref) async {
+    try {
+      var doc = _dashComments.delete().eq("commentID", commentID);
+      doc.then(
+        (e) => showSnackBar(context, "تم حذف التعليق بنجاح"),
+      );
+      await supabase.rpc("comment_decrement", params: {"count": 1, "row_id": dashID});
+    } catch (e) {
+      log(e.toString());
+      errorSnackBar(context);
       throw Failure(e.toString());
     }
   }

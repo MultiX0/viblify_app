@@ -7,8 +7,14 @@ import 'package:viblify_app/models/notifications_model.dart';
 import '../../../../core/providers/storage_repository_provider.dart';
 
 final getNotificationsProvider = FutureProvider.family((ref, String userID) async {
-  final dashCommentsController = ref.watch(notificationsControllerProvider.notifier);
-  return dashCommentsController.getAllNotifications(userID);
+  final notificationsController = ref.watch(notificationsControllerProvider.notifier);
+  return notificationsController.getAllNotifications(userID);
+});
+
+final getUnSeenNotificationsProvider = StreamProvider.family((ref, String uid) {
+  final notificationsController = ref.watch(notificationsControllerProvider.notifier);
+
+  return notificationsController.getUnSeenNotificationCount(uid);
 });
 
 final notificationsControllerProvider = StateNotifierProvider<NotificationsController, bool>((ref) {
@@ -29,5 +35,9 @@ class NotificationsController extends StateNotifier<bool> {
 
   Future<List<NotificationsModel>> getAllNotifications(String userID) async {
     return _repository.getAllNotifications(userID);
+  }
+
+  Stream<int> getUnSeenNotificationCount(String uid) {
+    return _repository.getUnSeenNotificationCount(uid);
   }
 }

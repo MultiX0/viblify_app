@@ -1,10 +1,10 @@
-// ignore_for_file: use_build_context_synchronously
+// ignore_for_file: use_build_context_synchronously, unused_result
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:like_button/like_button.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:viblify_app/core/common/error_text.dart';
 import 'package:viblify_app/core/common/loader.dart';
 import 'package:viblify_app/features/auth/controller/auth_controller.dart';
@@ -12,6 +12,7 @@ import 'package:viblify_app/theme/pallete.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:viblify_app/widgets/empty_widget.dart';
 
+import '../../../../utils/my_model_bottom_sheet.dart';
 import '../controller/controller.dart';
 
 TextEditingController comments = TextEditingController();
@@ -26,8 +27,6 @@ class DashCommentsScreen extends ConsumerWidget {
     final myData = ref.read(userProvider)!;
     void addComment() async {
       if (comments.text.trim().isNotEmpty) {
-        await Supabase.instance.client
-            .rpc("comment_increment", params: {"count": 1, "row_id": dashID});
         ref.read(dashCommentsControllerProvider.notifier).addComment(
               content: comments.text.trim(),
               context: context,
@@ -51,6 +50,21 @@ class DashCommentsScreen extends ConsumerWidget {
       return !isLiked;
     }
 
+    void more(String commentID) {
+      moreData(
+        context: context,
+        onTap: () {
+          context.pop();
+          ref
+              .watch(dashCommentsControllerProvider.notifier)
+              .deleteComment(commentID, dashID, context, ref)
+              .then((e) {
+            ref.refresh(getDashCommentsProvider(dashID));
+          });
+        },
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: const Text("Dash Comments"),
@@ -72,104 +86,140 @@ class DashCommentsScreen extends ConsumerWidget {
                               bool commentLiked = comment.likes.contains(myData.userID);
                               return ref.read(getUserDataProvider(comment.userID)).when(
                                   data: (user) {
-                                    return ListTile(
-                                      minTileHeight: 20,
-                                      leading: CircleAvatar(
-                                        backgroundColor: DenscordColors.scaffoldForeground,
-                                        backgroundImage:
-                                            CachedNetworkImageProvider(user.profilePic),
-                                        radius: 18,
-                                      ),
-                                      title: Row(
-                                        children: [
-                                          Text(
-                                            "@${user.userName}",
-                                            style: TextStyle(
-                                              fontSize: 14,
-                                              color: Colors.grey[500],
-                                            ),
-                                          ),
-                                          const Spacer(),
-                                          Text(
-                                            createdAt,
-                                            style: TextStyle(color: Colors.grey[700], fontSize: 13),
-                                          ),
-                                        ],
-                                      ),
-                                      subtitle: Column(
+                                    return Container(
+                                      padding:
+                                          const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+                                      child: Row(
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
-                                          Text(
-                                            comment.content,
-                                            style: const TextStyle(fontSize: 13),
+                                          CircleAvatar(
+                                            backgroundColor: DenscordColors.scaffoldForeground,
+                                            backgroundImage:
+                                                CachedNetworkImageProvider(user.profilePic),
+                                            radius: 18,
                                           ),
-                                          Padding(
-                                              padding: const EdgeInsets.only(top: 8.0, left: 8.0),
-                                              child: ref
-                                                  .watch(getDashCommentByID(comment.commentID))
-                                                  .when(
-                                                    data: (data) {
-                                                      return Row(
-                                                        children: [
-                                                          LikeButton(
-                                                            size: 19,
-                                                            onTap: (isLiked) => onLikeButtonTapped(
-                                                                data.likes.contains(myData.userID),
-                                                                data.commentID),
-                                                            likeBuilder: (bool isLiked) {
-                                                              return Icon(
-                                                                data.likes.contains(myData.userID)
-                                                                    ? Icons.favorite
-                                                                    : Icons.favorite_border,
-                                                                color: data.likes
-                                                                        .contains(myData.userID)
-                                                                    ? Colors.pinkAccent
-                                                                    : Colors.grey[600],
-                                                                size: 19,
-                                                              );
-                                                            },
-                                                          ),
-                                                          const SizedBox(
-                                                            width: 3,
-                                                          ),
-                                                          Text(
-                                                            data.likes.length.toString(),
-                                                            style: TextStyle(
-                                                                color: Colors.grey[700],
-                                                                fontSize: 13),
-                                                          ),
-                                                        ],
-                                                      );
-                                                    },
-                                                    error: (error, trace) =>
-                                                        ErrorText(error: error.toString()),
-                                                    loading: () => Row(
-                                                      children: [
-                                                        LikeButton(
-                                                          size: 19,
-                                                          onTap: (isLiked) => onLikeButtonTapped(
-                                                              isLiked, comment.commentID),
-                                                          likeBuilder: (bool isLiked) {
-                                                            return Icon(
-                                                              commentLiked
-                                                                  ? Icons.favorite
-                                                                  : Icons.favorite_border,
-                                                              color: commentLiked
-                                                                  ? Colors.pinkAccent
-                                                                  : Colors.grey[600],
-                                                              size: 19,
-                                                            );
-                                                          },
-                                                        ),
-                                                        Text(
-                                                          comment.likes.length.toString(),
-                                                          style: TextStyle(
-                                                              color: Colors.grey[700],
-                                                              fontSize: 13),
-                                                        ),
-                                                      ],
+                                          const SizedBox(
+                                            width: 8,
+                                          ),
+                                          Expanded(
+                                            child: Column(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
+                                                Row(
+                                                  children: [
+                                                    Text(
+                                                      "@${user.userName}",
+                                                      style: TextStyle(
+                                                        fontSize: 13,
+                                                        color: Colors.grey[500],
+                                                        fontWeight: FontWeight.bold,
+                                                      ),
                                                     ),
-                                                  )),
+                                                    Text(
+                                                      ' ∘ ',
+                                                      style: TextStyle(
+                                                          color: Colors.grey[700], fontSize: 13),
+                                                    ),
+                                                    Text(
+                                                      createdAt,
+                                                      style: TextStyle(
+                                                          color: Colors.grey[700], fontSize: 13),
+                                                    ),
+                                                    const Spacer(),
+                                                    GestureDetector(
+                                                      onTap: () => more(comment.commentID),
+                                                      child: Padding(
+                                                        padding: const EdgeInsets.all(4.0),
+                                                        child: Icon(
+                                                          Icons.more_horiz,
+                                                          color: Colors.grey[700],
+                                                          size: 16,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                                Text(
+                                                  comment.content,
+                                                  style: const TextStyle(fontSize: 13),
+                                                ),
+                                                Padding(
+                                                  padding: const EdgeInsets.only(top: 8.0),
+                                                  child: ref
+                                                      .watch(getDashCommentByID(comment.commentID))
+                                                      .when(
+                                                        data: (data) {
+                                                          return Row(
+                                                            crossAxisAlignment:
+                                                                CrossAxisAlignment.start,
+                                                            children: [
+                                                              LikeButton(
+                                                                size: 19,
+                                                                onTap: (isLiked) =>
+                                                                    onLikeButtonTapped(
+                                                                        data.likes.contains(
+                                                                            myData.userID),
+                                                                        data.commentID),
+                                                                likeBuilder: (bool isLiked) {
+                                                                  return Icon(
+                                                                    data.likes
+                                                                            .contains(myData.userID)
+                                                                        ? Icons.favorite
+                                                                        : Icons.favorite_border,
+                                                                    color: data.likes
+                                                                            .contains(myData.userID)
+                                                                        ? Colors.pinkAccent
+                                                                        : Colors.grey[600],
+                                                                    size: 19,
+                                                                  );
+                                                                },
+                                                              ),
+                                                              const SizedBox(
+                                                                width: 3,
+                                                              ),
+                                                              Text(
+                                                                data.likes.length.toString(),
+                                                                style: TextStyle(
+                                                                    color: Colors.grey[700],
+                                                                    fontSize: 13),
+                                                              ),
+                                                            ],
+                                                          );
+                                                        },
+                                                        error: (error, trace) =>
+                                                            ErrorText(error: error.toString()),
+                                                        loading: () => Row(
+                                                          children: [
+                                                            LikeButton(
+                                                              size: 19,
+                                                              onTap: (isLiked) =>
+                                                                  onLikeButtonTapped(
+                                                                      isLiked, comment.commentID),
+                                                              likeBuilder: (bool isLiked) {
+                                                                return Icon(
+                                                                  commentLiked
+                                                                      ? Icons.favorite
+                                                                      : Icons.favorite_border,
+                                                                  color: commentLiked
+                                                                      ? Colors.pinkAccent
+                                                                      : Colors.grey[600],
+                                                                  size: 19,
+                                                                );
+                                                              },
+                                                            ),
+                                                            Text(
+                                                              comment.likes.length.toString(),
+                                                              style: TextStyle(
+                                                                  color: Colors.grey[700],
+                                                                  fontSize: 13),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
                                         ],
                                       ),
                                     );

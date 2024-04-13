@@ -49,6 +49,20 @@ class DashRepository {
     }
   }
 
+  Future<List<Dash>> getUserDashs(String uid) async {
+    try {
+      final data = await _dash.select().eq('userID', uid); // does
+
+      final List<Dash> dashes = data.map<Dash>((data) => Dash.fromMap(data)).toList();
+      dashes.shuffle();
+
+      return dashes;
+    } catch (error) {
+      Failure("Error getting dashes: $error");
+      rethrow;
+    }
+  }
+
   Stream<Dash> getDashByID(String dashID) {
     return _dash
         .stream(primaryKey: ['dashID'])

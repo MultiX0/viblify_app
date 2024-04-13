@@ -25,6 +25,20 @@ void showSnackBar(BuildContext context, String text) {
   }
 }
 
+void errorSnackBar(BuildContext context) {
+  final scaffoldMessenger = ScaffoldMessenger.maybeOf(context);
+
+  if (scaffoldMessenger != null) {
+    scaffoldMessenger
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(
+          content: Text("تعذرت العملية لقد حدثت مشكلة"),
+        ),
+      );
+  }
+}
+
 Future<FilePickerResult?> pickImage() async {
   final image = FilePicker.platform.pickFiles(
     type: FileType.image,
@@ -114,8 +128,7 @@ void copyProfileUrl(String uid, BuildContext context) {
 void copyDashUrl(Map<String, dynamic> data, BuildContext context) {
   final encodedExtraData = Uri.encodeComponent(jsonEncode(data));
 
-  FlutterClipboard.copy('https://viblify.com/dash/view/$encodedExtraData')
-      .then((value) {
+  FlutterClipboard.copy('https://viblify.com/dash/view/$encodedExtraData').then((value) {
     Navigator.of(context).pop();
     Fluttertoast.showToast(msg: "تم نسخ الرابط");
   });

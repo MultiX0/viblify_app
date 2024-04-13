@@ -21,6 +21,11 @@ final getAllDashesProvider = FutureProvider((ref) {
 
   return dashController.getAllDashes(myID);
 });
+final getUserDashesProvider = FutureProvider.family((ref, String userID) {
+  final dashController = ref.watch(dashControllerProvider.notifier);
+
+  return dashController.getUserDashs(userID);
+});
 
 final getRecommendedDashProvider = FutureProvider.family((ref, Tuple2 tuple2) {
   final dashController = ref.watch(dashControllerProvider.notifier);
@@ -130,6 +135,10 @@ class DashController extends StateNotifier<bool> {
 
   Future<List<Dash>> getAllDashes(String uid) async {
     return _repository.getAllDashes(uid);
+  }
+
+  Future<List<Dash>> getUserDashs(String uid) async {
+    return _repository.getUserDashs(uid);
   }
 
   Future<List<Dash>> getRecommendedDash(String id, List<dynamic> labels) async {

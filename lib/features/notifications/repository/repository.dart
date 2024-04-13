@@ -37,4 +37,23 @@ class NotificationsRepository {
       rethrow;
     }
   }
+
+  Stream<int> getUnSeenNotificationCount(String uid) {
+    var ref = _notification.stream(primaryKey: ['notificationID']).eq("to_userID", uid);
+
+    return ref.map(
+      (data) {
+        int counter = 0;
+        if (data.isNotEmpty) {
+          for (var doc in data) {
+            bool seen = doc['seen'];
+            if (seen != true) {
+              counter++;
+            }
+          }
+        }
+        return counter;
+      },
+    );
+  }
 }

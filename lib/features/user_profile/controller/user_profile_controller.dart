@@ -12,12 +12,11 @@ import 'package:viblify_app/core/utils.dart';
 import 'package:viblify_app/features/auth/controller/auth_controller.dart';
 import 'package:viblify_app/models/user_model.dart';
 
+import '../../../models/feeds_model.dart';
 import '../repository/user_profile_repository.dart';
 
 final searchUsersProvider = StreamProvider.family((ref, String query) {
-  return ref
-      .watch(userProfileControllerProvider.notifier)
-      .searchCommunity(query);
+  return ref.watch(userProfileControllerProvider.notifier).searchCommunity(query);
 });
 
 final getFollowersProvider = StreamProvider.family((ref, String userID) {
@@ -29,22 +28,24 @@ final getFollowingProvider = StreamProvider.family((ref, String userID) {
   return userController.getFollowingStream(userID);
 });
 
-final userProfileControllerProvider =
-    StateNotifierProvider<UserProfileController, bool>((ref) {
+final getUserLikeFeeds = FutureProvider.family((ref, String uid) async {
+  final userController = ref.watch(userProfileControllerProvider.notifier);
+  return userController.getUserLikedFeeds(uid);
+});
+
+final userProfileControllerProvider = StateNotifierProvider<UserProfileController, bool>((ref) {
   final repository = ref.watch(userProfileRepositoryProvider);
   final storageRepository = ref.watch(firebaseStorageProvider);
   return UserProfileController(
       repository: repository, ref: ref, storageRepository: storageRepository);
 });
-final usernameTakenProvider =
-    FutureProvider.family<bool, String>((ref, username) async {
+final usernameTakenProvider = FutureProvider.family<bool, String>((ref, username) async {
   final repository = ref.read(userProfileRepositoryProvider);
   final user = ref.read(userProvider)!;
   return repository.isUsernameTaken(username, user.userID);
 });
 
-final isUserFollowingProvider =
-    StreamProvider.family<bool, String>((ref, username) {
+final isUserFollowingProvider = StreamProvider.family<bool, String>((ref, username) {
   final repository = ref.read(userProfileRepositoryProvider);
   final user = ref.read(userProvider)!;
   return repository.isFollowingTheUserStream(username, user.userID);
@@ -72,8 +73,7 @@ class UserProfileController extends StateNotifier<bool> {
   void downloadImage(String imgUrl, BuildContext context) async {
     state = true;
 
-    Fluttertoast.showToast(
-        msg: "جاري التحميل ...", backgroundColor: Colors.blue[800]);
+    Fluttertoast.showToast(msg: "جاري التحميل ...", backgroundColor: Colors.blue[800]);
 
     final res = await _repository.downloadImage(imgUrl);
 
@@ -85,8 +85,7 @@ class UserProfileController extends StateNotifier<bool> {
         print(l.message);
       }
     }, (r) {
-      Fluttertoast.showToast(
-          msg: "تم تحميل الصورة بنجاح", backgroundColor: Colors.green[800]);
+      Fluttertoast.showToast(msg: "تم تحميل الصورة بنجاح", backgroundColor: Colors.green[800]);
     });
   }
 
@@ -113,8 +112,8 @@ class UserProfileController extends StateNotifier<bool> {
       );
     }
     if (banner != null) {
-      final res = await _storageRepository.storeFile(
-          path: 'users/banner', id: user.userID, file: banner);
+      final res =
+          await _storageRepository.storeFile(path: 'users/banner', id: user.userID, file: banner);
       res.fold(
         (l) => showSnackBar(context, l.message),
         (r) => user = user.copyWith(bannerPic: r),
@@ -155,5 +154,9 @@ class UserProfileController extends StateNotifier<bool> {
 
   Stream<List<dynamic>> getFollowingStream(String userID) {
     return _repository.getFollowingStream(userID);
+  }
+
+  Future<List<Feeds>> getUserLikedFeeds(String uid) async {
+    return _repository.getUserLikedFeeds(uid);
   }
 }
