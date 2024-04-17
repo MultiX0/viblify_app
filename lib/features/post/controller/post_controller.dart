@@ -10,7 +10,7 @@ import 'package:viblify_app/core/providers/storage_repository_provider.dart';
 import 'package:viblify_app/core/utils.dart';
 import 'package:viblify_app/features/auth/controller/auth_controller.dart';
 import 'package:viblify_app/features/post/repository/post_repository.dart';
-import 'package:viblify_app/models/feeds_model.dart';
+import 'package:viblify_app/features/post/models/feeds_model.dart';
 
 final getAllFeedsProvider = FutureProvider.family((ref, String uid) {
   final communityController = ref.watch(postControllerProvider.notifier);

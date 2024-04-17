@@ -6,7 +6,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:viblify_app/core/Constant/firebase_constant.dart';
 import 'package:viblify_app/core/failure.dart';
 
-import '../../models/notifications_model.dart';
+import 'models/notifications_model.dart';
 import 'enums/notifications_enum.dart';
 
 class DbNotifications {

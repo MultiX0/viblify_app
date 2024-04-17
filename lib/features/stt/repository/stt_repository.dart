@@ -6,8 +6,8 @@ import 'package:fpdart/fpdart.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:viblify_app/core/Constant/firebase_constant.dart';
 import 'package:viblify_app/core/type_defs.dart';
-import 'package:viblify_app/models/notifications_model.dart';
-import 'package:viblify_app/models/stt_model.dart';
+import 'package:viblify_app/features/notifications/models/notifications_model.dart';
+import 'package:viblify_app/features/stt/models/stt_model.dart';
 
 import '../../../core/failure.dart';
 import '../../../core/providers/firebase_providers.dart';

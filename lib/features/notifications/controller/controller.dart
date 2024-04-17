@@ -2,7 +2,7 @@
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:viblify_app/features/notifications/repository/repository.dart';
-import 'package:viblify_app/models/notifications_model.dart';
+import 'package:viblify_app/features/notifications/models/notifications_model.dart';
 
 import '../../../../core/providers/storage_repository_provider.dart';
 

@@ -32,6 +32,7 @@ import 'features/auth/screens/registeration_screen.dart';
 import 'features/dash/comments/screens/dash_comments_screen.dart';
 import 'features/dash/screens/view_dash_screen.dart';
 import 'features/notifications/screens/notification_screen.dart';
+import 'features/story/screens/create_story_screen.dart';
 import 'widgets/profile_pic_widget.dart';
 
 class Navigation {
@@ -296,6 +297,12 @@ final routerProvider = Provider<GoRouter>((ref) {
               child: NotificationScreen(
             userID: state.pathParameters['userID']!,
           ));
+        },
+      ),
+      GoRoute(
+        path: "/create_story",
+        pageBuilder: (context, state) {
+          return const NoTransitionPage(child: CreateStoryScreen());
         },
       ),
       GoRoute(

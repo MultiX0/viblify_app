@@ -7,7 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:viblify_app/core/failure.dart';
 import 'package:viblify_app/core/providers/firebase_providers.dart';
-import 'package:viblify_app/models/notifications_model.dart';
+import 'package:viblify_app/features/notifications/models/notifications_model.dart';
 
 import '../../../core/Constant/firebase_constant.dart';
 

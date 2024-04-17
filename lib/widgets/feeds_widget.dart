@@ -27,7 +27,7 @@ import 'package:viblify_app/features/stt/controller/stt_controller.dart';
 import 'package:viblify_app/widgets/empty_widget.dart';
 import 'dart:ui' as ui;
 import '../features/auth/controller/auth_controller.dart';
-import '../models/feeds_model.dart';
+import '../features/post/models/feeds_model.dart';
 
 class FeedsWidget extends ConsumerWidget {
   final List<Feeds> posts;
@@ -104,8 +104,7 @@ class FeedsWidget extends ConsumerWidget {
                           bool isArabic = Bidi.hasAnyRtl(post.content);
                           bool feedLiked = post.likes.contains(myID);
                           final postTime = timeago.format(
-                              Timestamp.fromMillisecondsSinceEpoch(
-                                      int.parse(post.createdAt))
+                              Timestamp.fromMillisecondsSinceEpoch(int.parse(post.createdAt))
                                   .toDate(),
                               locale: 'en_short');
                           void more() {
@@ -151,8 +150,7 @@ class FeedsWidget extends ConsumerWidget {
                                   if (post.isCommentsOpen != false) {
                                     commentScreen();
                                   } else {
-                                    Fluttertoast.showToast(
-                                        msg: 'التعليقات مغلقة لهذا المنشور');
+                                    Fluttertoast.showToast(msg: 'التعليقات مغلقة لهذا المنشور');
                                   }
                                 },
                                 child: Container(
@@ -167,13 +165,11 @@ class FeedsWidget extends ConsumerWidget {
                                   ),
                                   padding: const EdgeInsets.all(8),
                                   child: Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       GestureDetector(
                                         onTap: () => user.userID != myID
-                                            ? navigationToUserScreen(
-                                                user.userID, context)
+                                            ? navigationToUserScreen(user.userID, context)
                                             : null,
                                         child: CircleAvatar(
                                           radius: 20,
@@ -181,8 +177,7 @@ class FeedsWidget extends ConsumerWidget {
                                           child: CircleAvatar(
                                             radius: 20,
                                             backgroundImage:
-                                                CachedNetworkImageProvider(
-                                                    user.profilePic),
+                                                CachedNetworkImageProvider(user.profilePic),
                                             backgroundColor: Colors.white,
                                           ),
                                         ),
@@ -194,15 +189,12 @@ class FeedsWidget extends ConsumerWidget {
                                         child: Column(
                                           children: [
                                             Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.spaceEvenly,
+                                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                               children: [
                                                 Expanded(
                                                   flex: 4,
                                                   child: Container(
-                                                    padding:
-                                                        const EdgeInsets.only(
-                                                            left: 5),
+                                                    padding: const EdgeInsets.only(left: 5),
                                                     height: 20,
                                                     child: Row(
                                                       children: [
@@ -219,79 +211,55 @@ class FeedsWidget extends ConsumerWidget {
                                                           ),
                                                         ],
                                                         GestureDetector(
-                                                          onTap: () => user
-                                                                      .userID !=
-                                                                  myID
+                                                          onTap: () => user.userID != myID
                                                               ? navigationToUserScreen(
-                                                                  user.userID,
-                                                                  context)
+                                                                  user.userID, context)
                                                               : null,
                                                           child: Text(
                                                             user.name,
                                                             style: TextStyle(
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .bold,
+                                                                fontWeight: FontWeight.bold,
                                                                 fontSize: 14,
                                                                 color: isThemeDark
-                                                                    ? Colors
-                                                                        .white
-                                                                    : Colors
-                                                                        .black),
+                                                                    ? Colors.white
+                                                                    : Colors.black),
                                                           ),
                                                         ),
                                                         Padding(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                  .only(
-                                                                  left: 5.0),
-                                                          child:
-                                                              GestureDetector(
-                                                            onTap: () => user
-                                                                        .userID !=
-                                                                    myID
+                                                          padding: const EdgeInsets.only(left: 5.0),
+                                                          child: GestureDetector(
+                                                            onTap: () => user.userID != myID
                                                                 ? navigationToUserScreen(
-                                                                    user.userID,
-                                                                    context)
+                                                                    user.userID, context)
                                                                 : null,
                                                             child: Text(
                                                               "@${user.userName}",
                                                               style: TextStyle(
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .bold,
+                                                                  fontWeight: FontWeight.bold,
                                                                   fontSize: 14,
                                                                   color: isThemeDark
-                                                                      ? Colors
-                                                                          .grey
-                                                                      : Colors.grey[
-                                                                          900]),
+                                                                      ? Colors.grey
+                                                                      : Colors.grey[900]),
                                                             ),
                                                           ),
                                                         ),
                                                         Text(
                                                           " · ",
                                                           style: TextStyle(
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold,
+                                                              fontWeight: FontWeight.bold,
                                                               fontSize: 13,
                                                               color: isThemeDark
                                                                   ? Colors.grey
-                                                                  : Colors.grey[
-                                                                      900]),
+                                                                  : Colors.grey[900]),
                                                         ),
                                                         Text(
                                                           postTime.toString(),
                                                           style: TextStyle(
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold,
+                                                              fontWeight: FontWeight.bold,
                                                               fontSize: 13,
                                                               color: isThemeDark
                                                                   ? Colors.grey
-                                                                  : Colors.grey[
-                                                                      900]),
+                                                                  : Colors.grey[900]),
                                                         ),
                                                         const Spacer(),
                                                         IconButton(
@@ -321,20 +289,16 @@ class FeedsWidget extends ConsumerWidget {
                                                     ? Alignment.centerRight
                                                     : Alignment.centerLeft,
                                                 child: Linkable(
-                                                  textColor: isThemeDark
-                                                      ? Colors.white
-                                                      : Colors.black,
-                                                  linkColor: isThemeDark
-                                                      ? Colors.blue
-                                                      : Colors.blue[900],
+                                                  textColor:
+                                                      isThemeDark ? Colors.white : Colors.black,
+                                                  linkColor:
+                                                      isThemeDark ? Colors.blue : Colors.blue[900],
                                                   text: post.content,
                                                   style: TextStyle(
-                                                      fontWeight: isThemeDark
-                                                          ? null
-                                                          : FontWeight.bold),
-                                                  textAlign: isArabic
-                                                      ? TextAlign.right
-                                                      : TextAlign.left,
+                                                      fontWeight:
+                                                          isThemeDark ? null : FontWeight.bold),
+                                                  textAlign:
+                                                      isArabic ? TextAlign.right : TextAlign.left,
                                                   textDirection: isArabic
                                                       ? ui.TextDirection.rtl
                                                       : ui.TextDirection.ltr,
@@ -345,30 +309,22 @@ class FeedsWidget extends ConsumerWidget {
                                               Align(
                                                 alignment: Alignment.centerLeft,
                                                 child: Wrap(
-                                                  alignment:
-                                                      WrapAlignment.start,
+                                                  alignment: WrapAlignment.start,
                                                   spacing: 5.0,
                                                   runSpacing: 5.0,
                                                   children: post.tags
                                                       .map(
-                                                        (item) =>
-                                                            GestureDetector(
+                                                        (item) => GestureDetector(
                                                           onTap: () =>
-                                                              navigationToTagScreen(
-                                                                  item,
-                                                                  context),
+                                                              navigationToTagScreen(item, context),
                                                           child: Text(
                                                             "#$item",
                                                             style: TextStyle(
                                                                 color: isThemeDark
-                                                                    ? Colors
-                                                                        .blue
-                                                                    : Colors.blue[
-                                                                        900],
+                                                                    ? Colors.blue
+                                                                    : Colors.blue[900],
                                                                 fontSize: 14,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w600),
+                                                                fontWeight: FontWeight.w600),
                                                           ),
                                                         ),
                                                       )
@@ -395,8 +351,7 @@ class FeedsWidget extends ConsumerWidget {
                                               Card(
                                                 elevation: 4.0,
                                                 shape: RoundedRectangleBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(15),
+                                                  borderRadius: BorderRadius.circular(15),
                                                 ),
                                                 child: Column(
                                                   children: [
@@ -408,55 +363,34 @@ class FeedsWidget extends ConsumerWidget {
                                                         "viblify/stt",
                                                         style: TextStyle(
                                                             fontSize: 16,
-                                                            fontFamily:
-                                                                "LobsterTwo",
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .bold),
+                                                            fontFamily: "LobsterTwo",
+                                                            fontWeight: FontWeight.bold),
                                                       ),
                                                     ),
                                                     Container(
-                                                      width:
-                                                          MediaQuery.of(context)
-                                                              .size
-                                                              .width,
-                                                      padding:
-                                                          const EdgeInsets.only(
-                                                              left: 16,
-                                                              right: 16,
-                                                              bottom: 16,
-                                                              top: 8),
+                                                      width: MediaQuery.of(context).size.width,
+                                                      padding: const EdgeInsets.only(
+                                                          left: 16, right: 16, bottom: 16, top: 8),
                                                       child: Column(
                                                         children: [
                                                           ref
                                                               .watch(
                                                                 getSttByIdProvider(
-                                                                  Tuple2(
-                                                                      post.sttID,
-                                                                      post.userID),
+                                                                  Tuple2(post.sttID, post.userID),
                                                                 ),
                                                               )
                                                               .when(
-                                                                data: (stt) =>
-                                                                    Text(
-                                                                  stt.first
-                                                                      .message,
-                                                                  textDirection: Bidi.hasAnyRtl(stt
-                                                                          .first
-                                                                          .message)
-                                                                      ? ui.TextDirection
-                                                                          .rtl
-                                                                      : ui.TextDirection
-                                                                          .ltr,
+                                                                data: (stt) => Text(
+                                                                  stt.first.message,
+                                                                  textDirection: Bidi.hasAnyRtl(
+                                                                          stt.first.message)
+                                                                      ? ui.TextDirection.rtl
+                                                                      : ui.TextDirection.ltr,
                                                                   style: const TextStyle(
-                                                                      color: Colors
-                                                                          .white),
+                                                                      color: Colors.white),
                                                                 ),
-                                                                error: (error,
-                                                                        trace) =>
-                                                                    ErrorText(
-                                                                        error: error
-                                                                            .toString()),
+                                                                error: (error, trace) => ErrorText(
+                                                                    error: error.toString()),
                                                                 loading: () =>
                                                                     const SttLoadingWidget(),
                                                               ),
@@ -467,74 +401,48 @@ class FeedsWidget extends ConsumerWidget {
                                                 ),
                                               ),
                                             ],
-                                            if (post
-                                                .youtubeVideoID.isNotEmpty) ...[
+                                            if (post.youtubeVideoID.isNotEmpty) ...[
                                               const SizedBox(
                                                 height: 5,
                                               ),
                                             ],
                                             if (post.gif.isNotEmpty) ...[
                                               GestureDetector(
-                                                onDoubleTap: () =>
-                                                    likeHunlidng(post.feedID),
+                                                onDoubleTap: () => likeHunlidng(post.feedID),
                                                 child: Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          top: 5,
-                                                          bottom: 5,
-                                                          right: 5,
-                                                          left: 3),
+                                                  padding: const EdgeInsets.only(
+                                                      top: 5, bottom: 5, right: 5, left: 3),
                                                   child: ClipRRect(
-                                                    borderRadius:
-                                                        const BorderRadius.all(
+                                                    borderRadius: const BorderRadius.all(
                                                       Radius.circular(15.0),
                                                     ),
-                                                    child:
-                                                        ExtendedImage.network(
+                                                    child: ExtendedImage.network(
                                                       post.gif,
                                                       fit: BoxFit.cover,
-                                                      loadStateChanged:
-                                                          (ExtendedImageState
-                                                              state) {
-                                                        switch (state
-                                                            .extendedImageLoadState) {
-                                                          case LoadState
-                                                                .loading:
+                                                      loadStateChanged: (ExtendedImageState state) {
+                                                        switch (state.extendedImageLoadState) {
+                                                          case LoadState.loading:
                                                             return AspectRatio(
-                                                              aspectRatio:
-                                                                  16 / 9,
-                                                              child: Shimmer
-                                                                  .fromColors(
-                                                                baseColor: Colors
-                                                                    .grey
-                                                                    .shade900,
+                                                              aspectRatio: 16 / 9,
+                                                              child: Shimmer.fromColors(
+                                                                baseColor: Colors.grey.shade900,
                                                                 highlightColor:
-                                                                    Colors.grey
-                                                                        .shade800,
-                                                                child:
-                                                                    Container(
-                                                                  decoration:
-                                                                      BoxDecoration(
+                                                                    Colors.grey.shade800,
+                                                                child: Container(
+                                                                  decoration: BoxDecoration(
                                                                     borderRadius:
-                                                                        BorderRadius.circular(
-                                                                            10),
-                                                                    color: Colors
-                                                                        .grey
-                                                                        .shade900,
+                                                                        BorderRadius.circular(10),
+                                                                    color: Colors.grey.shade900,
                                                                   ),
                                                                 ),
                                                               ),
                                                             );
 
-                                                          case LoadState
-                                                                .completed:
+                                                          case LoadState.completed:
                                                             return ExtendedRawImage(
-                                                              width: double
-                                                                  .infinity,
+                                                              width: double.infinity,
                                                               fit: BoxFit.cover,
-                                                              image: state
-                                                                  .extendedImageInfo
-                                                                  ?.image,
+                                                              image: state.extendedImageInfo?.image,
                                                             );
 
                                                           default:
@@ -542,51 +450,36 @@ class FeedsWidget extends ConsumerWidget {
                                                         }
                                                       },
                                                       cache: true,
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              0),
+                                                      borderRadius: BorderRadius.circular(0),
                                                     ),
                                                   ),
                                                 ),
                                               ),
                                             ],
-                                            if (post
-                                                .youtubeVideoID.isNotEmpty) ...[
+                                            if (post.youtubeVideoID.isNotEmpty) ...[
                                               AspectRatio(
                                                 aspectRatio: 16 / 9,
                                                 child: Container(
                                                   decoration: BoxDecoration(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            15),
+                                                    borderRadius: BorderRadius.circular(15),
                                                     image: DecorationImage(
-                                                        image:
-                                                            CachedNetworkImageProvider(
-                                                          VideoURLValidator
-                                                              .getYouTubeThumbnail(
-                                                                  post.youtubeVideoID),
+                                                        image: CachedNetworkImageProvider(
+                                                          VideoURLValidator.getYouTubeThumbnail(
+                                                              post.youtubeVideoID),
                                                         ),
                                                         fit: BoxFit.cover),
                                                   ),
                                                   child: Align(
                                                     alignment: Alignment.center,
                                                     child: GestureDetector(
-                                                      onTap: () =>
-                                                          navigationToVideScreen(
-                                                              post.youtubeVideoID,
-                                                              context),
+                                                      onTap: () => navigationToVideScreen(
+                                                          post.youtubeVideoID, context),
                                                       child: Container(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .all(1),
-                                                        decoration:
-                                                            BoxDecoration(
-                                                          shape:
-                                                              BoxShape.circle,
+                                                        padding: const EdgeInsets.all(1),
+                                                        decoration: BoxDecoration(
+                                                          shape: BoxShape.circle,
                                                           border: Border.all(
-                                                              color:
-                                                                  Colors.white,
-                                                              width: 2.5),
+                                                              color: Colors.white, width: 2.5),
                                                         ),
                                                         child: const Icon(
                                                           Icons.play_circle,
@@ -607,61 +500,42 @@ class FeedsWidget extends ConsumerWidget {
                                                 tag: post
                                                     .photoUrl, // Ensure this tag is unique and consistent
                                                 child: ClipRRect(
-                                                  borderRadius:
-                                                      const BorderRadius.all(
+                                                  borderRadius: const BorderRadius.all(
                                                     Radius.circular(10.0),
                                                   ),
                                                   child: GestureDetector(
-                                                    onDoubleTap: () =>
-                                                        likeHunlidng(
-                                                            post.feedID),
+                                                    onDoubleTap: () => likeHunlidng(post.feedID),
                                                     child: CachedNetworkImage(
                                                       imageUrl: post.photoUrl,
-                                                      imageBuilder: (context,
-                                                          imageProvider) {
+                                                      imageBuilder: (context, imageProvider) {
                                                         return GestureDetector(
-                                                          onTap: () =>
-                                                              context.push(
+                                                          onTap: () => context.push(
                                                             "/img/slide/${base64UrlEncode(utf8.encode(post.photoUrl))}",
                                                           ),
                                                           child: Container(
-                                                            width:
-                                                                double.infinity,
+                                                            width: double.infinity,
                                                             constraints: BoxConstraints(
-                                                                maxHeight:
-                                                                    MediaQuery.of(
-                                                                            context)
-                                                                        .size
-                                                                        .width),
+                                                                maxHeight: MediaQuery.of(context)
+                                                                    .size
+                                                                    .width),
                                                             child: Image(
-                                                              image:
-                                                                  imageProvider,
+                                                              image: imageProvider,
                                                               fit: BoxFit.cover,
                                                             ),
                                                           ),
                                                         );
                                                       },
-                                                      placeholder:
-                                                          (context, url) {
+                                                      placeholder: (context, url) {
                                                         return AspectRatio(
                                                           aspectRatio: 1 / 1,
-                                                          child: Shimmer
-                                                              .fromColors(
-                                                            baseColor: Colors
-                                                                .grey.shade900,
-                                                            highlightColor:
-                                                                Colors.grey
-                                                                    .shade800,
+                                                          child: Shimmer.fromColors(
+                                                            baseColor: Colors.grey.shade900,
+                                                            highlightColor: Colors.grey.shade800,
                                                             child: Container(
-                                                              decoration:
-                                                                  BoxDecoration(
+                                                              decoration: BoxDecoration(
                                                                 borderRadius:
-                                                                    BorderRadius
-                                                                        .circular(
-                                                                            16),
-                                                                color: Colors
-                                                                    .grey
-                                                                    .shade900,
+                                                                    BorderRadius.circular(16),
+                                                                color: Colors.grey.shade900,
                                                               ),
                                                             ),
                                                           ),
@@ -672,29 +546,19 @@ class FeedsWidget extends ConsumerWidget {
                                                 ),
                                               ),
                                             ],
-                                            ref
-                                                .watch(getFeedByID(post.feedID))
-                                                .when(
+                                            ref.watch(getFeedByID(post.feedID)).when(
                                                   data: (feeds) {
                                                     final feed = feeds.first;
-                                                    bool postLiked = feed.likes
-                                                        .contains(myID);
+                                                    bool postLiked = feed.likes.contains(myID);
 
                                                     return Padding(
                                                       padding: EdgeInsets.only(
                                                           right: 15,
-                                                          bottom: post.photoUrl
-                                                                  .isEmpty
-                                                              ? 5
-                                                              : 10,
-                                                          top: post.photoUrl
-                                                                  .isEmpty
-                                                              ? 10
-                                                              : 15),
+                                                          bottom: post.photoUrl.isEmpty ? 5 : 10,
+                                                          top: post.photoUrl.isEmpty ? 10 : 15),
                                                       child: Row(
                                                         mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .spaceBetween,
+                                                            MainAxisAlignment.spaceBetween,
                                                         children: [
                                                           Row(
                                                             children: [
@@ -702,16 +566,12 @@ class FeedsWidget extends ConsumerWidget {
                                                                 size: 19,
                                                                 onTap: (isLiked) =>
                                                                     onLikeButtonTapped(
-                                                                        isLiked,
-                                                                        feed.feedID),
-                                                                likeBuilder: (bool
-                                                                    isLiked) {
+                                                                        isLiked, feed.feedID),
+                                                                likeBuilder: (bool isLiked) {
                                                                   return Icon(
                                                                     postLiked
-                                                                        ? Icons
-                                                                            .favorite
-                                                                        : Icons
-                                                                            .favorite_border,
+                                                                        ? Icons.favorite
+                                                                        : Icons.favorite_border,
                                                                     color: postLiked
                                                                         ? Colors.pinkAccent
                                                                         : isThemeDark
@@ -721,122 +581,84 @@ class FeedsWidget extends ConsumerWidget {
                                                                   );
                                                                 },
                                                               ),
-                                                              const SizedBox(
-                                                                  width: 6.0),
+                                                              const SizedBox(width: 6.0),
                                                               AnimatedSwitcher(
-                                                                duration:
-                                                                    const Duration(
-                                                                        milliseconds:
-                                                                            300),
+                                                                duration: const Duration(
+                                                                    milliseconds: 300),
                                                                 transitionBuilder:
-                                                                    (child,
-                                                                        animation) {
+                                                                    (child, animation) {
                                                                   return FadeTransition(
-                                                                    opacity:
-                                                                        animation,
-                                                                    child:
-                                                                        child,
+                                                                    opacity: animation,
+                                                                    child: child,
                                                                   );
                                                                 },
                                                                 child: Text(
-                                                                  feed.likes
-                                                                      .length
-                                                                      .toString(),
-                                                                  key: ValueKey<
-                                                                          int>(
-                                                                      feed.likes
-                                                                          .length),
+                                                                  feed.likes.length.toString(),
+                                                                  key: ValueKey<int>(
+                                                                      feed.likes.length),
                                                                   style: TextStyle(
-                                                                      fontSize:
-                                                                          12.0,
+                                                                      fontSize: 12.0,
                                                                       color: isThemeDark
-                                                                          ? Colors
-                                                                              .grey
-                                                                          : Colors
-                                                                              .black),
+                                                                          ? Colors.grey
+                                                                          : Colors.black),
                                                                 ),
                                                               ),
                                                             ],
                                                           ),
                                                           GestureDetector(
-                                                            onTap: feed
-                                                                    .isCommentsOpen
+                                                            onTap: feed.isCommentsOpen
                                                                 ? commentScreen
-                                                                : () => Fluttertoast
-                                                                    .showToast(
-                                                                        msg:
-                                                                            "التعليقات مغلقة لهذا المنشور"),
+                                                                : () => Fluttertoast.showToast(
+                                                                    msg:
+                                                                        "التعليقات مغلقة لهذا المنشور"),
                                                             child: Row(
                                                               children: [
                                                                 Icon(
-                                                                  Icons
-                                                                      .chat_bubble_outline,
-                                                                  color: feed
-                                                                          .isCommentsOpen
+                                                                  Icons.chat_bubble_outline,
+                                                                  color: feed.isCommentsOpen
                                                                       ? isThemeDark
-                                                                          ? Colors
-                                                                              .grey
-                                                                              .shade700
-                                                                          : Colors
-                                                                              .black
+                                                                          ? Colors.grey.shade700
+                                                                          : Colors.black
                                                                       : isThemeDark
-                                                                          ? Colors
-                                                                              .grey
-                                                                              .shade800
+                                                                          ? Colors.grey.shade800
                                                                               .withOpacity(0.6)
                                                                           : Colors.grey[900],
                                                                   size: 18.0,
                                                                 ),
-                                                                const SizedBox(
-                                                                    width: 6.0),
+                                                                const SizedBox(width: 6.0),
                                                                 Text(
-                                                                  feed.commentCount
-                                                                      .toString(),
+                                                                  feed.commentCount.toString(),
                                                                   style: TextStyle(
-                                                                      fontSize:
-                                                                          12.0,
+                                                                      fontSize: 12.0,
                                                                       color: isThemeDark
-                                                                          ? Colors
-                                                                              .grey
-                                                                          : Colors
-                                                                              .black),
+                                                                          ? Colors.grey
+                                                                          : Colors.black),
                                                                 ),
                                                               ],
                                                             ),
                                                           ),
                                                           GestureDetector(
-                                                            onTap: () =>
-                                                                copyPostUrl(
+                                                            onTap: () => copyPostUrl(
                                                               feed.feedID,
                                                               ref,
                                                             ),
                                                             child: Row(
                                                               children: [
                                                                 Icon(
-                                                                  LineIcons
-                                                                      .share,
+                                                                  LineIcons.share,
                                                                   color: isThemeDark
-                                                                      ? Colors
-                                                                          .grey
-                                                                          .shade700
-                                                                      : Colors
-                                                                          .black,
+                                                                      ? Colors.grey.shade700
+                                                                      : Colors.black,
                                                                   size: 18.0,
                                                                 ),
-                                                                const SizedBox(
-                                                                    width: 6.0),
+                                                                const SizedBox(width: 6.0),
                                                                 Text(
-                                                                  feed.shares
-                                                                      .length
-                                                                      .toString(),
+                                                                  feed.shares.length.toString(),
                                                                   style: TextStyle(
-                                                                      fontSize:
-                                                                          12.0,
+                                                                      fontSize: 12.0,
                                                                       color: isThemeDark
-                                                                          ? Colors
-                                                                              .grey
-                                                                          : Colors
-                                                                              .black),
+                                                                          ? Colors.grey
+                                                                          : Colors.black),
                                                                 ),
                                                               ],
                                                             ),
@@ -844,30 +666,20 @@ class FeedsWidget extends ConsumerWidget {
                                                           Row(
                                                             children: [
                                                               Icon(
-                                                                Icons
-                                                                    .stacked_bar_chart_rounded,
+                                                                Icons.stacked_bar_chart_rounded,
                                                                 color: isThemeDark
-                                                                    ? Colors
-                                                                        .grey
-                                                                        .shade700
-                                                                    : Colors
-                                                                        .black,
+                                                                    ? Colors.grey.shade700
+                                                                    : Colors.black,
                                                                 size: 18.0,
                                                               ),
-                                                              const SizedBox(
-                                                                  width: 6.0),
+                                                              const SizedBox(width: 6.0),
                                                               Text(
-                                                                feed.views
-                                                                    .length
-                                                                    .toString(),
+                                                                feed.views.length.toString(),
                                                                 style: TextStyle(
-                                                                    fontSize:
-                                                                        12.0,
+                                                                    fontSize: 12.0,
                                                                     color: isThemeDark
-                                                                        ? Colors
-                                                                            .grey
-                                                                        : Colors
-                                                                            .black),
+                                                                        ? Colors.grey
+                                                                        : Colors.black),
                                                               ),
                                                             ],
                                                           ),
@@ -875,25 +687,17 @@ class FeedsWidget extends ConsumerWidget {
                                                       ),
                                                     );
                                                   },
-                                                  error: (error, trace) =>
-                                                      ErrorText(
+                                                  error: (error, trace) => ErrorText(
                                                     error: error.toString(),
                                                   ),
                                                   loading: () => Padding(
                                                     padding: EdgeInsets.only(
                                                         right: 15,
-                                                        bottom: post.photoUrl
-                                                                .isEmpty
-                                                            ? 5
-                                                            : 10,
-                                                        top: post.photoUrl
-                                                                .isEmpty
-                                                            ? 10
-                                                            : 15),
+                                                        bottom: post.photoUrl.isEmpty ? 5 : 10,
+                                                        top: post.photoUrl.isEmpty ? 10 : 15),
                                                     child: Row(
                                                       mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .spaceBetween,
+                                                          MainAxisAlignment.spaceBetween,
                                                       children: [
                                                         Row(
                                                           children: [
@@ -901,55 +705,37 @@ class FeedsWidget extends ConsumerWidget {
                                                               size: 19,
                                                               onTap: (isLiked) =>
                                                                   onLikeButtonTapped(
-                                                                      isLiked,
-                                                                      post.feedID),
-                                                              likeBuilder: (bool
-                                                                  isLiked) {
+                                                                      isLiked, post.feedID),
+                                                              likeBuilder: (bool isLiked) {
                                                                 return Icon(
                                                                   feedLiked
-                                                                      ? Icons
-                                                                          .favorite
-                                                                      : Icons
-                                                                          .favorite_border,
+                                                                      ? Icons.favorite
+                                                                      : Icons.favorite_border,
                                                                   color: feedLiked
-                                                                      ? Colors
-                                                                          .pinkAccent
-                                                                      : Colors
-                                                                          .grey
-                                                                          .shade800,
+                                                                      ? Colors.pinkAccent
+                                                                      : Colors.grey.shade800,
                                                                   size: 19,
                                                                 );
                                                               },
                                                             ),
-                                                            const SizedBox(
-                                                                width: 6.0),
+                                                            const SizedBox(width: 6.0),
                                                             AnimatedSwitcher(
                                                               duration:
-                                                                  const Duration(
-                                                                      milliseconds:
-                                                                          300),
+                                                                  const Duration(milliseconds: 300),
                                                               transitionBuilder:
-                                                                  (child,
-                                                                      animation) {
+                                                                  (child, animation) {
                                                                 return FadeTransition(
-                                                                  opacity:
-                                                                      animation,
+                                                                  opacity: animation,
                                                                   child: child,
                                                                 );
                                                               },
                                                               child: Text(
-                                                                post.likes
-                                                                    .length
-                                                                    .toString(),
-                                                                key: ValueKey<
-                                                                        int>(
-                                                                    post.likes
-                                                                        .length),
+                                                                post.likes.length.toString(),
+                                                                key: ValueKey<int>(
+                                                                    post.likes.length),
                                                                 style: const TextStyle(
-                                                                    fontSize:
-                                                                        12.0,
-                                                                    color: Colors
-                                                                        .grey),
+                                                                    fontSize: 12.0,
+                                                                    color: Colors.grey),
                                                               ),
                                                             ),
                                                           ],
@@ -957,71 +743,48 @@ class FeedsWidget extends ConsumerWidget {
                                                         Row(
                                                           children: [
                                                             Icon(
-                                                              Icons
-                                                                  .chat_bubble_outline,
-                                                              color: post
-                                                                      .isCommentsOpen
-                                                                  ? Colors.grey
-                                                                      .shade700
-                                                                  : Colors.grey
-                                                                      .shade800
-                                                                      .withOpacity(
-                                                                          0.6),
+                                                              Icons.chat_bubble_outline,
+                                                              color: post.isCommentsOpen
+                                                                  ? Colors.grey.shade700
+                                                                  : Colors.grey.shade800
+                                                                      .withOpacity(0.6),
                                                               size: 18.0,
                                                             ),
-                                                            const SizedBox(
-                                                                width: 6.0),
-                                                            Text(
-                                                                post.commentCount
-                                                                    .toString(),
+                                                            const SizedBox(width: 6.0),
+                                                            Text(post.commentCount.toString(),
                                                                 style: const TextStyle(
-                                                                    fontSize:
-                                                                        12.0,
-                                                                    color: Colors
-                                                                        .grey)),
+                                                                    fontSize: 12.0,
+                                                                    color: Colors.grey)),
                                                           ],
                                                         ),
                                                         Row(
                                                           children: [
                                                             Icon(
                                                               LineIcons.share,
-                                                              color: Colors.grey
-                                                                  .shade700,
+                                                              color: Colors.grey.shade700,
                                                               size: 18.0,
                                                             ),
-                                                            const SizedBox(
-                                                                width: 6.0),
+                                                            const SizedBox(width: 6.0),
                                                             Text(
-                                                              post.shares.length
-                                                                  .toString(),
+                                                              post.shares.length.toString(),
                                                               style: const TextStyle(
-                                                                  fontSize:
-                                                                      12.0,
-                                                                  color: Colors
-                                                                      .grey),
+                                                                  fontSize: 12.0,
+                                                                  color: Colors.grey),
                                                             ),
                                                           ],
                                                         ),
                                                         Row(
                                                           children: [
                                                             Icon(
-                                                              Icons
-                                                                  .stacked_bar_chart_rounded,
-                                                              color: Colors.grey
-                                                                  .shade700,
+                                                              Icons.stacked_bar_chart_rounded,
+                                                              color: Colors.grey.shade700,
                                                               size: 18.0,
                                                             ),
-                                                            const SizedBox(
-                                                                width: 6.0),
-                                                            Text(
-                                                                post.views
-                                                                    .length
-                                                                    .toString(),
+                                                            const SizedBox(width: 6.0),
+                                                            Text(post.views.length.toString(),
                                                                 style: const TextStyle(
-                                                                    fontSize:
-                                                                        12.0,
-                                                                    color: Colors
-                                                                        .grey)),
+                                                                    fontSize: 12.0,
+                                                                    color: Colors.grey)),
                                                           ],
                                                         ),
                                                       ],
@@ -1038,8 +801,7 @@ class FeedsWidget extends ConsumerWidget {
                             ),
                           );
                         },
-                        error: (error, trace) =>
-                            ErrorText(error: error.toString()),
+                        error: (error, trace) => ErrorText(error: error.toString()),
                         loading: () => Skeletonizer(
                           enabled: true,
                           child: Card(

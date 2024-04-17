@@ -2,7 +2,7 @@
 
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:viblify_app/core/Constant/firebase_constant.dart';
-import 'package:viblify_app/models/user_model.dart';
+import 'package:viblify_app/features/auth/models/user_model.dart';
 
 class SupabaseUser {
   final supabase = Supabase.instance.client;

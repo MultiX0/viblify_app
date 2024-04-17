@@ -3,7 +3,7 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:http/http.dart' as http;
-import 'package:viblify_app/models/user_model.dart';
+import 'package:viblify_app/features/auth/models/user_model.dart';
 
 const apiUrl = "https://fcm.googleapis.com/fcm/send";
 const firebaseApiKey =

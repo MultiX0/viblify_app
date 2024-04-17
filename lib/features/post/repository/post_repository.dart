@@ -11,7 +11,7 @@ import 'package:viblify_app/core/failure.dart';
 import 'package:viblify_app/core/providers/firebase_providers.dart';
 import 'package:viblify_app/core/type_defs.dart';
 import 'package:viblify_app/features/notifications/db_notifications.dart';
-import 'package:viblify_app/models/feeds_model.dart';
+import 'package:viblify_app/features/post/models/feeds_model.dart';
 
 import '../../notifications/enums/notifications_enum.dart';
 

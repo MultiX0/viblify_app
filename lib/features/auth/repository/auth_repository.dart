@@ -14,7 +14,7 @@ import 'package:viblify_app/core/type_defs.dart';
 import 'package:viblify_app/encrypt/encrypt.dart';
 import 'package:viblify_app/features/auth/repository/supabaseClient.dart';
 import 'package:viblify_app/messaging/notifications.dart';
-import 'package:viblify_app/models/user_model.dart';
+import 'package:viblify_app/features/auth/models/user_model.dart';
 
 final authRepositoryProvider = Provider(
   (ref) => AuthRepository(

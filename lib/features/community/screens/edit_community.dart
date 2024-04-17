@@ -9,7 +9,7 @@ import 'package:viblify_app/core/common/error_text.dart';
 import 'package:viblify_app/core/common/loader.dart';
 import 'package:viblify_app/core/utils.dart';
 import 'package:viblify_app/features/community/controller/community_controller.dart';
-import 'package:viblify_app/models/community_model.dart';
+import 'package:viblify_app/features/community/models/community_model.dart';
 import 'package:viblify_app/theme/pallete.dart';
 
 class EditCommunityScreen extends ConsumerStatefulWidget {
@@ -19,8 +19,7 @@ class EditCommunityScreen extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() =>
-      _EditCommunityScreenState();
+  ConsumerState<ConsumerStatefulWidget> createState() => _EditCommunityScreenState();
 }
 
 class _EditCommunityScreenState extends ConsumerState<EditCommunityScreen> {
@@ -60,8 +59,7 @@ class _EditCommunityScreenState extends ConsumerState<EditCommunityScreen> {
     return ref.watch(getCommunityByNameProvider(widget.name)).when(
         data: (community) => Scaffold(
               appBar: AppBar(
-                backgroundColor:
-                    Pallete.darkModeAppTheme.colorScheme.background,
+                backgroundColor: Pallete.darkModeAppTheme.colorScheme.background,
                 title: const Text("Edit Community"),
                 centerTitle: false,
                 actions: [
@@ -94,8 +92,7 @@ class _EditCommunityScreenState extends ConsumerState<EditCommunityScreen> {
                               radius: const Radius.circular(10),
                               dashPattern: const [10, 4],
                               strokeCap: StrokeCap.round,
-                              color: Pallete.darkModeAppTheme.textTheme
-                                  .bodyMedium!.color!,
+                              color: Pallete.darkModeAppTheme.textTheme.bodyMedium!.color!,
                               child: Container(
                                 width: double.infinity,
                                 height: 150,
@@ -108,8 +105,7 @@ class _EditCommunityScreenState extends ConsumerState<EditCommunityScreen> {
                                         fit: BoxFit.cover,
                                       )
                                     : community.banner.isEmpty ||
-                                            community.banner ==
-                                                Constant.bannerDefault
+                                            community.banner == Constant.bannerDefault
                                         ? const Center(
                                             child: Icon(
                                               Icons.camera_alt,
@@ -134,8 +130,7 @@ class _EditCommunityScreenState extends ConsumerState<EditCommunityScreen> {
                                       radius: 32,
                                     )
                                   : CircleAvatar(
-                                      backgroundImage:
-                                          NetworkImage(community.avatar),
+                                      backgroundImage: NetworkImage(community.avatar),
                                       radius: 32,
                                     ),
                             ),

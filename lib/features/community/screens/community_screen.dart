@@ -5,7 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:viblify_app/core/common/error_text.dart';
 import 'package:viblify_app/core/common/loader.dart';
 import 'package:viblify_app/features/auth/controller/auth_controller.dart';
-import 'package:viblify_app/models/community_model.dart';
+import 'package:viblify_app/features/community/models/community_model.dart';
 
 import '../controller/community_controller.dart';
 import 'mod_tools_screen.dart';
@@ -98,7 +98,9 @@ class CommunityScreen extends ConsumerWidget {
                                           ),
                                           padding: const EdgeInsets.symmetric(horizontal: 25)),
                                       onPressed: () => joinCommunity(ref, community, context),
-                                      child: Text(community.members.contains(user.userID) ? "leave" : "Join")),
+                                      child: Text(community.members.contains(user.userID)
+                                          ? "leave"
+                                          : "Join")),
                             ],
                           ),
                           Text("${community.members.length} members"),

@@ -10,9 +10,9 @@ import 'package:go_router/go_router.dart';
 import 'package:viblify_app/core/providers/storage_repository_provider.dart';
 import 'package:viblify_app/core/utils.dart';
 import 'package:viblify_app/features/auth/controller/auth_controller.dart';
-import 'package:viblify_app/models/user_model.dart';
+import 'package:viblify_app/features/auth/models/user_model.dart';
 
-import '../../../models/feeds_model.dart';
+import '../../post/models/feeds_model.dart';
 import '../repository/user_profile_repository.dart';
 
 final searchUsersProvider = StreamProvider.family((ref, String query) {

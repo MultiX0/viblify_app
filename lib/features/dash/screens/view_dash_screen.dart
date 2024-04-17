@@ -9,7 +9,7 @@ import 'package:viblify_app/features/auth/controller/auth_controller.dart';
 import 'package:viblify_app/features/dash/widgets/dash_recommandations.dart';
 import 'package:viblify_app/features/dash/widgets/user_card.dart';
 import 'package:viblify_app/features/user_profile/controller/user_profile_controller.dart';
-import 'package:viblify_app/models/dash_model.dart';
+import 'package:viblify_app/features/dash/comments/models/dash_model.dart';
 
 import '../widgets/comments_card.dart';
 

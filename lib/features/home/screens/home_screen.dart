@@ -207,6 +207,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
       body: SafeArea(
         child: widget.navigationShell.currentIndex == 0
             ? TabBarView(
+                physics: const NeverScrollableScrollPhysics(),
                 controller: _tabController,
                 children: const [FeedScreen(), FollowingTimeLine()],
               )

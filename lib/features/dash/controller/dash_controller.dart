@@ -10,7 +10,7 @@ import 'package:tuple/tuple.dart';
 import 'package:viblify_app/core/utils.dart';
 import 'package:viblify_app/features/auth/controller/auth_controller.dart';
 import 'package:viblify_app/features/dash/repository/dash_repository.dart';
-import 'package:viblify_app/models/dash_model.dart';
+import 'package:viblify_app/features/dash/comments/models/dash_model.dart';
 
 import '../../../core/Constant/firebase_constant.dart';
 import '../../../core/providers/storage_repository_provider.dart';

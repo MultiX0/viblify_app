@@ -1,7 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:viblify_app/models/user_model.dart';
+import 'package:viblify_app/features/auth/models/user_model.dart';
 import 'package:viblify_app/utils/my_date.dart';
 
 class ChatHeader extends StatelessWidget {
@@ -32,7 +32,8 @@ class ChatHeader extends StatelessWidget {
                 children: [
                   Text(
                     user.name,
-                    style: const TextStyle(fontSize: 15, fontFamily: "", fontWeight: FontWeight.bold),
+                    style:
+                        const TextStyle(fontSize: 15, fontFamily: "", fontWeight: FontWeight.bold),
                   ),
                   if (user.verified) ...[
                     const SizedBox(
@@ -49,7 +50,8 @@ class ChatHeader extends StatelessWidget {
               Text(
                 user.isUserOnline
                     ? "Online"
-                    : MyDateUtil.getLastActiveTime(context: context, lastActive: user.lastTimeActive),
+                    : MyDateUtil.getLastActiveTime(
+                        context: context, lastActive: user.lastTimeActive),
                 style: TextStyle(fontSize: 12, fontFamily: "", color: Colors.grey[400]),
               ),
             ],

@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:viblify_app/core/utils.dart';
 import 'package:viblify_app/features/auth/repository/auth_repository.dart';
-import 'package:viblify_app/models/user_model.dart';
+import 'package:viblify_app/features/auth/models/user_model.dart';
 
 final userProvider = StateProvider<UserModel?>((ref) => null);
 
@@ -50,8 +50,7 @@ class AuthController extends StateNotifier<bool> {
     return _authRepository.getUserIdByName(name);
   }
 
-  void signInWithEmail(
-      BuildContext context, String email, String password) async {
+  void signInWithEmail(BuildContext context, String email, String password) async {
     state = true;
     final user = await _authRepository.signInWithEmail(email, password);
     state = false;
@@ -61,11 +60,10 @@ class AuthController extends StateNotifier<bool> {
     });
   }
 
-  void registerWithEmail(BuildContext context, String email, String password,
-      String username) async {
+  void registerWithEmail(
+      BuildContext context, String email, String password, String username) async {
     state = true;
-    final user =
-        await _authRepository.registerWithEmail(email, password, username);
+    final user = await _authRepository.registerWithEmail(email, password, username);
     state = false;
     user.fold((l) => showSnackBar(context, l.message), (userModel) {
       _ref.read(userProvider.notifier).update((state) => userModel);

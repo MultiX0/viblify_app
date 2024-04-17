@@ -6,7 +6,7 @@ import 'package:uuid/uuid.dart';
 import 'package:viblify_app/core/utils.dart';
 import 'package:viblify_app/features/auth/controller/auth_controller.dart';
 import 'package:viblify_app/features/dash/comments/repository/repository.dart';
-import 'package:viblify_app/models/dash_comments_model.dart';
+import 'package:viblify_app/features/dash/comments/models/dash_comments_model.dart';
 
 import '../../../../core/providers/storage_repository_provider.dart';
 import '../../../notifications/db_notifications.dart';

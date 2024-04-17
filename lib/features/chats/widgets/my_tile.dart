@@ -13,7 +13,7 @@ import 'package:viblify_app/encrypt/encrypt.dart';
 import 'package:viblify_app/features/chats/widgets/my_image.dart';
 import 'package:viblify_app/features/chats/widgets/replymessage_widget.dart';
 import 'package:viblify_app/models/message_model.dart';
-import 'package:viblify_app/models/user_model.dart';
+import 'package:viblify_app/features/auth/models/user_model.dart';
 import 'package:zoom_tap_animation/zoom_tap_animation.dart';
 
 import '../../../core/Constant/constant.dart';
@@ -45,7 +45,8 @@ class myTile extends StatelessWidget {
     bool isPreviousMe = index > 0 && messages[index - 1].sender == user.userID;
     String msg = message.text != null ? decrypt(message.text!, encryptKey) : "";
 
-    bool isNextDifferentUser = index > messages.length - 1 && messages[index + 1].sender != message.sender;
+    bool isNextDifferentUser =
+        index > messages.length - 1 && messages[index + 1].sender != message.sender;
     return Directionality(
       textDirection: isMe ? ui.TextDirection.rtl : ui.TextDirection.ltr,
       child: Padding(
@@ -88,7 +89,8 @@ class myTile extends StatelessWidget {
                   if (message.replieMessage != null) ...[
                     ZoomTapAnimation(
                       child: Container(
-                        constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width / 1.75),
+                        constraints:
+                            BoxConstraints(maxWidth: MediaQuery.of(context).size.width / 1.75),
                         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                         decoration: BoxDecoration(
                           color: !isMe ? Colors.grey[900]!.withOpacity(0.7) : Colors.grey[900],
@@ -107,9 +109,10 @@ class myTile extends StatelessWidget {
                                     child: Linkable(
                                       text: msg,
                                       textColor: Colors.white,
-                                      textDirection: Bidi.hasAnyRtl(decrypt(message.text!, encryptKey))
-                                          ? ui.TextDirection.rtl
-                                          : ui.TextDirection.ltr,
+                                      textDirection:
+                                          Bidi.hasAnyRtl(decrypt(message.text!, encryptKey))
+                                              ? ui.TextDirection.rtl
+                                              : ui.TextDirection.ltr,
                                     ),
                                   ),
                                 ],
@@ -124,9 +127,10 @@ class myTile extends StatelessWidget {
                                         : Alignment.centerLeft,
                                     child: Text(
                                       msg,
-                                      textDirection: Bidi.hasAnyRtl(decrypt(message.text!, encryptKey))
-                                          ? ui.TextDirection.rtl
-                                          : ui.TextDirection.ltr,
+                                      textDirection:
+                                          Bidi.hasAnyRtl(decrypt(message.text!, encryptKey))
+                                              ? ui.TextDirection.rtl
+                                              : ui.TextDirection.ltr,
                                     ),
                                   ),
                                 ],
@@ -139,7 +143,8 @@ class myTile extends StatelessWidget {
                         Fluttertoast.showToast(msg: "تم نسخ الرساله");
                       }),
                       child: Container(
-                        constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width / 1.5),
+                        constraints:
+                            BoxConstraints(maxWidth: MediaQuery.of(context).size.width / 1.5),
                         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                         decoration: BoxDecoration(
                           color: !isMe ? Colors.grey[900]!.withOpacity(0.7) : Colors.grey[900],

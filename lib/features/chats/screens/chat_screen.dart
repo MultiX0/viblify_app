@@ -18,7 +18,7 @@ import 'package:viblify_app/features/chats/widgets/my_tile.dart';
 import 'package:viblify_app/features/chats/widgets/replymessage_widget.dart';
 import 'package:viblify_app/features/chats/widgets/swipeable.dart';
 import 'package:viblify_app/models/message_model.dart';
-import 'package:viblify_app/models/user_model.dart';
+import 'package:viblify_app/features/auth/models/user_model.dart';
 import 'package:viblify_app/theme/pallete.dart';
 import 'dart:ui' as ui;
 

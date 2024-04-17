@@ -1,5 +1,6 @@
 class FirebaseConstant {
   static const usersCollection = 'users';
+  static const storiesCollection = 'stories';
   static const communitiesCollection = 'communities';
   static const postsCollection = 'posts';
   static const dashCollection = 'dashs';

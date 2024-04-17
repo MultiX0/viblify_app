@@ -6,7 +6,7 @@ import 'package:viblify_app/core/common/error_text.dart';
 import 'package:viblify_app/core/common/loader.dart';
 import 'package:viblify_app/features/auth/controller/auth_controller.dart';
 import 'package:viblify_app/features/user_profile/controller/user_profile_controller.dart';
-import 'package:viblify_app/models/user_model.dart';
+import 'package:viblify_app/features/auth/models/user_model.dart';
 
 import '../../../core/common/follow_button.dart';
 
@@ -38,7 +38,8 @@ class UserCard extends ConsumerWidget {
                     backgroundImage: CachedNetworkImageProvider(user.profilePic),
                   ),
                 ),
-                GestureDetector(onTap: () => navigateToUserScreen(context, uid), child: userName(user)),
+                GestureDetector(
+                    onTap: () => navigateToUserScreen(context, uid), child: userName(user)),
                 const Spacer(),
                 Text(
                   "${user.followers.length} follower",

@@ -16,7 +16,7 @@ import 'package:viblify_app/theme/pallete.dart';
 import 'package:viblify_app/widgets/empty_widget.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import '../../../core/common/follow_button.dart';
-import '../../../models/user_model.dart';
+import '../../auth/models/user_model.dart';
 import '../../user_profile/controller/user_profile_controller.dart';
 import '../enums/notifications_enum.dart';
 

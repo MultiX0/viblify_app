@@ -16,14 +16,14 @@ import 'package:viblify_app/core/utils.dart';
 import 'package:viblify_app/encrypt/encrypt.dart';
 import 'package:viblify_app/features/auth/controller/auth_controller.dart';
 import 'package:viblify_app/features/chats/repository/chats_repository.dart';
-import 'package:viblify_app/models/chat_room_status.dart';
-import 'package:viblify_app/models/chats_model.dart';
+import 'package:viblify_app/features/chats/models/chat_room_status.dart';
+import 'package:viblify_app/features/chats/models/chats_model.dart';
 import 'package:viblify_app/models/message_model.dart';
 
 import '../../../core/providers/storage_repository_provider.dart';
 import '../../../messaging/apis.dart';
-import '../../../models/chat_status_model.dart';
-import '../../../models/user_model.dart';
+import '../models/chat_status_model.dart';
+import '../../auth/models/user_model.dart';
 
 final getAllMessagesProvider = StreamProvider.family((ref, String chatID) {
   final commentsController = ref.watch(chatsControllerProvider.notifier);

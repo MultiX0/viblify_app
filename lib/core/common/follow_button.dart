@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:viblify_app/features/user_profile/controller/user_profile_controller.dart';
-import 'package:viblify_app/models/user_model.dart';
+import 'package:viblify_app/features/auth/models/user_model.dart';
 
 class FollowButton extends ConsumerWidget {
   const FollowButton({
@@ -38,7 +38,8 @@ class FollowButton extends ConsumerWidget {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(15.0), // Adjust the border radius as needed
         ),
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 0), // Adjust the padding as needed
+        padding:
+            const EdgeInsets.symmetric(horizontal: 20, vertical: 0), // Adjust the padding as needed
       ),
       child: Text(
         isFollowingUser

@@ -10,7 +10,7 @@ import 'package:viblify_app/core/Constant/firebase_constant.dart';
 import 'package:viblify_app/core/failure.dart';
 import 'package:viblify_app/core/providers/firebase_providers.dart';
 import 'package:viblify_app/core/type_defs.dart';
-import 'package:viblify_app/models/community_model.dart';
+import 'package:viblify_app/features/community/models/community_model.dart';
 
 final communityRepositoryProvider = Provider((ref) {
   return CommunitRepository(firebaseFirestore: ref.watch(firestoreProvider));
@@ -62,16 +62,11 @@ class CommunitRepository {
   }
 
   Stream<List<Community>> getUserCommunities(String uid) {
-    try {
-      return _communities
-          .stream(primaryKey: ['id'])
-          .map((data) => data.map(Community.fromMap).toList())
-          .map((communities) =>
-              communities.where((community) => community.members.contains(uid)).toList());
-    } catch (error) {
-      log("Error getting user communities: $error");
-      rethrow;
-    }
+    return _communities
+        .stream(primaryKey: ['id'])
+        .map((data) => data.map(Community.fromMap).toList())
+        .map((communities) =>
+            communities.where((community) => community.members.contains(uid)).toList());
   }
 
   Stream<Community> getCommunityByName(String name) {

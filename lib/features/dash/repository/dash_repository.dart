@@ -8,7 +8,7 @@ import 'package:fpdart/fpdart.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:viblify_app/core/failure.dart';
 import 'package:viblify_app/core/providers/firebase_providers.dart';
-import 'package:viblify_app/models/dash_model.dart';
+import 'package:viblify_app/features/dash/comments/models/dash_model.dart';
 
 import '../../../core/Constant/firebase_constant.dart';
 import '../../../core/type_defs.dart';

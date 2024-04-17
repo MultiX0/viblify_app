@@ -11,7 +11,7 @@ import 'package:string_validator/string_validator.dart';
 import 'package:viblify_app/core/utils.dart';
 import 'package:viblify_app/features/auth/controller/auth_controller.dart';
 import 'package:viblify_app/features/user_profile/controller/user_profile_controller.dart';
-import 'package:viblify_app/models/user_model.dart';
+import 'package:viblify_app/features/auth/models/user_model.dart';
 
 import '../../../core/Constant/constant.dart';
 import '../../../core/common/error_text.dart';
@@ -23,8 +23,7 @@ class EditProfileScreen extends ConsumerStatefulWidget {
   const EditProfileScreen({super.key, required this.uid});
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() =>
-      _EditProfileScreenState();
+  ConsumerState<ConsumerStatefulWidget> createState() => _EditProfileScreenState();
 }
 
 class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
@@ -65,10 +64,8 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   void initState() {
     nameController = TextEditingController(text: ref.read(userProvider)!.name);
     bioController = TextEditingController(text: ref.read(userProvider)!.bio);
-    userNameController =
-        TextEditingController(text: ref.read(userProvider)!.userName);
-    locationController =
-        TextEditingController(text: ref.read(userProvider)!.location);
+    userNameController = TextEditingController(text: ref.read(userProvider)!.userName);
+    locationController = TextEditingController(text: ref.read(userProvider)!.location);
     linkController = TextEditingController(text: ref.read(userProvider)!.link);
     setState(() {
       userName = userNameController.text;
@@ -136,15 +133,13 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     return ref.watch(getUserDataProvider(widget.uid)).when(
         data: (user) => Scaffold(
               appBar: AppBar(
-                backgroundColor:
-                    Pallete.darkModeAppTheme.colorScheme.background,
+                backgroundColor: Pallete.darkModeAppTheme.colorScheme.background,
                 title: const Text("Edit Profile"),
                 centerTitle: false,
                 actions: [
                   TextButton(
                     onPressed: () {
-                      if ((isUsernameTaken != false && userName.length >= 4) &&
-                          (correctLink)) {
+                      if ((isUsernameTaken != false && userName.length >= 4) && (correctLink)) {
                         save(user);
                       }
                     },
@@ -176,8 +171,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                                 radius: const Radius.circular(10),
                                 dashPattern: const [10, 4],
                                 strokeCap: StrokeCap.round,
-                                color: Pallete.darkModeAppTheme.textTheme
-                                    .bodyMedium!.color!,
+                                color: Pallete.darkModeAppTheme.textTheme.bodyMedium!.color!,
                                 child: Container(
                                   width: double.infinity,
                                   height: 150,
@@ -190,8 +184,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                                           fit: BoxFit.cover,
                                         )
                                       : user.bannerPic.isEmpty ||
-                                              user.bannerPic ==
-                                                  Constant.bannerDefault
+                                              user.bannerPic == Constant.bannerDefault
                                           ? const Center(
                                               child: Icon(
                                                 Icons.camera_alt,
@@ -216,8 +209,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                                         radius: 32,
                                       )
                                     : CircleAvatar(
-                                        backgroundImage:
-                                            NetworkImage(user.profilePic),
+                                        backgroundImage: NetworkImage(user.profilePic),
                                         radius: 32,
                                       ),
                               ),
@@ -382,8 +374,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                             ),
                             borderRadius: BorderRadius.circular(10),
                           ),
-                          errorText:
-                              !correctLink ? "please enter correct url" : null,
+                          errorText: !correctLink ? "please enter correct url" : null,
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
                           ),
@@ -396,8 +387,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                         ),
                       ),
                       Padding(
-                        padding:
-                            const EdgeInsets.only(top: 15, right: 10, left: 10),
+                        padding: const EdgeInsets.only(top: 15, right: 10, left: 10),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -421,8 +411,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 10),
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [

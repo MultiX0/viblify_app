@@ -9,7 +9,7 @@ import 'package:viblify_app/core/providers/storage_repository_provider.dart';
 import 'package:viblify_app/core/utils.dart';
 import 'package:viblify_app/features/auth/controller/auth_controller.dart';
 import 'package:viblify_app/features/community/repository/community_repository.dart';
-import 'package:viblify_app/models/community_model.dart';
+import 'package:viblify_app/features/community/models/community_model.dart';
 
 final searchCommunityProvider = StreamProvider.family((ref, String query) {
   return ref.watch(communitControllerProvider.notifier).searchCommunity(query);
@@ -25,16 +25,14 @@ final userCommunitiesProvider = StreamProvider((ref) {
   return communityController.getUserCommunities();
 });
 
-final communitControllerProvider =
-    StateNotifierProvider<CommunityController, bool>((ref) {
+final communitControllerProvider = StateNotifierProvider<CommunityController, bool>((ref) {
   final _repository = ref.watch(communityRepositoryProvider);
   final _storageRepository = ref.watch(firebaseStorageProvider);
   return CommunityController(
       repository: _repository, ref: ref, storageRepository: _storageRepository);
 });
 
-final communityNameTakenProvider =
-    FutureProvider.family<bool, String>((ref, name) async {
+final communityNameTakenProvider = FutureProvider.family<bool, String>((ref, name) async {
   final repository = ref.read(communityRepositoryProvider);
 
   return repository.isUsernameTaken(name);
@@ -104,11 +102,9 @@ class CommunityController extends StateNotifier<bool> {
     return _repository.searchCommunity(query);
   }
 
-  void addMods(
-      String communityName, List<String> uids, BuildContext context) async {
+  void addMods(String communityName, List<String> uids, BuildContext context) async {
     final res = await _repository.addMods(communityName, uids);
-    res.fold((l) => showSnackBar(context, l.message),
-        (r) => Navigator.of(context).pop());
+    res.fold((l) => showSnackBar(context, l.message), (r) => Navigator.of(context).pop());
   }
 
   void editCommunity(
@@ -127,9 +123,7 @@ class CommunityController extends StateNotifier<bool> {
     }
     if (communityBanner != null) {
       final res = await _storageRepository.storeFile(
-          path: 'communities/banner',
-          id: community.name,
-          file: communityBanner);
+          path: 'communities/banner', id: community.name, file: communityBanner);
       res.fold(
         (l) => showSnackBar(context, l.message),
         (r) => community = community.copyWith(banner: r),
@@ -137,7 +131,6 @@ class CommunityController extends StateNotifier<bool> {
     }
     final res = await _repository.editCommunity(community);
     state = false;
-    res.fold((l) => showSnackBar(context, l.message),
-        (r) => Navigator.of(context).pop());
+    res.fold((l) => showSnackBar(context, l.message), (r) => Navigator.of(context).pop());
   }
 }

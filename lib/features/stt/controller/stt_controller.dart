@@ -9,8 +9,8 @@ import 'package:tuple/tuple.dart';
 import 'package:viblify_app/core/Constant/firebase_constant.dart';
 import 'package:viblify_app/features/auth/controller/auth_controller.dart';
 import 'package:viblify_app/features/stt/repository/stt_repository.dart';
-import 'package:viblify_app/models/notifications_model.dart';
-import 'package:viblify_app/models/stt_model.dart';
+import 'package:viblify_app/features/notifications/models/notifications_model.dart';
+import 'package:viblify_app/features/stt/models/stt_model.dart';
 
 import '../../../core/utils.dart';
 

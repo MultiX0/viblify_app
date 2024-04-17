@@ -5,8 +5,8 @@ import 'package:go_router/go_router.dart';
 import 'package:like_button/like_button.dart';
 import 'package:viblify_app/core/common/error_text.dart';
 import 'package:viblify_app/features/dash/controller/dash_controller.dart';
-import 'package:viblify_app/models/dash_model.dart';
-import 'package:viblify_app/models/user_model.dart';
+import 'package:viblify_app/features/dash/comments/models/dash_model.dart';
+import 'package:viblify_app/features/auth/models/user_model.dart';
 
 class MyCommentCard extends ConsumerWidget {
   const MyCommentCard({

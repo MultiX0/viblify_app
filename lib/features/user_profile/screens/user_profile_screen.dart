@@ -23,7 +23,7 @@ import 'package:viblify_app/features/chats/controller/chats_controller.dart';
 import 'package:viblify_app/features/user_profile/controller/user_profile_controller.dart';
 import 'package:viblify_app/features/user_profile/screens/user_dashs_screen.dart';
 import 'package:viblify_app/features/user_profile/screens/user_feeds.dart';
-import 'package:viblify_app/models/user_model.dart';
+import 'package:viblify_app/features/auth/models/user_model.dart';
 import 'package:viblify_app/theme/pallete.dart';
 import 'package:intl/intl.dart';
 import 'package:viblify_app/utils/colors.dart';

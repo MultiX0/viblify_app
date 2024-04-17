@@ -6,13 +6,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:viblify_app/core/Constant/firebase_constant.dart';
 import 'package:viblify_app/core/providers/firebase_providers.dart';
-import 'package:viblify_app/models/chats_model.dart';
-import 'package:viblify_app/models/user_model.dart';
+import 'package:viblify_app/features/chats/models/chats_model.dart';
+import 'package:viblify_app/features/auth/models/user_model.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../core/utils.dart';
-import '../../../models/chat_room_status.dart';
-import '../../../models/chat_status_model.dart';
+import '../models/chat_room_status.dart';
+import '../models/chat_status_model.dart';
 import '../../../models/message_model.dart';
 
 final chatsRepositoryProvider = Provider((ref) {
