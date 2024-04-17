@@ -80,6 +80,7 @@ class DashController extends StateNotifier<bool> {
       commentCount: 0,
       createdAt: Timestamp.now().millisecondsSinceEpoch.toString(),
       labels: labels,
+      title: title,
     );
 
     if (dash.dashID.isEmpty) {

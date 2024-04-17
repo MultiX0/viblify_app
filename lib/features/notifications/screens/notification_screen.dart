@@ -18,7 +18,7 @@ import 'package:timeago/timeago.dart' as timeago;
 import '../../../core/common/follow_button.dart';
 import '../../../models/user_model.dart';
 import '../../user_profile/controller/user_profile_controller.dart';
-import '../db_notifications.dart';
+import '../enums/notifications_enum.dart';
 
 class NotificationScreen extends ConsumerStatefulWidget {
   final String userID;
@@ -133,6 +133,9 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
                                       ),
                                     ],
                                     if (!notification.seen) ...[
+                                      SizedBox(
+                                        width: action == ActionType.new_follow ? 10 : 0,
+                                      ),
                                       Icon(
                                         Icons.circle,
                                         color: Colors.blue[900],

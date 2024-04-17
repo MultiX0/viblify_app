@@ -15,6 +15,7 @@ import 'package:viblify_app/models/dash_comments_model.dart';
 import '../../../../core/Constant/firebase_constant.dart';
 import '../../../../core/type_defs.dart';
 import '../../../notifications/db_notifications.dart';
+import '../../../notifications/enums/notifications_enum.dart';
 
 final dashCommentsRepositoryProvider = Provider((ref) {
   return DashCommentsRepository(firebaseFirestore: ref.watch(firestoreProvider));

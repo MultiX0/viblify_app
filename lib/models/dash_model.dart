@@ -7,6 +7,7 @@ class Dash {
   final String userID;
   final String dashID;
   final List<dynamic> likes;
+  final String title;
   final String contentUrl;
   final String description;
   final int commentCount;
@@ -19,6 +20,7 @@ class Dash {
     required this.userID,
     required this.dashID,
     required this.likes,
+    required this.title,
     required this.contentUrl,
     required this.description,
     required this.commentCount,
@@ -32,6 +34,7 @@ class Dash {
     String? userID,
     String? dashID,
     List? likes,
+    String? title,
     String? contentUrl,
     String? description,
     int? commentCount,
@@ -52,6 +55,7 @@ class Dash {
       createdAt: createdAt ?? this.createdAt,
       shares: shares ?? this.shares,
       labels: labels ?? this.labels,
+      title: title ?? this.title,
     );
   }
 
@@ -67,6 +71,7 @@ class Dash {
       'createdAt': createdAt,
       'shares': shares,
       'labels': labels,
+      'title': title,
     };
   }
 
@@ -75,6 +80,7 @@ class Dash {
       userID: map['userID'] as String,
       dashID: map['dashID'] as String,
       likes: List<dynamic>.from(map['likes'] as List<dynamic>),
+      title: map['title'] ?? "",
       contentUrl: map['contentUrl'] as String,
       description: map['description'] as String,
       commentCount: map['commentCount'] as int,

@@ -32,6 +32,10 @@ final getUserLikeFeeds = FutureProvider.family((ref, String uid) async {
   final userController = ref.watch(userProfileControllerProvider.notifier);
   return userController.getUserLikedFeeds(uid);
 });
+final getFeedsWithMedia = FutureProvider.family((ref, String uid) async {
+  final userController = ref.watch(userProfileControllerProvider.notifier);
+  return userController.getFeedsWithMedia(uid);
+});
 
 final userProfileControllerProvider = StateNotifierProvider<UserProfileController, bool>((ref) {
   final repository = ref.watch(userProfileRepositoryProvider);
@@ -158,5 +162,9 @@ class UserProfileController extends StateNotifier<bool> {
 
   Future<List<Feeds>> getUserLikedFeeds(String uid) async {
     return _repository.getUserLikedFeeds(uid);
+  }
+
+  Future<List<Feeds>> getFeedsWithMedia(String uid) async {
+    return _repository.getFeedsWithMedia(uid);
   }
 }

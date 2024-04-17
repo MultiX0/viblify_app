@@ -13,6 +13,8 @@ import 'package:viblify_app/core/type_defs.dart';
 import 'package:viblify_app/features/notifications/db_notifications.dart';
 import 'package:viblify_app/models/feeds_model.dart';
 
+import '../../notifications/enums/notifications_enum.dart';
+
 final postRepositoryProvider = Provider((ref) {
   return PostRepository(firebaseFirestore: ref.watch(firestoreProvider));
 });

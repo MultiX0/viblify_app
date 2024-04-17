@@ -28,8 +28,8 @@ import 'package:viblify_app/theme/pallete.dart';
 import 'package:intl/intl.dart';
 import 'package:viblify_app/utils/colors.dart';
 
-import '../../../widgets/empty_widget.dart';
 import 'user_liked_feeds.dart';
+import 'user_media_screen.dart';
 
 class UserProfileScreen extends ConsumerStatefulWidget {
   final String uid;
@@ -133,7 +133,11 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen>
                       isThemeDark: user.isThemeDark,
                       dividerColor: user.dividerColor,
                     ),
-                    const MyEmptyShowen(text: "لاتوجد نتائج"),
+                    UserMediaFeeds(
+                      uid: widget.uid,
+                      isThemeDark: user.isThemeDark,
+                      dividerColor: user.dividerColor,
+                    ),
                     UserDashScreen(userID: widget.uid),
                     UserLikedFeeds(
                       uid: widget.uid,
@@ -803,7 +807,9 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen>
     try {
       //update the user model data to null;
       ref.watch(userProvider.notifier).update((user) => null);
+      //signout with the firebase
       await FirebaseAuth.instance.signOut();
+      //close the app
       SystemNavigator.pop(animated: true);
       log('Sign Out Successful');
     } catch (error) {

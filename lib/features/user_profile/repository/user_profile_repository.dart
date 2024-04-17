@@ -18,6 +18,7 @@ import 'dart:typed_data';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import '../../../core/Constant/firebase_constant.dart';
 import '../../notifications/db_notifications.dart';
+import '../../notifications/enums/notifications_enum.dart';
 
 final userProfileRepositoryProvider = Provider((ref) {
   return UserRepository(firebaseFirestore: ref.watch(firestoreProvider));
@@ -234,6 +235,18 @@ class UserRepository {
           .from(FirebaseConstant.postsCollection)
           .select('*')
           .contains("likes", [uid]).neq("userID", uid);
+
+      final List<Feeds> feeds = ref.map<Feeds>((data) => Feeds.fromMap(data)).toList();
+      return feeds;
+    } catch (e) {
+      throw Failure(e.toString());
+    }
+  }
+
+  Future<List<Feeds>> getFeedsWithMedia(String uid) async {
+    try {
+      var ref =
+          await supabase.from(FirebaseConstant.postsCollection).select('*').neq("photoUrl", '');
 
       final List<Feeds> feeds = ref.map<Feeds>((data) => Feeds.fromMap(data)).toList();
       return feeds;
