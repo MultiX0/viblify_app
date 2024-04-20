@@ -152,27 +152,26 @@ class PostRepository {
         });
   }
 
-  Stream<List<Feeds>> getFollowingFeeds(List<dynamic> uids) {
-    return _posts
-        .stream(primaryKey: ['feedID'])
-        .order('createdAt', ascending: false)
-        .map((response) {
-          final List<Map<String, dynamic>> data = response;
-          List<Map<String, dynamic>> matchedFeeds = [];
-          for (var item in data) {
-            if (uids.contains(item['userID'])) {
-              matchedFeeds.add(item);
-            }
-          }
+  Future<List<Feeds>> getFollowingFeeds(List<dynamic> uids) async {
+    try {
+      final response = await _posts.select('*').order('createdAt', ascending: false);
 
-          // If there are documents, map them to Feeds objects
-          if (data.isNotEmpty) {
-            return matchedFeeds.map((map) => Feeds.fromMap(map)).toList();
-          } else {
-            // If no documents match the criteria, return an empty list
-            return [];
-          }
-        });
+      final List<Map<String, dynamic>> data = response;
+
+      // Filter the data based on uids and map them to Feeds objects
+      final matchedFeeds = data.where((item) => uids.contains(item['userID'])).toList();
+
+      // If there are matched feeds, map them to Feeds objects
+      if (matchedFeeds.isNotEmpty) {
+        return matchedFeeds.map((map) => Feeds.fromMap(map)).toList();
+      } else {
+        // If no matched feeds, return an empty list
+        return [];
+      }
+    } catch (e) {
+      log(e.toString());
+      throw Failure(e.toString());
+    }
   }
 
   void sharePost(String feedID, String uid) async {

@@ -19,8 +19,9 @@ final getAllSttsProvider = StreamProvider.family((ref, String uid) {
 
   return sttController.getAllStts(uid);
 });
-final getSttByIdProvider = StreamProvider.family<List<STT>, Tuple2<String, dynamic>>((ref, tuple) {
-  return ref.watch(sttControllerProvider.notifier).getSttByID(tuple.item1, tuple.item2);
+
+final getSttByIdProvider = StreamProvider.family<STT?, Tuple2<String, dynamic>>((ref, tuple) {
+  return ref.watch(sttControllerProvider.notifier).getSttByID(tuple.item1, tuple.item2)!;
 });
 
 final sttControllerProvider = StateNotifierProvider<SttController, bool>((ref) {
@@ -110,7 +111,7 @@ class SttController extends StateNotifier<bool> {
     return _repository.getAllStts(uid);
   }
 
-  Stream<List<STT>> getSttByID(String sttID, String userID) {
+  Stream<STT?>? getSttByID(String sttID, String userID) {
     return _repository.getSttByID(sttID, userID);
   }
 

@@ -5,23 +5,28 @@ import 'package:viblify_app/core/common/error_text.dart';
 import 'package:viblify_app/core/common/loader.dart';
 import 'package:viblify_app/features/post/controller/post_controller.dart';
 
-import '../../../widgets/feeds_widget.dart';
+import '../../Feed/widgets/feeds_widget.dart';
 
 class UserFeedsScreen extends ConsumerWidget {
   final String uid;
   final bool isThemeDark;
   final String dividerColor;
-  const UserFeedsScreen({super.key, required this.uid, required this.isThemeDark, required this.dividerColor});
+  const UserFeedsScreen(
+      {super.key, required this.uid, required this.isThemeDark, required this.dividerColor});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return ref.watch(getUserFeedsProvider(uid)).when(
           data: (posts) => posts.isNotEmpty
-              ? FeedsWidget(
-                  posts: posts,
-                  isThemeDark: isThemeDark,
-                  dividerColor: dividerColor,
-                  isUserProfile: true,
+              ? CustomScrollView(
+                  slivers: [
+                    FeedsWidget(
+                      posts: posts,
+                      isThemeDark: isThemeDark,
+                      dividerColor: dividerColor,
+                      isUserProfile: true,
+                    ),
+                  ],
                 )
               : Column(
                   mainAxisAlignment: MainAxisAlignment.center,

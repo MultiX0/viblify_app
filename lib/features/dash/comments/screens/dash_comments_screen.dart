@@ -17,21 +17,25 @@ import '../controller/controller.dart';
 
 TextEditingController comments = TextEditingController();
 
-class DashCommentsScreen extends ConsumerWidget {
+class DashCommentsScreen extends ConsumerStatefulWidget {
   final String dashID;
   final String dashUserID;
   const DashCommentsScreen({super.key, required this.dashID, required this.dashUserID});
-
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ConsumerStatefulWidget> createState() => _DashCommentsScreenState();
+}
+
+class _DashCommentsScreenState extends ConsumerState<DashCommentsScreen> {
+  @override
+  Widget build(BuildContext context) {
     final myData = ref.read(userProvider)!;
     void addComment() async {
       if (comments.text.trim().isNotEmpty) {
         ref.read(dashCommentsControllerProvider.notifier).addComment(
               content: comments.text.trim(),
               context: context,
-              dashID: dashID,
-              dashUserID: dashUserID,
+              dashID: widget.dashID,
+              dashUserID: widget.dashUserID,
               ref: ref,
             );
 
@@ -42,7 +46,7 @@ class DashCommentsScreen extends ConsumerWidget {
     void likeHunlidng(String commentID) {
       ref
           .watch(dashCommentsControllerProvider.notifier)
-          .likeHundling(commentID, myData.userID, dashID);
+          .likeHundling(commentID, myData.userID, widget.dashID);
     }
 
     Future<bool> onLikeButtonTapped(bool isLiked, String docID) async {
@@ -56,11 +60,9 @@ class DashCommentsScreen extends ConsumerWidget {
         onTap: () {
           context.pop();
           ref
-              .watch(dashCommentsControllerProvider.notifier)
-              .deleteComment(commentID, dashID, context, ref)
-              .then((e) {
-            ref.refresh(getDashCommentsProvider(dashID));
-          });
+              .read(dashCommentsControllerProvider.notifier)
+              .deleteComment(commentID, widget.dashID, context);
+          ref.refresh(getDashCommentsProvider(widget.dashID));
         },
       );
     }
@@ -73,7 +75,7 @@ class DashCommentsScreen extends ConsumerWidget {
       body: Column(
         children: [
           Expanded(
-            child: ref.watch(getDashCommentsProvider(dashID)).when(
+            child: ref.watch(getDashCommentsProvider(widget.dashID)).when(
                   data: (comments) {
                     return (comments.isNotEmpty)
                         ? ListView.builder(

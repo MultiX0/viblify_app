@@ -1,3 +1,5 @@
+// ignore_for_file: camel_case_types
+
 import 'dart:developer';
 import 'dart:io';
 
@@ -13,23 +15,29 @@ import 'package:viblify_app/features/story/repository/story_repository.dart';
 import '../../../core/providers/storage_repository_provider.dart';
 import '../../../core/utils.dart';
 
-final getAllStoriesProvider = StreamProvider.family((ref, WidgetRef wRef) {
+final getAllStoriesProvider = StreamProvider((ref) {
+  final myData = ref.read(userProvider)!;
   final storyController = ref.watch(storyControllerProvider.notifier);
-  return storyController.getAllStories(wRef);
+  return storyController.getAllStories(myData.userID, myData.following);
 });
 
-final storyControllerProvider = StateNotifierProvider<StoryController, bool>((ref) {
+final getAllUserStoriesProvider = StreamProvider.family((ref, String userID) {
+  final storyController = ref.watch(storyControllerProvider.notifier);
+  return storyController.getAllUserStories(userID);
+});
+
+final storyControllerProvider = StateNotifierProvider<Story_Controller, bool>((ref) {
   final _repository = ref.watch(storyRepositoryProvider);
   final _storageRepository = ref.watch(firebaseStorageProvider);
-  return StoryController(repository: _repository, ref: ref, storageRepository: _storageRepository);
+  return Story_Controller(repository: _repository, ref: ref, storageRepository: _storageRepository);
 });
 
-class StoryController extends StateNotifier<bool> {
+class Story_Controller extends StateNotifier<bool> {
   final uuid = const Uuid();
   StoryRepository _repository;
   StorageRepository _storageRepository;
   final Ref _ref;
-  StoryController(
+  Story_Controller(
       {required StoryRepository repository,
       required Ref ref,
       required StorageRepository storageRepository})
@@ -43,6 +51,7 @@ class StoryController extends StateNotifier<bool> {
     required BuildContext context,
   }) async {
     try {
+      state = true;
       var story_id = uuid.v4();
       final uid = _ref.read(userProvider)!.userID;
 
@@ -77,7 +86,15 @@ class StoryController extends StateNotifier<bool> {
     }
   }
 
-  Stream<List<Story>> getAllStories(WidgetRef ref) {
-    return _repository.getAllStories(ref);
+  Stream<List<Story>> getAllStories(String _userID, List<dynamic> myFollowing) {
+    return _repository.getAllStories(_userID, myFollowing);
+  }
+
+  Future<void> viewStory({required String storyID, required String userID}) async {
+    _repository.viewStory(storyID, userID);
+  }
+
+  Stream<List<Story>> getAllUserStories(String userID) {
+    return _repository.getUserStories(userID);
   }
 }

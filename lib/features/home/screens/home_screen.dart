@@ -15,6 +15,7 @@ import 'package:viblify_app/core/common/error_text.dart';
 import 'package:viblify_app/features/Feed/feed_screen.dart';
 import 'package:viblify_app/features/auth/controller/auth_controller.dart';
 import 'package:viblify_app/features/user_profile/repository/update_user_status.dart';
+import 'package:viblify_app/router.dart';
 import 'package:viblify_app/theme/pallete.dart';
 import 'package:badges/badges.dart' as badges;
 import '../../notifications/controller/controller.dart';
@@ -122,6 +123,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
               centerTitle: false,
               forceMaterialTransparency: true,
               actions: [
+                IconButton(
+                  onPressed: () => context.push(Navigation.ai_image),
+                  icon: const Icon(Icons.draw),
+                ),
                 ref.watch(getUnSeenNotificationsProvider(user.userID)).when(
                       data: (data) {
                         return data != 0

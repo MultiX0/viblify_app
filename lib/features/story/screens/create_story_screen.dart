@@ -42,7 +42,7 @@ class _CreateStoryScreenState extends ConsumerState<CreateStoryScreen> {
 
   @override
   Widget build(BuildContext context) {
-    bool isLoading = ref.watch(storyControllerProvider);
+    final isLoading = ref.watch(storyControllerProvider);
     void addStory() {
       ref.watch(storyControllerProvider.notifier).postStory(image: File(path!), context: context);
     }

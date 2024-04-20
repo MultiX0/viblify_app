@@ -93,9 +93,8 @@ class DashCommentsController extends StateNotifier<bool> {
     return _repository.getCommentByID(commentID);
   }
 
-  Future<void> deleteComment(
-      String commentID, String dashID, BuildContext context, WidgetRef ref) async {
-    _repository.deleteComment(commentID, dashID, context, ref);
+  Future<void> deleteComment(String commentID, String dashID, BuildContext context) async {
+    _repository.deleteComment(commentID, dashID, context);
   }
 }
 

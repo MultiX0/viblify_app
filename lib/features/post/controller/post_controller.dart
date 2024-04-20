@@ -31,7 +31,7 @@ final getUserFeedsProvider = StreamProvider.family((ref, String uid) {
   final communityController = ref.watch(postControllerProvider.notifier);
   return communityController.getUserFeeds(uid);
 });
-final getFollowingFeedsProvider = StreamProvider.family((ref, List<dynamic> uid) {
+final getFollowingFeedsProvider = FutureProvider.family((ref, List<dynamic> uid) {
   final communityController = ref.watch(postControllerProvider.notifier);
   return communityController.getFollowingFeeds(uid);
 });
@@ -179,7 +179,7 @@ class PostController extends StateNotifier<bool> {
     return _repository.getUserFeeds(uid);
   }
 
-  Stream<List<Feeds>> getFollowingFeeds(List<dynamic> uid) {
+  Future<List<Feeds>> getFollowingFeeds(List<dynamic> uid) {
     return _repository.getFollowingFeeds(uid);
   }
 

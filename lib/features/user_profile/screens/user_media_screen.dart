@@ -4,7 +4,7 @@ import 'package:viblify_app/core/Constant/constant.dart';
 import 'package:viblify_app/core/common/error_text.dart';
 import 'package:viblify_app/core/common/loader.dart';
 
-import '../../../widgets/feeds_widget.dart';
+import '../../Feed/widgets/feeds_widget.dart';
 import '../controller/user_profile_controller.dart';
 
 class UserMediaFeeds extends ConsumerWidget {
@@ -18,11 +18,15 @@ class UserMediaFeeds extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return ref.watch(getFeedsWithMedia(uid)).when(
           data: (posts) => posts.isNotEmpty
-              ? FeedsWidget(
-                  posts: posts,
-                  isThemeDark: isThemeDark,
-                  dividerColor: dividerColor,
-                  isUserProfile: true,
+              ? CustomScrollView(
+                  slivers: [
+                    FeedsWidget(
+                      posts: posts,
+                      isThemeDark: isThemeDark,
+                      dividerColor: dividerColor,
+                      isUserProfile: true,
+                    ),
+                  ],
                 )
               : Column(
                   mainAxisAlignment: MainAxisAlignment.center,

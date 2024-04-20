@@ -111,16 +111,17 @@ class Feeds {
       tags: List<dynamic>.from(map['tags'] as List),
       likes: List<dynamic>.from(map['likes'] as List),
       shares: List<dynamic>.from(map['shares'] as List),
-      photoUrl: map['photoUrl'] as String,
+      photoUrl: map['photoUrl'] ?? "",
       views: List<dynamic>.from(map['views'] as List),
       commentCount: map['commentCount'] as int,
       likeCount: map['likeCount'] as int,
-      createdAt: map['createdAt'] as String, // Change the type of createdAt to String
+      createdAt: map['createdAt'] ?? "", // Change the type of createdAt to String
       isCommentsOpen: map['isCommentsOpen'] as bool,
       score: map['score'] as int,
       isShowed: map['isShowed'] as bool,
       gif: map['gif'] ?? "",
-      youtubeVideoID: map['youtubeVideoID'] ?? "", // Include the new field in the factory constructor
+      youtubeVideoID:
+          map['youtubeVideoID'] ?? "", // Include the new field in the factory constructor
     );
   }
 

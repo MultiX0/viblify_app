@@ -90,8 +90,7 @@ class DashCommentsRepository {
     }
   }
 
-  Future<void> deleteComment(
-      String commentID, String dashID, BuildContext context, WidgetRef ref) async {
+  Future<void> deleteComment(String commentID, String dashID, BuildContext context) async {
     try {
       var doc = _dashComments.delete().eq("commentID", commentID);
       doc.then(

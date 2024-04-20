@@ -24,7 +24,7 @@ import 'package:viblify_app/features/user_profile/screens/user_profile_screen.da
 import 'package:viblify_app/theme/pallete.dart';
 
 import '../../../../core/methods/youtube_video_validator.dart';
-import '../../../../widgets/feeds_widget.dart';
+import '../../../Feed/widgets/feeds_widget.dart';
 import '../../../stt/controller/stt_controller.dart';
 import '../../../user_profile/screens/video_screen.dart';
 import '../widgets/comments_card.dart';
@@ -369,10 +369,10 @@ class _CommentScreenState extends ConsumerState<CommentScreen> {
                                                                     )
                                                                     .when(
                                                                       data: (stt) => Text(
-                                                                        stt.first.message,
+                                                                        stt!.message,
                                                                         textDirection: Bidi
-                                                                                .hasAnyRtl(stt
-                                                                                    .first.message)
+                                                                                .hasAnyRtl(
+                                                                                    stt.message)
                                                                             ? ui.TextDirection.rtl
                                                                             : ui.TextDirection.ltr,
                                                                         style: const TextStyle(

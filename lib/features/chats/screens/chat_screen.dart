@@ -182,48 +182,55 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
                         padding: const EdgeInsets.only(
                           bottom: 30,
                         ),
-                        child: ListView.builder(
-                          controller: scollController,
+                        child: CustomScrollView(
                           reverse: true,
-                          primary: false,
-                          shrinkWrap: true,
-                          itemCount: messages.length,
-                          itemBuilder: (context, index) {
-                            final message = messages[index];
+                          slivers: [
+                            SliverList.separated(
+                              separatorBuilder: (context, index) => const SizedBox(height: 8),
+                              itemCount: messages.length,
+                              itemBuilder: (context, index) {
+                                final message = messages[index];
 
-                            bool isMe = message.sender == myData.userID;
+                                bool isMe = message.sender == myData.userID;
 
-                            if (!message.seen! && message.sender != myData.userID) {
-                              ref.read(chatsControllerProvider.notifier).setChatMessageSeen(context,
-                                  user.userID, myData.userID, message.messageid!, widget.chatID);
-                            }
+                                if (!message.seen! && message.sender != myData.userID) {
+                                  ref.read(chatsControllerProvider.notifier).setChatMessageSeen(
+                                      context,
+                                      user.userID,
+                                      myData.userID,
+                                      message.messageid!,
+                                      widget.chatID);
+                                }
 
-                            // Fade Animation
-                            if (!fadeAnimationControllers.containsKey(message.messageid)) {
-                              fadeAnimationControllers[message.messageid!] = AnimationController(
-                                duration: const Duration(milliseconds: 600),
-                                vsync: this,
-                              );
-                              fadeAnimationControllers[message.messageid]!.forward(from: 0.0);
-                            }
+                                // Fade Animation
+                                if (!fadeAnimationControllers.containsKey(message.messageid)) {
+                                  fadeAnimationControllers[message.messageid!] =
+                                      AnimationController(
+                                    duration: const Duration(milliseconds: 600),
+                                    vsync: this,
+                                  );
+                                  fadeAnimationControllers[message.messageid]!.forward(from: 0.0);
+                                }
 
-                            return MyReply(
-                              callback: () {
-                                replyToMessage(message);
-                                focusNode.requestFocus();
+                                return MyReply(
+                                  callback: () {
+                                    replyToMessage(message);
+                                    focusNode.requestFocus();
+                                  },
+                                  isMe: isMe,
+                                  child: myTile(
+                                    index: index,
+                                    chatID: widget.chatID,
+                                    isMe: isMe,
+                                    myData: myData,
+                                    message: message,
+                                    user: user,
+                                    messages: messages,
+                                  ),
+                                );
                               },
-                              isMe: isMe,
-                              child: myTile(
-                                index: index,
-                                chatID: widget.chatID,
-                                isMe: isMe,
-                                myData: myData,
-                                message: message,
-                                user: user,
-                                messages: messages,
-                              ),
-                            );
-                          },
+                            ),
+                          ],
                         ),
                       ),
                     );

@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:viblify_app/features/Feed/feed_screen.dart';
 import 'package:viblify_app/features/Feed/tag_feed_screen.dart';
+import 'package:viblify_app/features/ai/screens/image_generate_ai.dart';
 import 'package:viblify_app/features/auth/screens/auth_screen.dart';
 import 'package:viblify_app/features/auth/screens/signin_screen.dart';
 import 'package:viblify_app/features/chats/screens/chat_screen.dart';
@@ -40,6 +41,8 @@ class Navigation {
 
   static const addDash = "newDash";
   static const dashview = "dashview";
+  static const story_view = "story_view";
+  static const ai_image = "/ai_image";
 }
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -309,10 +312,19 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: "/dash_comments/:dashID/:dashUserID",
         pageBuilder: (context, state) {
           return NoTransitionPage(
-              child: DashCommentsScreen(
-            dashID: state.pathParameters['dashID']!,
-            dashUserID: state.pathParameters['dashUserID']!,
-          ));
+            child: DashCommentsScreen(
+              dashID: state.pathParameters['dashID']!,
+              dashUserID: state.pathParameters['dashUserID']!,
+            ),
+          );
+        },
+      ),
+      GoRoute(
+        path: Navigation.ai_image,
+        pageBuilder: (context, state) {
+          return const NoTransitionPage(
+            child: ImageGenerateAi(),
+          );
         },
       ),
     ],
