@@ -2,7 +2,7 @@
 
 import 'dart:developer';
 import 'package:path/path.dart';
-
+import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -15,9 +15,11 @@ import 'package:viblify_app/features/auth/controller/auth_controller.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 
 import '../../../core/providers/storage_repository_provider.dart';
+import '../enums/request_type.dart';
 import '../models/image_generate_ai_model.dart';
 
-final String apiKey = dotenv.env['STABILITY_API_KEY'] ?? "";
+final String stability_api_key = dotenv.env['STABILITY_API_KEY'] ?? "";
+final String gemeni_api_key = dotenv.env['GOOGLE_GENERATIVE_API_KEY'] ?? "";
 final StabilityAI _ai = StabilityAI();
 const ImageAIStyle imageAIStyle = ImageAIStyle.anime;
 
@@ -51,49 +53,48 @@ class AiController extends StateNotifier<bool> {
         _ref = ref,
         super(false);
 
-  final prompt_id = const Uuid().v4();
-
   Future<void> addPrompt({
     required String body,
+    required AiRequestType request_type,
+    required ImageGenerateAiModel aiModel,
   }) async {
     try {
       state = true;
 
       final uid = _ref.read(userProvider)!.userID;
 
-      ImageGenerateAiModel aiModel = ImageGenerateAiModel(
-        prompt_id: prompt_id,
-        userID: uid,
-        hasError: false,
-        img_url: "",
-        createdAt: DateTime.now(),
-        response_date: DateTime.now(),
-        body: body,
-      );
       _repository.addPrompt(aiModel);
+      if (request_type == AiRequestType.image_ai) {
+        /// Call the generateImage method with the required parameters.
+        Uint8List image = await _ai.generateImage(
+          apiKey: stability_api_key,
+          imageAIStyle: imageAIStyle,
+          prompt: body,
+        );
 
-      /// Call the generateImage method with the required parameters.
-      Uint8List image = await _ai.generateImage(
-        apiKey: apiKey,
-        imageAIStyle: imageAIStyle,
-        prompt: body,
-      );
+        Uint8List compressedImage = await FlutterImageCompress.compressWithList(
+          image,
+          quality: 70,
+        );
 
-      Uint8List compressedImage = await FlutterImageCompress.compressWithList(
-        image,
-        quality: 70,
-      );
+        FirebaseStorage storage = FirebaseStorage.instance;
 
-      FirebaseStorage storage = FirebaseStorage.instance;
-
-      Reference storageRef = storage.ref().child('prompts/$uid/${basename("$prompt_id.jpg")}');
-      UploadTask uploadTask = storageRef.putData(compressedImage);
-      TaskSnapshot taskSnapshot = await uploadTask;
-      String downloadURL = await taskSnapshot.ref.getDownloadURL();
-      _repository.editPrompt(prompt_id, downloadURL);
-      state = false;
+        Reference storageRef =
+            storage.ref().child('prompts/$uid/${basename("${aiModel.prompt_id}.jpg")}');
+        UploadTask uploadTask = storageRef.putData(compressedImage);
+        TaskSnapshot taskSnapshot = await uploadTask;
+        String downloadURL = await taskSnapshot.ref.getDownloadURL();
+        _repository.addImageToThePrompt(aiModel.prompt_id, downloadURL);
+        state = false;
+      } else {
+        final model = GenerativeModel(model: 'gemini-pro', apiKey: gemeni_api_key);
+        final content = [Content.text(body)];
+        final response = await model.generateContent(content);
+        _repository.addResponseToThePrompt(aiModel.prompt_id, response.text!);
+        state = false;
+      }
     } catch (e) {
-      _repository.hasError(prompt_id);
+      _repository.hasError(aiModel.prompt_id);
       log(e.toString());
       throw Failure(e.toString());
     }

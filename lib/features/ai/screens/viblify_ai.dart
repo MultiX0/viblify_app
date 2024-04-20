@@ -5,6 +5,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:uuid/uuid.dart';
 import 'package:viblify_app/core/common/error_text.dart';
 import 'package:viblify_app/core/common/loader.dart';
 import 'package:viblify_app/core/utils.dart';
@@ -14,15 +15,17 @@ import 'package:viblify_app/features/ai/models/image_generate_ai_model.dart';
 import 'package:viblify_app/theme/pallete.dart';
 
 import '../../auth/controller/auth_controller.dart';
+import '../enums/request_type.dart';
 
-class ImageGenerateAi extends ConsumerStatefulWidget {
-  const ImageGenerateAi({super.key});
+class ViblifyAi extends ConsumerStatefulWidget {
+  const ViblifyAi({super.key});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _ImageGenerateAiState();
 }
 
-class _ImageGenerateAiState extends ConsumerState<ImageGenerateAi> {
+class _ImageGenerateAiState extends ConsumerState<ViblifyAi> {
+  AiRequestType request_type = AiRequestType.image_ai;
   final _scrollController = ScrollController();
   final _textController = TextEditingController();
   String text = '';
@@ -32,20 +35,38 @@ class _ImageGenerateAiState extends ConsumerState<ImageGenerateAi> {
     final isLoading = ref.watch(aiControllerProvider);
     final myData = ref.watch(userProvider)!;
     void addPrompt(int toDay_prompts) {
-      if (text.length >= 4) {
+      var uuid = Uuid();
+      ImageGenerateAiModel aiModel = ImageGenerateAiModel(
+        prompt_id: uuid.v4(),
+        response: '',
+        userID: myData.userID,
+        request_type: request_type,
+        hasError: false,
+        img_url: "",
+        createdAt: DateTime.now(),
+        response_date: DateTime.now(),
+        body: text,
+      );
+      if (_textController.text.trim().length >= 4) {
         log(myData.userID);
         log("is user mod ? : ${myData.isUserMod}");
         if (myData.isUserMod == true) {
           _textController.clear();
           ref
               .read(aiControllerProvider.notifier)
-              .addPrompt(body: text.trim())
+              .addPrompt(body: text.trim(), request_type: request_type, aiModel: aiModel)
+              .then((e) => _scrollController.jumpTo(0));
+        } else if (aiModel.request_type == AiRequestType.text_ai) {
+          _textController.clear();
+          ref
+              .read(aiControllerProvider.notifier)
+              .addPrompt(body: text.trim(), request_type: request_type, aiModel: aiModel)
               .then((e) => _scrollController.jumpTo(0));
         } else if (toDay_prompts < 3) {
           _textController.clear();
           ref
               .read(aiControllerProvider.notifier)
-              .addPrompt(body: text.trim())
+              .addPrompt(body: text.trim(), request_type: request_type, aiModel: aiModel)
               .then((e) => _scrollController.jumpTo(0));
         } else {
           _textController.clear();
@@ -54,6 +75,52 @@ class _ImageGenerateAiState extends ConsumerState<ImageGenerateAi> {
       } else {
         showSnackBar(context, "You must enter at least 4 fields");
       }
+    }
+
+    void requestTypeAction() {
+      showModalBottomSheet(
+        context: context,
+        builder: (context) => Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+                leading: Icon(Icons.image,
+                    color:
+                        request_type == AiRequestType.image_ai ? Colors.blue[900]! : Colors.white),
+                title: Text(
+                  'AI Image Generator',
+                  style: TextStyle(
+                      color: request_type == AiRequestType.image_ai
+                          ? Colors.blue[900]!
+                          : Colors.white),
+                ),
+                onTap: () {
+                  setState(() {
+                    request_type = AiRequestType.image_ai;
+                  });
+                  log(getRequestType(request_type));
+                  context.pop();
+                }),
+            ListTile(
+                leading: Icon(Icons.text_format,
+                    color:
+                        request_type == AiRequestType.text_ai ? Colors.blue[900]! : Colors.white),
+                title: Text(
+                  'AI Text Generator',
+                  style: TextStyle(
+                      color:
+                          request_type == AiRequestType.text_ai ? Colors.blue[900]! : Colors.white),
+                ),
+                onTap: () {
+                  setState(() {
+                    request_type = AiRequestType.text_ai;
+                  });
+                  log(getRequestType(request_type));
+                  context.pop();
+                }),
+          ],
+        ),
+      );
     }
 
     return Scaffold(
@@ -90,6 +157,7 @@ class _ImageGenerateAiState extends ConsumerState<ImageGenerateAi> {
                                           size: size,
                                           response_date: response_date,
                                           isLoading: isLoading,
+                                          request_type: request_type,
                                         ),
                                       ],
                                     );
@@ -133,6 +201,20 @@ class _ImageGenerateAiState extends ConsumerState<ImageGenerateAi> {
                                   ),
                                 ),
                               ] else ...[
+                                if (!isLoading)
+                                  IconButton(
+                                    onPressed: requestTypeAction,
+                                    icon: Icon(
+                                      request_type == AiRequestType.image_ai
+                                          ? Icons.image
+                                          : Icons.text_format,
+                                      color: request_type == AiRequestType.image_ai
+                                          ? Colors.pink[700]
+                                          : Colors.green[300],
+                                    ),
+                                  )
+                                else
+                                  const SizedBox(),
                                 IconButton(
                                   onPressed: isLoading ? null : () => addPrompt(promptsCount),
                                   icon: Icon(
@@ -191,16 +273,18 @@ class BotBody extends StatelessWidget {
 
 class BotHeader extends StatelessWidget {
   const BotHeader({
-    super.key,
+    Key? key,
     required this.prompt,
     required this.size,
     required this.response_date,
+    required this.request_type,
     required this.isLoading,
-  });
+  }) : super(key: key);
 
   final ImageGenerateAiModel prompt;
   final bool isLoading;
   final Size size;
+  final AiRequestType request_type;
   final String response_date;
 
   @override
@@ -218,7 +302,7 @@ class BotHeader extends StatelessWidget {
                 radius: 16,
               ),
               const SizedBox(
-                width: 5,
+                width: 8,
               ),
               const Text(
                 "viblify.ai",
@@ -227,53 +311,131 @@ class BotHeader extends StatelessWidget {
             ],
           ),
         ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 15),
-          child: prompt.img_url.isNotEmpty
-              ? Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Hero(
-                      tag: prompt.img_url,
-                      child: GestureDetector(
-                        onTap: () => context.push(
-                          "/img/slide/${base64UrlEncode(utf8.encode(prompt.img_url))}",
-                        ),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(10),
-                          child: Image(
-                            width: size.width * 0.5,
-                            height: size.width * 0.5,
-                            image: CachedNetworkImageProvider(
-                              prompt.img_url,
+        if (prompt.request_type == AiRequestType.image_ai) ...[
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 10),
+            child: prompt.img_url.isNotEmpty
+                ? Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Hero(
+                        tag: prompt.img_url,
+                        child: GestureDetector(
+                          onTap: () => context.push(
+                            "/img/slide/${base64UrlEncode(utf8.encode(prompt.img_url))}",
+                          ),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(10),
+                            child: Image(
+                              width: size.width * 0.5,
+                              height: size.width * 0.5,
+                              image: CachedNetworkImageProvider(
+                                prompt.img_url,
+                              ),
                             ),
                           ),
                         ),
                       ),
+                      const SizedBox(
+                        height: 3,
+                      ),
+                      Text(
+                        response_date,
+                        style: TextStyle(fontSize: 11, color: Colors.grey[700]),
+                      ),
+                    ],
+                  )
+                : Container(
+                    padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 15),
+                    margin: const EdgeInsets.symmetric(horizontal: 15),
+                    decoration: BoxDecoration(
+                      color: DenscordColors.scaffoldForeground,
+                      borderRadius: BorderRadius.circular(15),
                     ),
-                    const SizedBox(
-                      height: 3,
-                    ),
-                    Text(
-                      response_date,
-                      style: TextStyle(fontSize: 11, color: Colors.grey[700]),
-                    ),
-                  ],
-                )
-              : Container(
-                  padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 15),
-                  margin: const EdgeInsets.symmetric(horizontal: 15),
-                  decoration: BoxDecoration(
-                    color: DenscordColors.scaffoldForeground,
-                    borderRadius: BorderRadius.circular(15),
+                    child: (prompt.hasError)
+                        ? const Text(
+                            "I'm very sorry. It seems like an error occurred. Please try again")
+                        : const Text("generating the image please wait..."),
                   ),
-                  child: (prompt.hasError)
-                      ? const Text(
-                          "I'm very sorry. It seems like an error occurred. Please try again")
-                      : const Text("generating the image please wait..."),
-                ),
-        ),
+          ),
+        ] else ...[
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 15),
+            child: prompt.response.isNotEmpty
+                ? Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Container(
+                        constraints: BoxConstraints(maxWidth: size.width * 0.75),
+                        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 15),
+                        margin: const EdgeInsets.symmetric(horizontal: 15),
+                        decoration: BoxDecoration(
+                          color: DenscordColors.scaffoldForeground,
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        child: SingleChildScrollView(
+                          child: parseText(prompt.response),
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 3,
+                      ),
+                      Text(
+                        response_date,
+                        style: TextStyle(fontSize: 11, color: Colors.grey[700]),
+                      ),
+                    ],
+                  )
+                : Container(
+                    padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 15),
+                    margin: const EdgeInsets.symmetric(horizontal: 15),
+                    decoration: BoxDecoration(
+                      color: DenscordColors.scaffoldForeground,
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    child: (prompt.hasError)
+                        ? const Text(
+                            "I'm very sorry. It seems like an error occurred. Please try again")
+                        : const Text("The answer is being written"),
+                  ),
+          ),
+        ],
       ],
+    );
+  }
+
+  Widget parseText(String text) {
+    List<Widget> widgets = [];
+
+    // Find and replace the text between ** with bold and larger text
+    RegExp boldRegex =
+        RegExp(r'\*\*(\S(?:.*?\S)?)\*\*'); // Match non-whitespace characters surrounded by **
+    text.splitMapJoin(
+      boldRegex,
+      onMatch: (Match match) {
+        String boldText =
+            match.group(1)!; // Extract matched group without leading/trailing whitespace
+        widgets.add(
+          Text(
+            boldText,
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+          ),
+        );
+        return '';
+      },
+      onNonMatch: (String nonMatch) {
+        widgets.add(Text(
+          nonMatch.replaceAll('*', '').replaceAll('\n\n', '\n'),
+          style: TextStyle(color: Colors.grey[300]),
+        ));
+        return '';
+      },
+    );
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: widgets,
     );
   }
 }

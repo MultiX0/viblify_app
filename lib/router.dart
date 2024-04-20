@@ -7,7 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:viblify_app/features/Feed/feed_screen.dart';
 import 'package:viblify_app/features/Feed/tag_feed_screen.dart';
-import 'package:viblify_app/features/ai/screens/image_generate_ai.dart';
+import 'package:viblify_app/features/ai/screens/viblify_ai.dart';
 import 'package:viblify_app/features/auth/screens/auth_screen.dart';
 import 'package:viblify_app/features/auth/screens/signin_screen.dart';
 import 'package:viblify_app/features/chats/screens/chat_screen.dart';
@@ -323,7 +323,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: Navigation.ai_image,
         pageBuilder: (context, state) {
           return const NoTransitionPage(
-            child: ImageGenerateAi(),
+            child: ViblifyAi(),
           );
         },
       ),

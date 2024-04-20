@@ -65,11 +65,22 @@ class AiRepository {
         });
   }
 
-  Future<void> editPrompt(String promptID, String img_url) async {
+  Future<void> addImageToThePrompt(String promptID, String img_url) async {
     try {
       final response_date = DateTime.now().millisecondsSinceEpoch;
       await _ai_prompt
           .update({'img_url': img_url, "response_date": response_date}).eq("prompt_id", promptID);
+    } catch (e) {
+      log(e.toString());
+      throw Failure(e.toString());
+    }
+  }
+
+  Future<void> addResponseToThePrompt(String promptID, String response) async {
+    try {
+      final response_date = DateTime.now().millisecondsSinceEpoch;
+      await _ai_prompt
+          .update({'response': response, "response_date": response_date}).eq("prompt_id", promptID);
     } catch (e) {
       log(e.toString());
       throw Failure(e.toString());
