@@ -51,6 +51,8 @@ class AiController extends StateNotifier<bool> {
         _ref = ref,
         super(false);
 
+  final prompt_id = Uuid().v4();
+
   Future<void> addPrompt({
     required String body,
   }) async {
@@ -58,11 +60,11 @@ class AiController extends StateNotifier<bool> {
       state = true;
 
       final uid = _ref.read(userProvider)!.userID;
-      final prompt_id = uuid.v4();
 
       ImageGenerateAiModel aiModel = ImageGenerateAiModel(
         prompt_id: prompt_id,
         userID: uid,
+        hasError: false,
         img_url: "",
         createdAt: DateTime.now(),
         response_date: DateTime.now(),
@@ -91,6 +93,7 @@ class AiController extends StateNotifier<bool> {
       _repository.editPrompt(prompt_id, downloadURL);
       state = false;
     } catch (e) {
+      _repository.hasError(prompt_id);
       log(e.toString());
       throw Failure(e.toString());
     }

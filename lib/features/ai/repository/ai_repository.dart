@@ -75,4 +75,13 @@ class AiRepository {
       throw Failure(e.toString());
     }
   }
+
+  Future<void> hasError(String promptID) async {
+    try {
+      await _ai_prompt.update({"hasError": true}).eq("prompt_id", promptID);
+    } catch (e) {
+      log(e.toString());
+      throw Failure(e.toString());
+    }
+  }
 }
