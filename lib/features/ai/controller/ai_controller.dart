@@ -26,6 +26,12 @@ final getUserPromptsProvider = StreamProvider((ref) {
   return aiController.getUserPrompts(myID);
 });
 
+final getUserPromptCountProvider = StreamProvider<int>((ref) {
+  final aiController = ref.watch(aiControllerProvider.notifier);
+  final myID = ref.read(userProvider)!.userID;
+  return aiController.getUserPromptsCount(myID);
+});
+
 final aiControllerProvider = StateNotifierProvider<AiController, bool>((ref) {
   final _repository = ref.watch(aiRepositoryProvider);
   final _storageRepository = ref.watch(firebaseStorageProvider);
@@ -86,5 +92,9 @@ class AiController extends StateNotifier<bool> {
 
   Stream<List<ImageGenerateAiModel>> getUserPrompts(String userID) {
     return _repository.getUserPrompts(userID);
+  }
+
+  Stream<int> getUserPromptsCount(String userID) {
+    return _repository.getUserPromptsCount(userID);
   }
 }

@@ -46,6 +46,26 @@ class AiRepository {
     return stream;
   }
 
+  Stream<int> getUserPromptsCount(String userID) {
+    final now = DateTime.now();
+    final DateTime twentyFourHoursAgo = now.subtract(const Duration(hours: 24));
+
+    return _ai_prompt
+        .stream(primaryKey: ['prompt_id'])
+        .eq("userID", userID)
+        .order('createdAt', ascending: false)
+        .map((data) {
+          // Filter the prompts within the last 24 hours
+          final filteredPrompts = data.where((prompt) {
+            final createdAt = DateTime.parse(prompt['createdAt']);
+            return createdAt.isAfter(twentyFourHoursAgo) && createdAt.isBefore(now);
+          }).toList();
+
+          // Return the count of filtered prompts
+          return filteredPrompts.length;
+        });
+  }
+
   Future<void> editPrompt(String promptID, String img_url) async {
     try {
       final response_date = DateTime.now().millisecondsSinceEpoch;
