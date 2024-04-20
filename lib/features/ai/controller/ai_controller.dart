@@ -51,7 +51,7 @@ class AiController extends StateNotifier<bool> {
         _ref = ref,
         super(false);
 
-  final prompt_id = Uuid().v4();
+  final prompt_id = const Uuid().v4();
 
   Future<void> addPrompt({
     required String body,

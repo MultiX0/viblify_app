@@ -32,7 +32,7 @@ void errorSnackBar(BuildContext context) {
     scaffoldMessenger
       ..hideCurrentSnackBar()
       ..showSnackBar(
-        SnackBar(
+        const SnackBar(
           content: Text("تعذرت العملية لقد حدثت مشكلة"),
         ),
       );
