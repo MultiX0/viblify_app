@@ -12,6 +12,7 @@ import 'package:uuid/uuid.dart';
 import 'package:viblify_app/core/failure.dart';
 import 'package:viblify_app/features/ai/repository/ai_repository.dart';
 import 'package:viblify_app/features/auth/controller/auth_controller.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 
 import '../../../core/providers/storage_repository_provider.dart';
 import '../models/image_generate_ai_model.dart';
@@ -76,10 +77,15 @@ class AiController extends StateNotifier<bool> {
         prompt: body,
       );
 
+      Uint8List compressedImage = await FlutterImageCompress.compressWithList(
+        image,
+        quality: 70,
+      );
+
       FirebaseStorage storage = FirebaseStorage.instance;
 
       Reference storageRef = storage.ref().child('prompts/$uid/${basename("$prompt_id.jpg")}');
-      UploadTask uploadTask = storageRef.putData(image);
+      UploadTask uploadTask = storageRef.putData(compressedImage);
       TaskSnapshot taskSnapshot = await uploadTask;
       String downloadURL = await taskSnapshot.ref.getDownloadURL();
       _repository.editPrompt(prompt_id, downloadURL);
