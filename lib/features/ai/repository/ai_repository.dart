@@ -47,22 +47,21 @@ class AiRepository {
   }
 
   Stream<int> getUserPromptsCount(String userID) {
-    final now = DateTime.now();
-    final DateTime twentyFourHoursAgo = now.subtract(const Duration(hours: 24));
+    final yesterday = DateTime.now().subtract(const Duration(days: 1));
 
     return _ai_prompt
         .stream(primaryKey: ['prompt_id'])
-        .eq("userID", userID)
+        .gt("createdAt", yesterday.millisecondsSinceEpoch)
         .order('createdAt', ascending: false)
         .map((data) {
-          // Filter the prompts within the last 24 hours
-          final filteredPrompts = data.where((prompt) {
-            final createdAt = DateTime.parse(prompt['createdAt']);
-            return createdAt.isAfter(twentyFourHoursAgo) && createdAt.isBefore(now);
-          }).toList();
-
+          List<Map<String, dynamic>> list = [];
+          for (var prompt in data) {
+            if (prompt['userID'] == userID) {
+              list.add(prompt);
+            }
+          }
           // Return the count of filtered prompts
-          return filteredPrompts.length;
+          return list.length;
         });
   }
 

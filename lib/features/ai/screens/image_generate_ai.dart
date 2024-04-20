@@ -30,6 +30,7 @@ class _ImageGenerateAiState extends ConsumerState<ImageGenerateAi> {
     void addPrompt(int toDay_prompts) {
       if (text.length >= 4) {
         if (toDay_prompts < 3) {
+          _textController.clear();
           ref
               .read(aiControllerProvider.notifier)
               .addPrompt(body: text.trim())
@@ -55,121 +56,155 @@ class _ImageGenerateAiState extends ConsumerState<ImageGenerateAi> {
                     return Column(
                       children: [
                         Expanded(
-                          child: ListView.builder(
-                            controller: _scrollController,
-                            reverse: true,
-                            itemCount: prompts.length,
-                            itemBuilder: (context, index) {
-                              final prompt = prompts[index];
+                          child: prompts.isNotEmpty
+                              ? ListView.builder(
+                                  controller: _scrollController,
+                                  reverse: true,
+                                  itemCount: prompts.length,
+                                  itemBuilder: (context, index) {
+                                    final prompt = prompts[index];
 
-                              final createdAt =
-                                  timeago.format(prompt.createdAt, locale: 'en_short');
-                              final response_date =
-                                  timeago.format(prompt.response_date, locale: 'en_short');
-                              return Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Expanded(
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(top: 32.0),
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Padding(
-                                            padding: const EdgeInsets.symmetric(horizontal: 15),
-                                            child: Row(
+                                    final createdAt =
+                                        timeago.format(prompt.createdAt, locale: 'en_short');
+                                    final response_date =
+                                        timeago.format(prompt.response_date, locale: 'en_short');
+                                    return Row(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Expanded(
+                                          child: Padding(
+                                            padding: const EdgeInsets.only(top: 32.0),
+                                            child: Column(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
                                               children: [
-                                                CircleAvatar(
-                                                  backgroundColor: Colors.grey[900],
-                                                  backgroundImage:
-                                                      const AssetImage("assets/images/ai.jpg"),
-                                                  radius: 16,
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.symmetric(horizontal: 15),
+                                                  child: Row(
+                                                    children: [
+                                                      CircleAvatar(
+                                                        backgroundColor: Colors.grey[900],
+                                                        backgroundImage: const AssetImage(
+                                                            "assets/images/ai.jpg"),
+                                                        radius: 16,
+                                                      ),
+                                                      const SizedBox(
+                                                        width: 5,
+                                                      ),
+                                                      const Text(
+                                                        "viblify.ai",
+                                                        style:
+                                                            TextStyle(fontWeight: FontWeight.bold),
+                                                      ),
+                                                    ],
+                                                  ),
                                                 ),
-                                                const SizedBox(
-                                                  width: 5,
-                                                ),
-                                                const Text(
-                                                  "viblify.ai",
-                                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                                Padding(
+                                                  padding: const EdgeInsets.symmetric(
+                                                      horizontal: 25, vertical: 10),
+                                                  child: prompt.img_url.isNotEmpty
+                                                      ? Column(
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment.end,
+                                                          children: [
+                                                            Hero(
+                                                              tag: prompt.img_url,
+                                                              child: GestureDetector(
+                                                                onTap: () => context.push(
+                                                                  "/img/slide/${base64UrlEncode(utf8.encode(prompt.img_url))}",
+                                                                ),
+                                                                child: ClipRRect(
+                                                                  borderRadius:
+                                                                      BorderRadius.circular(10),
+                                                                  child: Image(
+                                                                    width: size.width * 0.5,
+                                                                    height: size.width * 0.5,
+                                                                    image:
+                                                                        CachedNetworkImageProvider(
+                                                                      prompt.img_url,
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            ),
+                                                            const SizedBox(
+                                                              height: 3,
+                                                            ),
+                                                            Text(
+                                                              response_date,
+                                                              style: TextStyle(
+                                                                  fontSize: 11,
+                                                                  color: Colors.grey[700]),
+                                                            ),
+                                                          ],
+                                                        )
+                                                      : Container(
+                                                          padding: const EdgeInsets.symmetric(
+                                                              vertical: 8, horizontal: 15),
+                                                          margin: const EdgeInsets.symmetric(
+                                                              horizontal: 15),
+                                                          decoration: BoxDecoration(
+                                                            color:
+                                                                DenscordColors.scaffoldForeground,
+                                                            borderRadius: BorderRadius.circular(15),
+                                                          ),
+                                                          child: const Text(
+                                                              "generating the image please wait..."),
+                                                        ),
                                                 ),
                                               ],
                                             ),
                                           ),
-                                          Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 25, vertical: 10),
-                                            child: prompt.img_url.isNotEmpty
-                                                ? Column(
-                                                    crossAxisAlignment: CrossAxisAlignment.end,
-                                                    children: [
-                                                      Hero(
-                                                        tag: prompt.img_url,
-                                                        child: GestureDetector(
-                                                          onTap: () => context.push(
-                                                            "/img/slide/${base64UrlEncode(utf8.encode(prompt.img_url))}",
-                                                          ),
-                                                          child: ClipRRect(
-                                                            borderRadius: BorderRadius.circular(10),
-                                                            child: Image(
-                                                              width: size.width * 0.5,
-                                                              height: size.width * 0.5,
-                                                              image: CachedNetworkImageProvider(
-                                                                prompt.img_url,
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        ),
-                                                      ),
-                                                      const SizedBox(
-                                                        height: 3,
-                                                      ),
-                                                      Text(
-                                                        response_date,
-                                                        style: TextStyle(
-                                                            fontSize: 11, color: Colors.grey[700]),
-                                                      ),
-                                                    ],
-                                                  )
-                                                : Container(
-                                                    padding: const EdgeInsets.symmetric(
-                                                        vertical: 8, horizontal: 15),
-                                                    margin:
-                                                        const EdgeInsets.symmetric(horizontal: 15),
-                                                    decoration: BoxDecoration(
-                                                      color: DenscordColors.scaffoldForeground,
-                                                      borderRadius: BorderRadius.circular(15),
-                                                    ),
-                                                    child: const Text(
-                                                        "generating the image please wait..."),
-                                                  ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                  Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Container(
-                                        padding:
-                                            const EdgeInsets.symmetric(vertical: 8, horizontal: 15),
-                                        margin: const EdgeInsets.symmetric(horizontal: 15),
-                                        decoration: BoxDecoration(
-                                          color: DenscordColors.scaffoldForeground,
-                                          borderRadius: BorderRadius.circular(15),
                                         ),
-                                        child: Text(prompt.body),
+                                        Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Container(
+                                              padding: const EdgeInsets.symmetric(
+                                                  vertical: 8, horizontal: 15),
+                                              margin: const EdgeInsets.symmetric(horizontal: 15),
+                                              decoration: BoxDecoration(
+                                                color: DenscordColors.scaffoldForeground,
+                                                borderRadius: BorderRadius.circular(15),
+                                              ),
+                                              child: Text(prompt.body),
+                                            ),
+                                            Text(
+                                              createdAt,
+                                              style:
+                                                  TextStyle(fontSize: 11, color: Colors.grey[700]),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                )
+                              : Center(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        "No Data Yet..",
+                                        style: TextStyle(
+                                            fontFamily: "FixelDisplay",
+                                            color: Colors.grey[200],
+                                            fontSize: 32),
+                                      ),
+                                      const SizedBox(
+                                        height: 3,
                                       ),
                                       Text(
-                                        createdAt,
-                                        style: TextStyle(fontSize: 11, color: Colors.grey[700]),
+                                        "Engage your imagination",
+                                        style: TextStyle(
+                                          fontFamily: "FixelText",
+                                          color: Colors.grey[400],
+                                        ),
                                       ),
                                     ],
                                   ),
-                                ],
-                              );
-                            },
-                          ),
+                                ),
                         ),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
