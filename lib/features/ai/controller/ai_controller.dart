@@ -21,7 +21,6 @@ import '../models/image_generate_ai_model.dart';
 final String stability_api_key = dotenv.env['STABILITY_API_KEY'] ?? "";
 final String gemeni_api_key = dotenv.env['GOOGLE_GENERATIVE_API_KEY'] ?? "";
 final StabilityAI _ai = StabilityAI();
-const ImageAIStyle imageAIStyle = ImageAIStyle.anime;
 
 final getUserPromptsProvider = StreamProvider((ref) {
   final myID = ref.read(userProvider)!.userID;
@@ -57,6 +56,7 @@ class AiController extends StateNotifier<bool> {
     required String body,
     required AiRequestType request_type,
     required ImageGenerateAiModel aiModel,
+    required ImageAIStyle imageAIStyle,
   }) async {
     try {
       state = true;
