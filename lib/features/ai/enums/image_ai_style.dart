@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:stability_image_generation/stability_image_generation.dart';
 
+//enums
 enum AiImageStyle {
   noStyle,
   anime,
