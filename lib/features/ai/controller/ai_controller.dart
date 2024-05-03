@@ -95,6 +95,7 @@ class AiController extends StateNotifier<bool> {
       }
     } catch (e) {
       _repository.hasError(aiModel.prompt_id);
+      state = false;
       log(e.toString());
       throw Failure(e.toString());
     }

@@ -15,6 +15,8 @@ import 'package:viblify_app/features/user_profile/controller/user_profile_contro
 import 'package:viblify_app/widgets/empty_widget.dart';
 import 'package:viblify_app/features/Feed/widgets/feeds_widget.dart';
 
+import '../story/controller/story_controller.dart';
+
 class FeedScreen extends ConsumerStatefulWidget {
   const FeedScreen({super.key});
 
@@ -26,6 +28,7 @@ class _FeedScreenState extends ConsumerState<FeedScreen> {
   Future<void> _onRefresh(WidgetRef ref) async {
     setState(() {});
     ref.refresh(getAllFeedsProvider(FirebaseAuth.instance.currentUser!.uid));
+    ref.refresh(getAllStoriesProvider);
     log("done");
   }
 

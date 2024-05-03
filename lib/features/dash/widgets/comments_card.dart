@@ -1,3 +1,5 @@
+// ignore_for_file: unused_result
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -7,6 +9,8 @@ import 'package:viblify_app/core/common/error_text.dart';
 import 'package:viblify_app/features/dash/controller/dash_controller.dart';
 import 'package:viblify_app/features/dash/comments/models/dash_model.dart';
 import 'package:viblify_app/features/auth/models/user_model.dart';
+
+import '../comments/controller/controller.dart';
 
 class MyCommentCard extends ConsumerWidget {
   const MyCommentCard({
@@ -25,6 +29,11 @@ class MyCommentCard extends ConsumerWidget {
     }
 
     Future<bool> onLikeButtonTapped(bool isLiked, String docID) async {
+      if (dash.likes.contains(myData.userID)) {
+        dash.likes.add(myData.userID);
+      } else {
+        dash.likes.remove(myData.userID);
+      }
       likeHunlidng(docID);
       return !isLiked;
     }
@@ -99,7 +108,8 @@ class MyCommentCard extends ConsumerWidget {
                   width: 15,
                 ),
                 GestureDetector(
-                  onTap: () => navigationToDashCommentScreen(context, dash.dashID, dash.userID),
+                  onTap: () =>
+                      navigationToDashCommentScreen(context, dash.dashID, dash.userID, ref),
                   child: Text(
                     "add new comment",
                     style: TextStyle(
@@ -115,7 +125,9 @@ class MyCommentCard extends ConsumerWidget {
     );
   }
 
-  void navigationToDashCommentScreen(BuildContext context, String dashID, String dashUserID) {
+  void navigationToDashCommentScreen(
+      BuildContext context, String dashID, String dashUserID, WidgetRef ref) {
+    ref.refresh(getDashCommentsProvider(dashID));
     context.push("/dash_comments/$dashID/$dashUserID");
   }
 }

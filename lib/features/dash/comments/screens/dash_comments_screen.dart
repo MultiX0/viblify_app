@@ -14,6 +14,7 @@ import 'package:viblify_app/widgets/empty_widget.dart';
 
 import '../../../../utils/my_model_bottom_sheet.dart';
 import '../controller/controller.dart';
+import '../models/dash_comments_model.dart';
 
 TextEditingController comments = TextEditingController();
 
@@ -54,7 +55,7 @@ class _DashCommentsScreenState extends ConsumerState<DashCommentsScreen> {
       return !isLiked;
     }
 
-    void more(String commentID) {
+    void more(String commentID, List<DashCommentsModel> comments) {
       moreData(
         context: context,
         onTap: () {
@@ -62,6 +63,13 @@ class _DashCommentsScreenState extends ConsumerState<DashCommentsScreen> {
           ref
               .read(dashCommentsControllerProvider.notifier)
               .deleteComment(commentID, widget.dashID, context);
+          var myComment = comments.firstWhere(
+            (comment) => comment.commentID == commentID,
+          );
+
+          setState(() {
+            comments.remove(myComment);
+          });
           ref.refresh(getDashCommentsProvider(widget.dashID));
         },
       );
@@ -129,7 +137,8 @@ class _DashCommentsScreenState extends ConsumerState<DashCommentsScreen> {
                                                     ),
                                                     const Spacer(),
                                                     GestureDetector(
-                                                      onTap: () => more(comment.commentID),
+                                                      onTap: () =>
+                                                          more(comment.commentID, comments),
                                                       child: Padding(
                                                         padding: const EdgeInsets.all(4.0),
                                                         child: Icon(
