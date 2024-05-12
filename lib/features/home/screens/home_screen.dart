@@ -11,7 +11,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:line_icons/line_icons.dart';
-import 'package:viblify_app/core/common/error_text.dart';
 import 'package:viblify_app/features/Feed/feed_screen.dart';
 import 'package:viblify_app/features/auth/controller/auth_controller.dart';
 import 'package:viblify_app/features/user_profile/repository/update_user_status.dart';
@@ -168,7 +167,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                                 ),
                               );
                       },
-                      error: (error, stackTrace) => ErrorText(error: error.toString()),
+                      error: (error, stackTrace) => IconButton(
+                        onPressed: () {
+                          ref.refresh(getNotificationsProvider(user.userID));
+                          context.push("/notifications/${user.userID}");
+                        },
+                        icon: const Icon(
+                          LineIcons.bell,
+                          size: 22,
+                        ),
+                      ),
                       loading: () => IconButton(
                         onPressed: () {
                           ref.refresh(getNotificationsProvider(user.userID));

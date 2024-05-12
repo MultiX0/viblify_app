@@ -2,11 +2,16 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:go_router/go_router.dart';
 import 'package:tuple/tuple.dart';
 import 'package:viblify_app/core/common/error_text.dart';
 import 'package:viblify_app/core/common/loader.dart';
+import 'package:viblify_app/features/auth/controller/auth_controller.dart';
 import 'package:viblify_app/features/dash/controller/dash_controller.dart';
+import 'package:viblify_app/router.dart';
 import 'package:viblify_app/widgets/empty_widget.dart';
+
+import '../comments/models/dash_model.dart';
 
 class DashRecommandations extends ConsumerWidget {
   final String id;
@@ -16,6 +21,15 @@ class DashRecommandations extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final myData = ref.read(userProvider)!;
+    void navigateToDashView(Dash dash, String uid) {
+      ref.read(dashControllerProvider.notifier).addUserToViews(dash.dashID, uid);
+      context.pushNamed(
+        Navigation.dashview,
+        extra: dash.toMap(),
+      );
+    }
+
     return ref.watch(getRecommendedDashProvider(Tuple2(id, labels))).when(
           data: (dashs) {
             if (dashs.isNotEmpty) {
@@ -45,6 +59,7 @@ class DashRecommandations extends ConsumerWidget {
                           child: Hero(
                             tag: dash.dashID,
                             child: GestureDetector(
+                              onTap: () => navigateToDashView(dash, myData.userID),
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(10),
                                 child: CachedNetworkImage(

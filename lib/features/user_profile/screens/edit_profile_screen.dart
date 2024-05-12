@@ -28,7 +28,7 @@ class EditProfileScreen extends ConsumerStatefulWidget {
 
 class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   final allowedChars = 'abcdefghijklmnopqrstuvwxyz0123456789_';
-  bool stt = false;
+
   String currentVal = 'Prefer not to say';
   List<String> mbtis = [
     "Prefer not to say",
@@ -60,8 +60,10 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   late TextEditingController userNameController;
   late TextEditingController locationController;
   late TextEditingController linkController;
+  late bool stt;
   @override
   void initState() {
+    stt = ref.read(userProvider)!.stt;
     nameController = TextEditingController(text: ref.read(userProvider)!.name);
     bioController = TextEditingController(text: ref.read(userProvider)!.bio);
     userNameController = TextEditingController(text: ref.read(userProvider)!.userName);

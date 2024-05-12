@@ -15,6 +15,8 @@ import 'package:viblify_app/features/user_profile/controller/user_profile_contro
 import 'package:viblify_app/widgets/empty_widget.dart';
 import 'package:viblify_app/features/Feed/widgets/feeds_widget.dart';
 
+import '../story/controller/story_controller.dart';
+
 class FeedScreen extends ConsumerStatefulWidget {
   const FeedScreen({super.key});
 
@@ -26,13 +28,16 @@ class _FeedScreenState extends ConsumerState<FeedScreen> {
   Future<void> _onRefresh(WidgetRef ref) async {
     setState(() {});
     ref.refresh(getAllFeedsProvider(FirebaseAuth.instance.currentUser!.uid));
+    ref.refresh(getAllStoriesProvider);
     log("done");
   }
 
   @override
   Widget build(BuildContext context) {
     // final myData = ref.watch(userProvider)!;
-    final uid = ref.watch(userProvider)!.userID;
+    // final uid = ref.watch(userProvider)!.userID;
+    var auth = FirebaseAuth.instance;
+    var user_id = auth.currentUser?.uid ?? "";
     return Scaffold(
       body: CustomMaterialIndicator(
         onRefresh: () => _onRefresh(ref),
@@ -43,7 +48,7 @@ class _FeedScreenState extends ConsumerState<FeedScreen> {
             size: 30,
           );
         },
-        child: ref.read(getAllFeedsProvider(uid)).when(
+        child: ref.read(getAllFeedsProvider(user_id)).when(
               data: (posts) => posts.isNotEmpty
                   ? CustomScrollView(
                       slivers: [

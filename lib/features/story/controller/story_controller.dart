@@ -81,6 +81,7 @@ class Story_Controller extends StateNotifier<bool> {
         context.pop();
       });
     } catch (e) {
+      state = false;
       log(e.toString());
       throw Failure(e.toString());
     }
