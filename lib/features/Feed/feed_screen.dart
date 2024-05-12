@@ -35,7 +35,9 @@ class _FeedScreenState extends ConsumerState<FeedScreen> {
   @override
   Widget build(BuildContext context) {
     // final myData = ref.watch(userProvider)!;
-    final uid = ref.watch(userProvider)!.userID;
+    // final uid = ref.watch(userProvider)!.userID;
+    var auth = FirebaseAuth.instance;
+    var user_id = auth.currentUser?.uid ?? "";
     return Scaffold(
       body: CustomMaterialIndicator(
         onRefresh: () => _onRefresh(ref),
@@ -46,7 +48,7 @@ class _FeedScreenState extends ConsumerState<FeedScreen> {
             size: 30,
           );
         },
-        child: ref.read(getAllFeedsProvider(uid)).when(
+        child: ref.read(getAllFeedsProvider(user_id)).when(
               data: (posts) => posts.isNotEmpty
                   ? CustomScrollView(
                       slivers: [
