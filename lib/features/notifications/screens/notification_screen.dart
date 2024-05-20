@@ -6,6 +6,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:custom_refresh_indicator/custom_refresh_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:viblify_app/core/Constant/constant.dart';
 import 'package:viblify_app/core/common/error_text.dart';
@@ -32,6 +33,22 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
     setState(() {});
     ref.refresh(getNotificationsProvider(widget.userID));
     log("done");
+  }
+
+  void goToUserProfile(String uid) {
+    context.push("/u/$uid");
+  }
+
+  void goToSttScreen() {
+    context.push("/stt");
+  }
+
+  void goToFeedScreen(String feed_id) {
+    context.push("/p/$feed_id");
+  }
+
+  void goToDashCommentsScreen(String dash_id, String user_id) {
+    context.push("/dash_comments/$dash_id/$user_id");
   }
 
   @override
@@ -86,6 +103,33 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
                               }
                               return ListTile(
                                 minTileHeight: 30,
+                                onTap: () {
+                                  switch (action) {
+                                    case ActionType.new_follow:
+                                      goToUserProfile(notification.userID);
+
+                                    case ActionType.stt:
+                                      goToSttScreen();
+
+                                    case ActionType.feed_like:
+                                      goToFeedScreen(notification.feedID);
+
+                                    case ActionType.feed_comment:
+                                      goToFeedScreen(notification.feedID);
+
+                                    case ActionType.feed_comment_like:
+                                      goToFeedScreen(notification.feedID);
+
+                                    case ActionType.dash_comment:
+                                      goToDashCommentsScreen(notification.dashID, myData.userID);
+
+                                    case ActionType.dash_comment_like:
+                                      goToDashCommentsScreen(notification.dashID, myData.userID);
+
+                                    default:
+                                      null;
+                                  }
+                                },
                                 leading: CircleAvatar(
                                   backgroundColor: DenscordColors.scaffoldForeground,
                                   radius: 18,

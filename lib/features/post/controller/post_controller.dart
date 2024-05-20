@@ -12,9 +12,9 @@ import 'package:viblify_app/features/auth/controller/auth_controller.dart';
 import 'package:viblify_app/features/post/repository/post_repository.dart';
 import 'package:viblify_app/features/post/models/feeds_model.dart';
 
-final getAllFeedsProvider = FutureProvider.family((ref, String uid) {
-  final communityController = ref.watch(postControllerProvider.notifier);
-  return communityController.getAllFeeds(uid);
+final getAllFeedsProvider = FutureProvider.family<List<Feeds>, String>((ref, userId) async {
+  final repository = ref.watch(postControllerProvider.notifier);
+  return await repository.getAllFeeds(userId);
 });
 
 final deleteFeedProvider = FutureProvider.family((ref, String feedID) {

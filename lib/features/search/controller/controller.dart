@@ -91,7 +91,7 @@ class _SearchTabState extends State<SearchTab> with SingleTickerProviderStateMix
             CommunitySearchScreen(
               query: query,
             ),
-            const MyEmptyShowen(text: "لاتوجد نتائج"),
+            const MyEmptyShowen(text: "Comming Soon"),
           ],
         ),
       ),

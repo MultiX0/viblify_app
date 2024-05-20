@@ -41,7 +41,7 @@ class DashCommentsRepository {
   Future<List<DashCommentsModel>> getAllComments(String dashID) async {
     try {
       final data =
-          await _dashComments.select().eq("dashID", dashID).order('createdAt', ascending: false);
+          await _dashComments.select("*").eq("dashID", dashID).order('createdAt', ascending: false);
 
       final List<DashCommentsModel> comments =
           data.map<DashCommentsModel>((data) => DashCommentsModel.fromMap(data)).toList();

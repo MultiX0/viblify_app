@@ -8,6 +8,7 @@ import 'package:go_router/go_router.dart';
 import 'package:tuple/tuple.dart';
 import 'package:viblify_app/core/Constant/firebase_constant.dart';
 import 'package:viblify_app/features/auth/controller/auth_controller.dart';
+import 'package:viblify_app/features/notifications/enums/notifications_enum.dart';
 import 'package:viblify_app/features/stt/repository/stt_repository.dart';
 import 'package:viblify_app/features/notifications/models/notifications_model.dart';
 import 'package:viblify_app/features/stt/models/stt_model.dart';
@@ -64,7 +65,7 @@ class SttController extends StateNotifier<bool> {
       userID: uid,
       dashID: '',
       feedID: '',
-      notification_type: '',
+      notification_type: getActionTypeString(ActionType.stt),
       seen: false,
       notification: "لقد وصلت رسالة جديدة من مجهول",
       sttID: stt.sttID,

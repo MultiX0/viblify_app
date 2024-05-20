@@ -6,6 +6,7 @@ import 'package:viblify_app/core/common/error_text.dart';
 import 'package:viblify_app/core/common/loader.dart';
 import 'package:viblify_app/features/auth/controller/auth_controller.dart';
 import 'package:viblify_app/features/community/models/community_model.dart';
+import 'package:viblify_app/widgets/empty_widget.dart';
 
 import '../controller/community_controller.dart';
 import 'mod_tools_screen.dart';
@@ -114,7 +115,9 @@ class CommunityScreen extends ConsumerWidget {
                   ),
                 ];
               }),
-              body: Container()),
+              body: const MyEmptyShowen(
+                text: 'Soon',
+              )),
           error: (error, trace) => ErrorText(error: error.toString()),
           loading: () => const Loader()),
     );

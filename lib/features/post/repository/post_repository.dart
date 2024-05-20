@@ -91,15 +91,21 @@ class PostRepository {
   Future<List<Feeds>> getAllFeeds(String uid) async {
     try {
       // Query the posts table from Supabase
-      final response = await _posts.select('*').neq("userID", uid);
+      final response = await _posts.select().neq("userID", uid);
+
+      // Check if response has data
+      if (response.isEmpty) {
+        throw Failure("Error");
+      }
 
       // Extract data from the response
-      List<Feeds> feeds = (response).map((data) => Feeds.fromMap(data)).toList();
+      List<Feeds> feeds = (response as List).map((data) => Feeds.fromMap(data)).toList();
 
       // Calculate scores for each feed using the custom scoring function
 
       // Sort feeds based on the custom score in descending order
       feeds.sort((a, b) => b.score.compareTo(a.score));
+
       // Shuffle the feeds
       feeds.shuffle();
 

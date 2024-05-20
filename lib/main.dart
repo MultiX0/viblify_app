@@ -1,10 +1,13 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
@@ -14,6 +17,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pub_semver/pub_semver.dart';
+import 'package:viblify_app/core/Constant/firebase_constant.dart';
 import 'package:viblify_app/core/common/error_text.dart';
 import 'package:viblify_app/features/auth/controller/auth_controller.dart';
 import 'package:viblify_app/features/splash_screen/splash_screen.dart';
@@ -112,24 +116,47 @@ class MyApp extends ConsumerStatefulWidget {
 }
 
 class _MyAppState extends ConsumerState<MyApp> {
+  final firestore = FirebaseFirestore.instance;
   UserModel? userModel;
   String appVersion = '';
   int buildNumber = 1;
-  void getData(WidgetRef ref, User data) async {
-    userModel = await ref.read(authControllerProvider.notifier).getUserData(data.uid).first;
-
-    ref.read(userProvider.notifier).update((state) => userModel);
-    setState(() {});
-  }
+  bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    notifications();
-    _loadAppVersion();
+    _initializeApp();
   }
 
-  Future<void> notifications() async {
+  Future<void> _initializeApp() async {
+    await _loadAppVersion();
+    _setupNotifications();
+  }
+
+  Future<void> getData(WidgetRef ref, User data) async {
+    try {
+      Timer(const Duration(seconds: 1), () async {
+        var querySnapshot = await firestore
+            .collection(FirebaseConstant.usersCollection)
+            .where("userID", isEqualTo: data.uid)
+            .get();
+
+        if (querySnapshot.docs.isNotEmpty) {
+          userModel = UserModel.fromMap(querySnapshot.docs.first.data());
+          ref.watch(userProvider.notifier).update((state) => userModel);
+          setState(() {
+            isLoading = false;
+          });
+        } else {
+          log('No user data found for user_id: ${data.uid}');
+        }
+      });
+    } catch (e) {
+      log('Failed to fetch user data: $e');
+    }
+  }
+
+  void _setupNotifications() {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
       String imageUrl = message.data["image"] ?? "";
       String title = message.data["title"] ?? "";
@@ -157,18 +184,10 @@ class _MyAppState extends ConsumerState<MyApp> {
 
   Future<String> _base64encodedImage(String url) async {
     final http.Response response = await http.get(Uri.parse(url));
-    final String base64Data = base64Encode(response.bodyBytes);
-    return base64Data;
-  }
-
-  Uint8List stringToUint8List(String inputString) {
-    List<int> codeUnits = utf8.encode(inputString);
-    return Uint8List.fromList(codeUnits);
+    return base64Encode(response.bodyBytes);
   }
 
   Future<void> _loadAppVersion() async {
-    await Future.delayed(Duration.zero); // Introduce a delay to wait for the build to complete
-
     final packageInfo = await PackageInfo.fromPlatform();
     setState(() {
       appVersion = packageInfo.version;
@@ -185,63 +204,71 @@ class _MyAppState extends ConsumerState<MyApp> {
           data: (data) => ref.read(updateInfoProvider).when(
                 data: (update) {
                   if (data != null) {
-                    getData(ref, data);
+                    if (isLoading) {
+                      getData(ref, data);
+                      return _buildLoadingApp();
+                    }
                   } else {
-                    log('not logged in');
+                    log('Not logged in');
                   }
                   if (appVersion.isNotEmpty &&
                           update.version.isNotEmpty &&
                           Version.parse(appVersion) < Version.parse(update.version) ||
                       buildNumber < update.buildNumber) {
-                    return MaterialApp(
-                      navigatorObservers: [
-                        FirebaseAnalyticsObserver(analytics: FirebaseAnalytics.instance),
-                      ],
-                      navigatorKey: navigatorKey,
-                      theme: Pallete.darkModeAppTheme,
-                      debugShowCheckedModeBanner: false,
-                      home: const Scaffold(
-                        body: Center(
-                          child: Text(
-                            'new update!',
-                            style: TextStyle(
-                              fontSize: 65,
-                              fontFamily: "LobsterTwo",
-                            ),
-                          ),
-                        ),
-                      ),
-                    );
+                    return _buildUpdateApp();
                   } else {
-                    return MaterialApp.router(
-                      routeInformationParser: router.routeInformationParser,
-                      routerDelegate: router.routerDelegate,
-                      routeInformationProvider: router.routeInformationProvider,
-                      debugShowCheckedModeBanner: false,
-                      theme: Pallete.darkModeAppTheme,
-                      title: "viblify",
-                    );
+                    return _buildMainApp(router);
                   }
                 },
                 error: (error, trace) => ErrorText(error: error.toString()),
-                loading: () => MaterialApp(
-                  navigatorObservers: [
-                    FirebaseAnalyticsObserver(analytics: FirebaseAnalytics.instance),
-                  ],
-                  theme: Pallete.darkModeAppTheme,
-                  debugShowCheckedModeBanner: false,
-                  home: const TitleWidget(),
-                ),
+                loading: () => _buildLoadingApp(),
               ),
           error: (error, stackTrace) => ErrorText(error: error.toString()),
-          loading: () => MaterialApp(
-            navigatorObservers: [
-              FirebaseAnalyticsObserver(analytics: FirebaseAnalytics.instance),
-            ],
-            theme: Pallete.darkModeAppTheme,
-            debugShowCheckedModeBanner: false,
-            home: const TitleWidget(),
-          ),
+          loading: () => _buildLoadingApp(),
         );
+  }
+
+  MaterialApp _buildUpdateApp() {
+    return MaterialApp(
+      navigatorObservers: [
+        FirebaseAnalyticsObserver(analytics: FirebaseAnalytics.instance),
+      ],
+      navigatorKey: navigatorKey,
+      theme: Pallete.darkModeAppTheme,
+      debugShowCheckedModeBanner: false,
+      home: const Scaffold(
+        body: Center(
+          child: Text(
+            'New update!',
+            style: TextStyle(
+              fontSize: 65,
+              fontFamily: "LobsterTwo",
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  MaterialApp _buildMainApp(GoRouter router) {
+    return MaterialApp.router(
+      routeInformationParser: router.routeInformationParser,
+      routerDelegate: router.routerDelegate,
+      routeInformationProvider: router.routeInformationProvider,
+      debugShowCheckedModeBanner: false,
+      theme: Pallete.darkModeAppTheme,
+      title: "Viblify",
+    );
+  }
+
+  MaterialApp _buildLoadingApp() {
+    return MaterialApp(
+      navigatorObservers: [
+        FirebaseAnalyticsObserver(analytics: FirebaseAnalytics.instance),
+      ],
+      theme: Pallete.darkModeAppTheme,
+      debugShowCheckedModeBanner: false,
+      home: const TitleWidget(),
+    );
   }
 }
