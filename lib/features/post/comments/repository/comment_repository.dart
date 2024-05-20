@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fpdart/fpdart.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:viblify_app/core/failure.dart';
 
 import '../../../../core/Constant/firebase_constant.dart';
@@ -13,13 +14,14 @@ final commentsRepositoryProvider = Provider((ref) {
 });
 
 class CommentsRepository {
+  final supabase = Supabase.instance.client;
   final FirebaseFirestore _firebaseFirestore;
   CommentsRepository({required FirebaseFirestore firebaseFirestore})
       : _firebaseFirestore = firebaseFirestore;
   CollectionReference get _comments =>
       _firebaseFirestore.collection(FirebaseConstant.postsCollection);
 
-  FutureVoid addPost(Comments comments, String feedID) async {
+  FutureVoid addCommit(Comments comments, String feedID) async {
     try {
       return right(_comments
           .doc(feedID)
@@ -27,8 +29,15 @@ class CommentsRepository {
           .doc(comments.commentID)
           .set(comments.toMap())
           .then((value) async {
-        int commentCount = await getCollectionSize(feedID);
-        _comments.doc(feedID).update({"commentCount": commentCount});
+        try {
+          int commentCount = await getCollectionSize(feedID);
+          await supabase
+              .from(FirebaseConstant.postsCollection)
+              .update({"commentCount": commentCount}).eq("feedID", feedID);
+          _comments.doc(feedID).update({"commentCount": commentCount});
+        } catch (e) {
+          rethrow;
+        }
       }));
     } on FirebaseException catch (e) {
       throw e.message!;
@@ -148,10 +157,16 @@ class CommentsRepository {
           .doc(commentID)
           .update({
         'isShowed': false,
-      }).then((value) {
-        _comments.doc(feedID).update({
-          'commentCount': FieldValue.increment(-1),
-        });
+      }).then((value) async {
+        try {
+          int commentCount = await getCollectionSize(feedID);
+          await supabase
+              .from(FirebaseConstant.postsCollection)
+              .update({"commentCount": commentCount}).eq("feedID", feedID);
+          _comments.doc(feedID).update({"commentCount": commentCount});
+        } catch (e) {
+          rethrow;
+        }
       });
 
       await deleted;

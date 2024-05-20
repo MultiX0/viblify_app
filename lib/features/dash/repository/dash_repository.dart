@@ -36,9 +36,7 @@ class DashRepository {
 
   Future<List<Dash>> getAllDashes(String uid) async {
     try {
-      final data = await _dash.select();
-
-      // .neq('userID', uid); // does
+      final data = await _dash.select().neq('userID', uid); // does
 
       final List<Dash> dashes = data.map<Dash>((data) => Dash.fromMap(data)).toList();
       dashes.shuffle();

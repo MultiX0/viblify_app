@@ -2,7 +2,6 @@
 
 import 'dart:developer';
 
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:custom_refresh_indicator/custom_refresh_indicator.dart';
@@ -25,22 +24,23 @@ class FeedScreen extends ConsumerStatefulWidget {
 }
 
 class _FeedScreenState extends ConsumerState<FeedScreen> {
-  Future<void> _onRefresh(WidgetRef ref) async {
-    setState(() {});
-    ref.refresh(getAllFeedsProvider(FirebaseAuth.instance.currentUser!.uid));
+  Future<void> _onRefresh(WidgetRef ref, String userId) async {
+    // Refreshing the providers
+    ref.refresh(getAllFeedsProvider(userId));
     ref.refresh(getAllStoriesProvider);
-    log("done");
+    setState(() {
+      // This will rebuild the widget to reflect new state
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    // final myData = ref.watch(userProvider)!;
-    // final uid = ref.watch(userProvider)!.userID;
-    var auth = FirebaseAuth.instance;
-    var user_id = auth.currentUser?.uid ?? "";
+    // Watching the userProvider for the user ID
+    final uid = ref.watch(userProvider)?.userID ?? '';
+
     return Scaffold(
       body: CustomMaterialIndicator(
-        onRefresh: () => _onRefresh(ref),
+        onRefresh: () => _onRefresh(ref, uid),
         indicatorBuilder: (context, controller) {
           return const Icon(
             Icons.ac_unit,
@@ -48,11 +48,10 @@ class _FeedScreenState extends ConsumerState<FeedScreen> {
             size: 30,
           );
         },
-        child: ref.read(getAllFeedsProvider(user_id)).when(
+        child: ref.watch(getAllFeedsProvider(uid)).when(
               data: (posts) => posts.isNotEmpty
                   ? CustomScrollView(
                       slivers: [
-                        // Stories View
                         const SliverToBoxAdapter(
                           child: SizedBox(height: 8),
                         ),
@@ -60,8 +59,6 @@ class _FeedScreenState extends ConsumerState<FeedScreen> {
                         const SliverToBoxAdapter(
                           child: SizedBox(height: 8),
                         ),
-
-                        // displays list of posts
                         FeedsWidget(
                           isUserProfile: false,
                           posts: posts,

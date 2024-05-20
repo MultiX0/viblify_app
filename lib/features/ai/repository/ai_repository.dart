@@ -8,6 +8,7 @@ import 'package:fpdart/fpdart.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:viblify_app/core/failure.dart';
 import 'package:viblify_app/core/providers/firebase_providers.dart';
+import 'package:viblify_app/features/ai/enums/request_type.dart';
 import 'package:viblify_app/features/ai/models/image_generate_ai_model.dart';
 
 import '../../../../core/Constant/firebase_constant.dart';
@@ -57,7 +58,9 @@ class AiRepository {
           List<Map<String, dynamic>> list = [];
           for (var prompt in data) {
             if (prompt['userID'] == userID) {
-              list.add(prompt);
+              if (prompt['request_type'] == getRequestType(AiRequestType.image_ai)) {
+                list.add(prompt);
+              }
             }
           }
           // Return the count of filtered prompts

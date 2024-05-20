@@ -91,6 +91,11 @@ class _CommentScreenState extends ConsumerState<CommentScreen> {
       body: SafeArea(
         child: ref.watch(getFeedByID(widget.feedID)).when(
               data: (feeds) {
+                if (feeds.isEmpty) {
+                  return const Center(
+                    child: Text("This Post not Found!"),
+                  );
+                }
                 final feed = feeds.first;
                 return NestedScrollView(
                   physics: const NeverScrollableScrollPhysics(),

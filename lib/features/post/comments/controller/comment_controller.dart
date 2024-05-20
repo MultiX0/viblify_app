@@ -94,7 +94,7 @@ class CommentController extends StateNotifier<bool> {
     }
 
     // Now add the post
-    final result = await _repository.addPost(comments, feedID);
+    final result = await _repository.addCommit(comments, feedID);
 
     state = false;
     result.fold((l) => showSnackBar(context, l.message), (r) async {
