@@ -1,7 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:viblify_app/core/utils.dart';
 import 'package:viblify_app/features/auth/repository/auth_repository.dart';
 import 'package:viblify_app/features/auth/models/user_model.dart';
@@ -24,9 +23,9 @@ final getUserByName = StreamProvider.family((ref, String userName) {
   return authController.getUserDataByName(userName);
 });
 
-final authChangeState = StreamProvider((ref) {
+final authStateChangeProvider = StreamProvider((ref) {
   final authController = ref.watch(authControllerProvider.notifier);
-  return authController.authStateChanges;
+  return authController.authStateChange;
 });
 
 class AuthController extends StateNotifier<bool> {
@@ -37,7 +36,7 @@ class AuthController extends StateNotifier<bool> {
         _ref = ref,
         super(false);
 
-  Stream<User?> get authStateChanges => _authRepository.authStateChanged;
+  Stream<User?> get authStateChange => _authRepository.authStateChange;
   Stream<UserModel> getUserData(String uid) {
     return _authRepository.getUserData(uid);
   }
@@ -56,7 +55,7 @@ class AuthController extends StateNotifier<bool> {
     state = false;
     user.fold((l) => showSnackBar(context, l.message), (userModel) {
       _ref.read(userProvider.notifier).update((state) => userModel);
-      context.go('/splash');
+      //context.go('/splash');
     });
   }
 
@@ -67,7 +66,7 @@ class AuthController extends StateNotifier<bool> {
     state = false;
     user.fold((l) => showSnackBar(context, l.message), (userModel) {
       _ref.read(userProvider.notifier).update((state) => userModel);
-      context.go('/splash');
+      //context.go('/splash');
     });
   }
 }
