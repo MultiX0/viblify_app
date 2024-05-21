@@ -200,32 +200,36 @@ class _MyAppState extends ConsumerState<MyApp> {
   Widget build(BuildContext context) {
     final router = ref.read(routerProvider);
 
-    return ref.watch(authChangeState).when(
-          data: (data) => ref.read(updateInfoProvider).when(
-                data: (update) {
-                  if (data != null) {
-                    if (isLoading) {
-                      getData(ref, data);
-                      return _buildLoadingApp();
+    return MaterialApp(
+      theme: Pallete.darkModeAppTheme,
+      debugShowCheckedModeBanner: false,
+      home: ref.watch(authStateChangeProvider).when(
+            data: (data) => ref.read(updateInfoProvider).when(
+                  data: (update) {
+                    if (data != null) {
+                      if (isLoading) {
+                        getData(ref, data);
+                        return _buildLoadingApp();
+                      }
+                    } else {
+                      log('Not logged in');
                     }
-                  } else {
-                    log('Not logged in');
-                  }
-                  if (appVersion.isNotEmpty &&
-                          update.version.isNotEmpty &&
-                          Version.parse(appVersion) < Version.parse(update.version) ||
-                      buildNumber < update.buildNumber) {
-                    return _buildUpdateApp();
-                  } else {
-                    return _buildMainApp(router);
-                  }
-                },
-                error: (error, trace) => ErrorText(error: error.toString()),
-                loading: () => _buildLoadingApp(),
-              ),
-          error: (error, stackTrace) => ErrorText(error: error.toString()),
-          loading: () => _buildLoadingApp(),
-        );
+                    if (appVersion.isNotEmpty &&
+                            update.version.isNotEmpty &&
+                            Version.parse(appVersion) < Version.parse(update.version) ||
+                        buildNumber < update.buildNumber) {
+                      return _buildUpdateApp();
+                    } else {
+                      return _buildMainApp(router);
+                    }
+                  },
+                  error: (error, trace) => ErrorText(error: error.toString()),
+                  loading: () => _buildLoadingApp(),
+                ),
+            error: (error, stackTrace) => ErrorText(error: error.toString()),
+            loading: () => _buildLoadingApp(),
+          ),
+    );
   }
 
   MaterialApp _buildUpdateApp() {
@@ -261,14 +265,7 @@ class _MyAppState extends ConsumerState<MyApp> {
     );
   }
 
-  MaterialApp _buildLoadingApp() {
-    return MaterialApp(
-      navigatorObservers: [
-        FirebaseAnalyticsObserver(analytics: FirebaseAnalytics.instance),
-      ],
-      theme: Pallete.darkModeAppTheme,
-      debugShowCheckedModeBanner: false,
-      home: const TitleWidget(),
-    );
+  Widget _buildLoadingApp() {
+    return const TitleWidget();
   }
 }

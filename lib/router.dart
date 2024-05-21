@@ -99,7 +99,7 @@ final routerProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: "/profile",
                 builder: (context, state) => UserProfileScreen(
-                  uid: FirebaseAuth.instance.currentUser!.uid,
+                  uid: FirebaseAuth.instance.currentUser?.uid ?? '',
                 ),
               ),
             ],
@@ -328,22 +328,26 @@ final routerProvider = Provider<GoRouter>((ref) {
         },
       ),
     ],
-    // redirect: (context, state) {
-    //   // If our async state is loading, don't perform redirects, yet
-    //   if (authState.isLoading || authState.hasError) return null;
+    redirect: (context, state) async {
+      // Listen to the auth state stream
+      // Determine authentication state based on the current user
+      final isAuthenticated = ref.watch(authStateChangeProvider).value != null;
+      // If authenticated, allow navigation
+      if (isAuthenticated) {
+        return null;
+      }
 
-    //   // Here we guarantee that hasData == true, i.e. we have a readable value
-
-    //   // This has to do with how the FirebaseAuth SDK handles the "log-in" state
-    //   // Returning `null` means "we are not authorized"
-    //   final isAuth = authState.valueOrNull != null;
-
-    //   final isLoggingIn = state.matchedLocation == "/login";
-    //   // final isSplash = state.matchedLocation == "/splash";
-    //   // if (isSplash) return isAuth ? "/" : "/login";
-    //   if (isLoggingIn) return isAuth ? "/" : null;
-
-    //   return isAuth ? null : "/login";
-    // },
+      // If not authenticated, check if the current route is auth related
+      final isAuthRoute = state.uri.toString() == '/login' ||
+          state.uri.toString() == '/register' ||
+          state.uri.toString() == '/sigin';
+      if (!isAuthRoute) {
+        // Redirect to auth screen if trying to access other routes
+        return "/login";
+      } else {
+        // Allow navigation to /login and /register from /auth
+        return null;
+      }
+    },
   );
 });

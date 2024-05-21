@@ -13,7 +13,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:line_icons/line_icons.dart';
-import 'package:panara_dialogs/panara_dialogs.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:viblify_app/core/common/loader.dart';
 import 'package:viblify_app/core/failure.dart';
@@ -779,27 +778,33 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen>
   }
 
   void signout() {
-    PanaraConfirmDialog.show(
-      context,
-      title: "Are you sure?",
-      message: "are you sure you want to signout of the application?",
-      confirmButtonText: "Confirm",
-      cancelButtonText: "Cancel",
-      color: Colors.grey.shade900,
-
-      onTapCancel: () {
-        context.pop();
-      },
-      onTapConfirm: () {
-        _signOut();
-        context.pushReplacement('/login');
-        log("logout");
-        ref.watch(userProvider.notifier).update((user) => null);
-        log("update user data to null");
-      },
-      panaraDialogType: PanaraDialogType.custom,
-      textColor: const Color.fromARGB(255, 22, 17, 17),
+    showDialog(
+      context: context,
       barrierDismissible: false, // optional parameter (default is true)
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Are you sure?"),
+          content: const Text("Are you sure you want to sign out of the application?"),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const Text("Cancel"),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+                _signOut();
+                log("logout");
+                ref.watch(userProvider.notifier).update((user) => null);
+                log("update user data to null");
+              },
+              child: const Text("Confirm"),
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -810,7 +815,7 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen>
       //signout with the firebase
       await FirebaseAuth.instance.signOut();
       //close the app
-      SystemNavigator.pop(animated: true);
+      // SystemNavigator.pop(animated: true);
       log('Sign Out Successful');
     } catch (error) {
       log('Error signing out : $error');

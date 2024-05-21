@@ -35,7 +35,7 @@ class AuthRepository {
 
   CollectionReference get _users => _firestore.collection(FirebaseConstant.usersCollection);
 
-  Stream<User?> get authStateChanged => _auth.authStateChanges();
+  Stream<User?> get authStateChange => _auth.authStateChanges();
 
   FutureEither<UserModel> registerWithEmail(String email, String password, String username) async {
     try {
