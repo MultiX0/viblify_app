@@ -55,7 +55,11 @@ Also, fun facts:
    - A Pinterest-like dashboard to discover new content.
    - AI-powered post classification and recommendations for exploring fresh posts.
 
-8. **Notifications:**
+8. **Say the Truth (STT) Feature:**
+   - Send anonymous messages to anyone to express your thoughts.
+   - No worries about revealing your identity—just say what you’re thinking!
+
+9. **Notifications:**
    - Push notifications for updates.
    - Notifications for community activities.
 
@@ -96,7 +100,6 @@ Also, fun facts:
 
 ## Screenshots
 _**Coming Soon!**_ (Because I forgot to take them while building. Classic me.)
-
 
 <img src="flutter_01.png" alt="Screenshot 1" width="200" />
 
