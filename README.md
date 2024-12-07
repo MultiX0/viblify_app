@@ -22,6 +22,7 @@ This app marks the phase of my life where I boldly ventured into the world of Ri
 Also, fun facts:
 1. I completely misunderstood how databases work at first. I treated Supabase, a structured SQL database, like it was some sort of NoSQL playground. Turns out, SQL doesn't appreciate being ignored—lesson learned! 😂
 2. Instead of securely storing database credentials in an `.env` file, I went full "beginner mode" and hardcoded them right into the app files. Future me cringes every time I think about it. 😅
+3. DRY (Don't Repeat Yourself)? What even is that? I never met this person in my life. Why not copy-paste the same code all over the place and grow a massive codebase of identical lines? Turns out, maintaining that is not as fun as it sounds. 😆
 
 ---
 
@@ -103,6 +104,7 @@ _**Coming Soon!**_ (Because I forgot to take them while building. Classic me.)
 - Thanks to my patience (and caffeine) for enduring hours of debugging spaghetti code.
 - A big thank you to SQL tutorials for rescuing me after I tried to treat Supabase like a NoSQL database. Who knew relational databases like relations?
 - Apologies to the `.env` file for not using it properly at the start. I promise to do better next time.
+- DRY (Don't Repeat Yourself)? Nah, I went full WET (Write Everything Twice) mode. Copy-pasting was my mantra until I realized that debugging 10 places for the same issue is a nightmare.
 - To my future self: "You've come a long way since this project. Be proud."
 
 ---
