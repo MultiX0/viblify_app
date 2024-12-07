@@ -19,7 +19,9 @@ This app marks the phase of my life where I boldly ventured into the world of Ri
 
 > **Disclaimer:** The code is a mix of "What was I thinking?" and "Whoa, that actually works!" moments. Enjoy at your own risk. 😅
 
-Also, fun fact: I completely misunderstood how databases work at first. I treated Supabase, a structured SQL database, like it was some sort of NoSQL playground. Turns out, SQL doesn't appreciate being ignored—lesson learned! 😂
+Also, fun facts:
+1. I completely misunderstood how databases work at first. I treated Supabase, a structured SQL database, like it was some sort of NoSQL playground. Turns out, SQL doesn't appreciate being ignored—lesson learned! 😂
+2. Instead of securely storing database credentials in an `.env` file, I went full "beginner mode" and hardcoded them right into the app files. Future me cringes every time I think about it. 😅
 
 ---
 
@@ -100,6 +102,7 @@ _**Coming Soon!**_ (Because I forgot to take them while building. Classic me.)
 - Shoutout to Riverpod and Supabase for being awesome tools.
 - Thanks to my patience (and caffeine) for enduring hours of debugging spaghetti code.
 - A big thank you to SQL tutorials for rescuing me after I tried to treat Supabase like a NoSQL database. Who knew relational databases like relations?
+- Apologies to the `.env` file for not using it properly at the start. I promise to do better next time.
 - To my future self: "You've come a long way since this project. Be proud."
 
 ---
