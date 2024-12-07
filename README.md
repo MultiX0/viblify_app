@@ -97,6 +97,9 @@ Also, fun facts:
 ## Screenshots
 _**Coming Soon!**_ (Because I forgot to take them while building. Classic me.)
 
+
+<img src="flutter_01.png" alt="Screenshot 1" width="200" />
+
 ---
 
 ## Acknowledgments
